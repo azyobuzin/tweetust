@@ -1,0 +1,10 @@
+[package]
+name = "tweetust"
+version = "0.0.1"
+authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
+
+[dependencies]
+hyper = "*"
+oauthcli = "*"
+rustc-serialize = "*"
+url = "*"
