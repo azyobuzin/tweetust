@@ -2,6 +2,10 @@
 name = "tweetust"
 version = "0.0.1"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
+description = "Experimental Twitter Library"
+repository = "https://github.com/azyobuzin/tweetust"
+keywords = ["twitter", "tweet"]
+license = "MIT"
 
 [dependencies]
 hyper = "*"
