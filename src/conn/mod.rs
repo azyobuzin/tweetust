@@ -1,14 +1,20 @@
-use hyper::{header, HttpError, HttpResult};
-use hyper::client::Client;
-use hyper::client::response::Response;
+use std::str::FromStr;
+use hyper;
+use hyper::{header, mime, HttpError, HttpResult, Get, Delete, Head};
+use hyper::client::Response;
 use hyper::method::Method;
-use hyper::mime;
-use oauthcli::{self, SignatureMethod};
+use hyper::status::StatusClass;
+use rustc_serialize::json;
 use url::{form_urlencoded, Url};
+use super::{TwitterError, TwitterResult};
+use super::models::*;
+use super::models::error::{Error, ErrorResponse};
+
+pub mod oauth_authenticator;
 
 pub enum Parameter<'a> {
     Value(&'a str, &'a str),
-    File(&'a str, &'a [u8])
+    File(&'a str, &'a mut (Reader + 'a))
 }
 
 pub trait Authenticator {
@@ -17,17 +23,17 @@ pub trait Authenticator {
 }
 
 fn is_multipart(params: &[Parameter]) -> bool {
-    params.iter().any(|x| match x {
-        &Parameter::Value(_, _) => false,
-        &Parameter::File(_, _) => true
+    params.iter().any(|x| match *x {
+        Parameter::Value(_, _) => false,
+        Parameter::File(_, _) => true
     })
 }
 
-fn send_request_internal(method: Method, mut url: Url, params: &[Parameter],
+pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
     authorization: String) -> HttpResult<Response>
 {
     let has_body = match method {
-        Method::Get | Method::Delete | Method::Head => false,
+        Get | Delete | Head => false,
         _ => true
     };
 
@@ -46,7 +52,7 @@ fn send_request_internal(method: Method, mut url: Url, params: &[Parameter],
         );
     }
 
-    let mut client = Client::new();
+    let mut client = hyper::Client::new();
     let mut req = client.request(method, url);
 
     let body;
@@ -73,58 +79,53 @@ fn send_request_internal(method: Method, mut url: Url, params: &[Parameter],
     req.header(header::Authorization(authorization)).send()
 }
 
-#[derive(Clone, Show)]
-pub struct OAuthAuthenticator {
-    pub consumer_key: String,
-    pub consumer_secret: String,
-    pub access_token: String,
-    pub access_token_secret: String
+#[derive(RustcDecodable)]
+struct InternalErrorResponse {
+    errors: Option<Vec<Error>>,
+    error: Option<Vec<Error>>
 }
 
-impl OAuthAuthenticator {
-    pub fn new(consumer_key: &str, consumer_secret: &str,
-        access_token: &str, access_token_secret: &str) -> OAuthAuthenticator
-    {
-        OAuthAuthenticator {
-            consumer_key: consumer_key.to_string(),
-            consumer_secret: consumer_secret.to_string(),
-            access_token: access_token.to_string(),
-            access_token_secret: access_token_secret.to_string()
-        }
-    }
-}
+pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
+    match source {
+        Ok(mut res) => {
+            // Parse headers
+            let limit = res.headers.get_raw("X-Rate-Limit-Limit")
+                .and_then(|x| x.first())
+                .and_then(|x| FromStr::from_str(String::from_utf8_lossy(x.as_slice()).as_slice()));
+            let remaining = res.headers.get_raw("X-Rate-Limit-Remaining")
+                .and_then(|x| x.first())
+                .and_then(|x| FromStr::from_str(String::from_utf8_lossy(x.as_slice()).as_slice()));
+            let reset = res.headers.get_raw("X-Rate-Limit-Reset")
+                .and_then(|x| x.first())
+                .and_then(|x| FromStr::from_str(String::from_utf8_lossy(x.as_slice()).as_slice()));
+            let rate_limit = limit.and(remaining).and(reset)
+                .map(|_| RateLimitStatus {
+                    limit: limit.unwrap(),
+                    remaining: remaining.unwrap(),
+                    reset: reset.unwrap()
+                });
 
-impl Authenticator for OAuthAuthenticator {
-    fn send_request(&self, method: Method, url: &str, params: &[Parameter]) -> HttpResult<Response> {
-        match Url::parse(url) {
-            Ok(u) => {
-                let multipart = is_multipart(params);
-                let mut auth_params = Vec::<(String, String)>::new();
-                if !multipart {
-                    auth_params.extend(params.iter().map(|x| match x {
-                        &Parameter::Value(key, val) => (key.to_string(), val.to_string()),
-                        _ => unreachable!()
-                    }));
-                }
-
-                let authorization = oauthcli::authorization_header(
-                    method.to_string().as_slice(),
-                    u.clone(),
-                    None,
-                    self.consumer_key.as_slice(),
-                    self.consumer_secret.as_slice(),
-                    Some(self.access_token.as_slice()),
-                    Some(self.access_token_secret.as_slice()),
-                    SignatureMethod::HmacSha1,
-                    oauthcli::timestamp(),
-                    oauthcli::nonce(),
-                    None,
-                    None,
-                    auth_params.iter()
-                );
-                send_request_internal(method, u.clone(), params, authorization)
-            },
-            Err(e) => Err(HttpError::HttpUriError(e))
-        }
+            match res.read_to_string() {
+                Ok(body) => match res.status.class() {
+                    // 2xx
+                    StatusClass::Success => Ok(TwitterResponse {
+                        object: (), raw_response: body, rate_limit: rate_limit
+                    }),
+                    _ => {
+                        // Error response
+                        let dec: json::DecodeResult<InternalErrorResponse> = json::decode(body.as_slice());
+                        let errors = dec.ok().and_then(|x| x.errors.or(x.error));
+                        Err(TwitterError::ErrorResponse(ErrorResponse {
+                            status: res.status,
+                            errors: errors,
+                            raw_response: body,
+                            rate_limit: rate_limit
+                        }))
+                    }
+                },
+                Err(e) => Err(TwitterError::HttpError(HttpError::HttpIoError(e)))
+            }
+        },
+        Err(e) => Err(TwitterError::HttpError(e))
     }
 }
