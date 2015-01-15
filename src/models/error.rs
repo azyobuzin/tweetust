@@ -18,7 +18,7 @@ pub struct ErrorResponse {
 
 impl std::error::Error for ErrorResponse {
     fn description(&self) -> &str {
-        "The server returned an error response"
+        "the server returned an error response"
     }
 
     fn detail(&self) -> Option<String> {

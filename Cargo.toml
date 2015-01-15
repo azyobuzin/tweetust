@@ -3,6 +3,7 @@ name = "tweetust"
 version = "0.0.1"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "Experimental Twitter Library"
+documentation = "http://www.rust-ci.org/azyobuzin/tweetust/doc/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 keywords = ["twitter", "tweet"]
 license = "MIT"
@@ -12,3 +13,6 @@ hyper = "*"
 oauthcli = "*"
 rustc-serialize = "*"
 url = "*"
+
+[dependencies.tweetust_macros]
+path = "macros"

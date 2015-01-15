@@ -1,18 +1,25 @@
 #![allow(unstable)]
+#![feature(plugin)]
 
 extern crate hyper;
 extern crate oauthcli;
 extern crate "rustc-serialize" as rustc_serialize;
 extern crate url;
 
+#[plugin]
+#[no_link]
+extern crate tweetust_macros;
+
 use std::error::{Error, FromError};
 use rustc_serialize::json;
 use models::TwitterResponse;
 
 pub use auth::{access_token, request_token};
+pub use clients::TwitterClient;
 pub use conn::oauth_authenticator::OAuthAuthenticator;
 
 pub mod auth;
+pub mod clients;
 pub mod conn;
 pub mod models;
 
@@ -26,7 +33,7 @@ pub enum TwitterError {
 
 impl Error for TwitterError {
     fn description(&self) -> &str {
-        "An error occured in your request"
+        "an error occured in your request"
     }
 
     fn cause(&self) -> Option<&Error> {

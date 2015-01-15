@@ -1,0 +1,11 @@
+[package]
+name = "tweetust_macros"
+version = "0.0.1"
+authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
+description = "Macros used in tweetust"
+repository = "https://github.com/azyobuzin/tweetust"
+license = "MIT"
+
+[[lib]]
+name = "tweetust_macros"
+crate-type = ["dylib"]

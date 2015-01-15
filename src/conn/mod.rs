@@ -46,7 +46,7 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
             query.iter().map(|x| (x.0.as_slice(), x.1.as_slice())).chain(
                 params.iter().map(|x| match x {
                     &Parameter::Value(key, val) => (key, val),
-                    _ => panic!("The request whose method is GET, DELETE or HEAD has Parameter::File")
+                    _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
         );
