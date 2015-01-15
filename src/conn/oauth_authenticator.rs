@@ -52,7 +52,7 @@ impl Authenticator for OAuthAuthenticator {
                     oauthcli::nonce(),
                     None,
                     None,
-                    auth_params.iter()
+                    auth_params.into_iter()
                 );
                 send_request(method, u.clone(), params, authorization)
             },

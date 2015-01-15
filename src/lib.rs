@@ -9,7 +9,7 @@ use std::error::{Error, FromError};
 use rustc_serialize::json;
 use models::TwitterResponse;
 
-pub use auth::request_token;
+pub use auth::{access_token, request_token};
 pub use conn::oauth_authenticator::OAuthAuthenticator;
 
 pub mod auth;
