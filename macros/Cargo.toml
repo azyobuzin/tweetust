@@ -6,6 +6,7 @@ description = "Macros used in tweetust"
 repository = "https://github.com/azyobuzin/tweetust"
 license = "MIT"
 
-[[lib]]
+[lib]
 name = "tweetust_macros"
 crate-type = ["dylib"]
+plugin = true
