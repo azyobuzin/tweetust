@@ -1,5 +1,5 @@
 #![allow(unstable)]
-#![feature(plugin)]
+#![feature(box_syntax, plugin)]
 
 extern crate hyper;
 extern crate oauthcli;

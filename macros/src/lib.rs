@@ -26,12 +26,15 @@
 extern crate rustc;
 extern crate syntax;
 
+use std::fmt::Writer;
 use rustc::plugin::Registry;
 use syntax::ast::{self, TokenTree};
-use syntax::ext::base::{DummyResult, ExtCtxt, MacResult};
-use syntax::ext::quote::rt::ToSource;
+use syntax::ext::base::{DummyResult, ExtCtxt, MacItems, MacResult};
+use syntax::ext::quote::rt::{ExtParseUtils, ToSource};
 use syntax::codemap::Span;
+use syntax::parse::common::SeqSep;
 use syntax::parse::token;
+use syntax::parse::parser::Parser;
 
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
@@ -40,6 +43,7 @@ pub fn plugin_registrar(reg: &mut Registry) {
 
 struct ApiDef {
     method_name: String,
+    request_struct_name: String,
     http_method: String,
     url: String,
     required_params: Vec<ast::Arg>,
@@ -48,45 +52,26 @@ struct ApiDef {
 }
 
 pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
-    let mut iter = args.iter();
     let client_name;
-    match iter.next() {
-        Some(tt) => match tt {
-            &ast::TtToken(_, token::Ident(ident, token::Plain)) =>
-                client_name = token::get_ident(ident).to_string(),
-            _ => {
-                cx.span_err(sp, "the first argument is not identifier");
-                return DummyResult::any(sp);
-            }
-        },
-        None => {
-            cx.span_err(sp, "no argument");
-            return DummyResult::any(sp);
+    let deftts;
+    match args {
+        [
+            ast::TtToken(_, token::Ident(client_name_id, token::Plain)),
+            ast::TtToken(_, token::Comma),
+            ast::TtDelimited(_, ref delim)
+        ] if delim.delim == token::Bracket => {
+            client_name = client_name_id.to_string();
+            deftts = delim.tts.clone();
         }
-    }
-
-    let mut deftts;
-    match iter.next() {
-        Some(&ast::TtDelimited(span, ref delim)) => match delim.delim {
-            token::Bracket => deftts = delim.tts.clone().into_iter(),
-            _ => {
-                cx.span_err(span, "the second argument is not []");
-                return DummyResult::any(sp);
-            }
-        },
         _ => {
-            cx.span_err(sp, "invalid second argument");
+            cx.span_err(sp, "invalid arguments");
+            cx.span_note(sp, format!("{:?}", args).as_slice());
             return DummyResult::any(sp);
         }
     }
 
-    if iter.next().is_some() {
-        cx.span_err(sp, "too many arguments");
-        return DummyResult::any(sp);
-    }
-
-    let mut defs = Vec::new();
-    for tt in deftts {
+    let mut defs = Vec::with_capacity(deftts.len());
+    for tt in deftts.into_iter() {
         let defspan;
         let tts;
         match tt {
@@ -106,76 +91,62 @@ pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacR
             }
         }
 
-        if tts.len() != 6 {
-            cx.span_err(defspan, "an API definition requires 6 arguments");
-            return DummyResult::any(sp);
-        }
+        let mut p = cx.new_parser_from_tts(tts.as_slice());
 
-        let method_name;
-        match tts[0] {
-            ast::TtToken(_, token::Ident(ident, token::Plain)) =>
-                method_name = token::get_ident(ident).to_string(),
-            ast::TtToken(span, _)
-            | ast::TtDelimited(span, _)
-            | ast::TtSequence(span, _) => {
-                cx.span_err(span, "a method name must be a plain ident");
-                return DummyResult::any(sp);
-            }
-        }
-
-        let http_method = cx.new_parser_from_tts(&[tts[1].clone()])
-            .parse_expr().to_source();
-
-        let url = cx.new_parser_from_tts(&[tts[2].clone()])
-            .parse_expr().to_source();
-
-        let mut required_params = Vec::new();
-        match tts[3] {
-            ast::TtDelimited(span, ref delim) => match delim.delim {
-                token::Bracket => {
-                    for tt in delim.tts.clone().into_iter() {
-                        required_params.push(
-                            cx.new_parser_from_tts(&[tt]).parse_arg()
-                        );
+        let method_name = p.parse_ident().to_string();
+        let mut request_struct_name = String::with_capacity(method_name.len() + 14);
+        let mut is_next_upper = true;
+        for c in method_name.as_slice().chars() {
+            if c == '_' {
+                is_next_upper = true;
+            } else {
+                request_struct_name.push(
+                    if is_next_upper {
+                        is_next_upper = false;
+                        c.to_uppercase()
+                    } else {
+                        c
                     }
-                },
-                _ => {
-                    cx.span_err(span, "required parameters must be surrounded by []");
-                    return DummyResult::any(sp);
-                }
-            },
-            ast::TtToken(span, _) | ast::TtSequence(span, _) => {
-                cx.span_err(span, "invalid required parameters");
-                return DummyResult::any(sp);
+                );
             }
         }
+        request_struct_name.push_str("RequestBuilder");
 
-        let mut optional_params = Vec::new();
-        match tts[4] {
-            ast::TtDelimited(span, ref delim) => match delim.delim {
-                token::Bracket => {
-                    for tt in delim.tts.clone().into_iter() {
-                        optional_params.push(
-                            cx.new_parser_from_tts(&[tt]).parse_arg()
-                        );
-                    }
-                },
-                _ => {
-                    cx.span_err(span, "optional parameters must be surrounded by []");
-                    return DummyResult::any(sp);
-                }
+        p.expect(&token::Comma);
+        let http_method = p.parse_expr().to_source();
+
+        p.expect(&token::Comma);
+        let url = p.parse_str().0.get().to_source();
+
+        p.expect(&token::Comma);
+        p.expect(&token::OpenDelim(token::Bracket));
+        let required_params = p.parse_seq_to_end(
+            &token::CloseDelim(token::Bracket),
+            SeqSep {
+                sep: Some(token::Comma),
+                trailing_sep_allowed: true
             },
-            ast::TtToken(span, _) | ast::TtSequence(span, _) => {
-                cx.span_err(span, "invalid optional parameters");
-                return DummyResult::any(sp);
-            }
-        }
+            |p| p.parse_arg()
+        );
 
-        let return_type = cx.new_parser_from_tts(&[tts[5].clone()])
-            .parse_ty().to_source();
+        p.expect(&token::Comma);
+        p.expect(&token::OpenDelim(token::Bracket));
+        let optional_params = p.parse_seq_to_end(
+            &token::CloseDelim(token::Bracket),
+            SeqSep {
+                sep: Some(token::Comma),
+                trailing_sep_allowed: true
+            },
+            |p| p.parse_arg()
+        );
+
+        p.expect(&token::Comma);
+        let return_type = p.parse_ty().to_source();
+        p.eat(&token::Comma);
 
         defs.push(ApiDef {
             method_name: method_name,
+            request_struct_name: request_struct_name,
             http_method: http_method,
             url: url,
             required_params: required_params,
@@ -184,5 +155,96 @@ pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacR
         });
     }
 
-    unimplemented!();
+    // client struct, client impl, API struct, API impl
+    let mut items = Vec::with_capacity(defs.len() * 2 + 2);
+
+    items.push(cx.parse_item(format!(
+        "pub struct {}<T: conn::Authenticator>(pub ::std::rc::Rc<T>);",
+        client_name
+    )));
+
+    let mut client_impl = format!(
+        "impl<T: conn::Authenticator> {}<T> {{\n",
+        client_name
+    );
+    for ref def in defs.iter() {
+        write!(&mut client_impl, "pub fn {}(&self, ", def.method_name);
+        for ref p in def.required_params.iter() {
+            write!(&mut client_impl, "{}, ", p.to_source());
+        }
+        writeln!(&mut client_impl,
+            ") -> {0}<T> {{\n{0} {{\n_auth: self.0.clone(),", def.request_struct_name);
+        for ref p in def.required_params.iter() {
+            writeln!(&mut client_impl, "{0}: {0},", p.pat.to_source());
+        }
+        for ref p in def.optional_params.iter() {
+            writeln!(&mut client_impl, "{}: None,", p.pat.to_source());
+        }
+        client_impl.push_str("}\n}\n");
+    }
+    client_impl.push('}');
+    items.push(cx.parse_item(client_impl));
+
+    for ref def in defs.iter() {
+        let mut request_struct = format!(
+            "pub struct {}<T: conn::Authenticator> {{\n_auth: ::std::rc::Rc<T>,\n",
+            def.request_struct_name
+        );
+        for ref p in def.required_params.iter() {
+            writeln!(&mut request_struct, "{},", p.to_source());
+        }
+        for ref p in def.optional_params.iter() {
+            writeln!(&mut request_struct, "{}: Option<{}>,",
+                p.pat.to_source(), p.ty.to_source()
+            );
+        }
+        request_struct.push('}');
+        items.push(cx.parse_item(request_struct));
+
+        let mut request_impl = format!(
+            "impl<T: conn::Authenticator> {}<T> {{\n",
+            def.request_struct_name
+        );
+        for ref p in def.optional_params.iter() {
+            writeln!(&mut request_impl, "pub fn {0}(mut self, val: {1}) -> Self {{
+self.{0} = Some(val);\nself\n}}",
+                p.pat.to_source(),
+                p.ty.to_source()
+            );
+        }
+        writeln!(&mut request_impl, "pub fn execute(&self) -> TwitterResult<::std::boxed::Box<{}>> {{
+let mut params: Vec<conn::Parameter> = Vec::with_capacity({});",
+            def.return_type, def.required_params.len() + def.optional_params.len()
+        );
+        for ref p in def.required_params.iter() {
+            writeln!(&mut request_impl,
+                "params.push(conn::ToParameter::to_parameter(self.{0}, \"{0}\"));",
+                p.pat.to_source()
+            );
+        }
+        for ref p in def.optional_params.iter() {
+            writeln!(&mut request_impl, "match self.{0} {{
+    Some(x) => params.push(conn::ToParameter::to_parameter(x, \"{0}\")),
+    None => ()\n}}",
+                p.pat.to_source()
+            );
+        }
+        write!(&mut request_impl, "let url = {};
+let result = conn::read_to_twitter_result(
+    conn::Authenticator::send_request(&*self._auth, {}, url, params.as_slice())
+);
+match result {{
+    Ok(res) => match ::rustc_serialize::json::decode(res.raw_response.as_slice()) {{
+        Ok(j) => Ok(res.object(box j)),
+        Err(e) => Err(TwitterError::JsonError(e, res))
+    }},
+    Err(e) => Err(e)
+}}\n}}\n}}",
+            def.url,
+            def.http_method
+        );
+        items.push(cx.parse_item(request_impl));
+    }
+
+    MacItems::new(items.into_iter())
 }

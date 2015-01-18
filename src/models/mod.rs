@@ -1,5 +1,3 @@
-pub mod error;
-
 #[derive(Clone, Copy, Show)]
 pub struct RateLimitStatus {
     pub limit: i32,
@@ -10,7 +8,7 @@ pub struct RateLimitStatus {
 #[derive(Clone, Show)]
 pub struct TwitterResponse<T> {
     pub object: T,
-    pub raw_response: String,
+    pub raw_response: Box<String>,
     pub rate_limit: Option<RateLimitStatus>
 }
 
@@ -23,3 +21,6 @@ impl TwitterResponse<()> {
         }
     }
 }
+
+pub mod error;
+pub mod status;

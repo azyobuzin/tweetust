@@ -34,7 +34,7 @@ impl Authenticator for OAuthAuthenticator {
                 let mut auth_params = Vec::<(String, String)>::new();
                 if !multipart {
                     auth_params.extend(params.iter().map(|x| match x {
-                        &Parameter::Value(key, val) => (key.to_string(), val.to_string()),
+                        &Parameter::Value(key, ref val) => (key.to_string(), val.clone()),
                         _ => unreachable!()
                     }));
                 }

@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::string::ToString;
 use hyper;
 use hyper::{header, mime, HttpError, HttpResult, Get, Delete, Head};
 use hyper::client::Response;
@@ -13,11 +14,11 @@ use super::models::error::{Error, ErrorResponse};
 pub mod oauth_authenticator;
 
 pub enum Parameter<'a> {
-    Value(&'a str, &'a str),
+    Value(&'a str, String),
     File(&'a str, &'a mut (Reader + 'a))
 }
 
-pub trait Authenticator {
+pub trait Authenticator: Clone {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter])
         -> HttpResult<Response>;
 }
@@ -45,7 +46,7 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
         url.set_query_from_pairs(
             query.iter().map(|x| (x.0.as_slice(), x.1.as_slice())).chain(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(key, val) => (key, val),
+                    &Parameter::Value(key, ref val) => (key, val.as_slice()),
                     _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
@@ -63,7 +64,7 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
         } else {
             body = form_urlencoded::serialize(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(ref key, val) => (key.as_slice(), val),
+                    &Parameter::Value(key, ref val) => (key, val.as_slice()),
                     _ => unreachable!()
                 })
             );
@@ -109,7 +110,7 @@ pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()>
                 Ok(body) => match res.status.class() {
                     // 2xx
                     StatusClass::Success => Ok(TwitterResponse {
-                        object: (), raw_response: body, rate_limit: rate_limit
+                        object: (), raw_response: box body, rate_limit: rate_limit
                     }),
                     _ => {
                         // Error response
@@ -118,7 +119,7 @@ pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()>
                         Err(TwitterError::ErrorResponse(ErrorResponse {
                             status: res.status,
                             errors: errors,
-                            raw_response: body,
+                            raw_response: box body,
                             rate_limit: rate_limit
                         }))
                     }
@@ -127,5 +128,15 @@ pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()>
             }
         },
         Err(e) => Err(TwitterError::HttpError(e))
+    }
+}
+
+pub trait ToParameter {
+    fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a>;
+}
+
+impl<T: ToString> ToParameter for T {
+    fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a> {
+        Parameter::Value(key, self.to_string())
     }
 }

@@ -33,7 +33,7 @@ impl RequestTokenRequestBuilder {
         let request_token_url = Url::parse("https://api.twitter.com/oauth/request_token").unwrap();
         let mut params = Vec::new();
         match self.x_auth_access_type {
-            Some(ref x) => params.push(Value("x_auth_access_type", x.as_slice())),
+            Some(ref x) => params.push(Value("x_auth_access_type", x.clone())),
             None => ()
         }
         let authorization = oauthcli::authorization_header(
@@ -50,7 +50,7 @@ impl RequestTokenRequestBuilder {
             Some(self.oauth_callback.as_slice()),
             None,
             params.iter().map(|x| match x {
-                &Value(key, val) => (key.to_string(), val.to_string()),
+                &Value(key, ref val) => (key.to_string(), val.clone()),
                 _ => unreachable!()
             })
         );
