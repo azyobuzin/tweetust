@@ -7,7 +7,6 @@ documentation = "http://www.rust-ci.org/azyobuzin/tweetust/doc/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 keywords = ["twitter", "tweet"]
 license = "MIT"
-include = ["macros"]
 
 [dependencies]
 hyper = "*"
@@ -17,3 +16,4 @@ url = "*"
 
 [dependencies.tweetust_macros]
 path = "macros"
+version = "0.0.1"
