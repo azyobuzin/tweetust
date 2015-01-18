@@ -1,5 +1,33 @@
+//! Tweetust is the simple wrapper for Twitter API.
+//! # Getting started
+//! This is a Twitter API wrapper, so you must lean Twitter API.
+//! [Visit the official document](https://dev.twitter.com/).
+//!
+//! After getting the API key, let's start using tweetust.
+//! # How to get the access token
+//! See [request_token function](auth/fn.request_token.html).
+//! After getting the access token, you can use [to_authenticator function](auth/struct.AccessTokenResult.html#method.to_authenticator)
+//! to make [OAuthAuthenticator](conn/oauth_authenticator/struct.OAuthAuthenticator.html).
+//! # How to create OAuthAuthenticator with an access token string
+//! See [OAuthAuthenticator::new](conn/oauth_authenticator/struct.OAuthAuthenticator.html#method.new).
+//! # The first tweeting
+//! When you created OAuthAuthenticator and set to `auth` variable, you can tweet in a minute.
+//!
+//! ```rust
+//! // extern crate tweetust; or use tweetust;
+//! let your_tweet =
+//!   tweetust::TwitterClient::new(&auth)
+//!     .statuses()
+//!     .update("My First Tweet!")
+//!     .execute();
+//! ```
+//! It's easy for people who have leaned about Twitter, isn't it?
+
 #![allow(unstable)]
+#![experimental]
 #![feature(box_syntax, plugin)]
+
+//TODO: `type` field
 
 extern crate hyper;
 extern crate oauthcli;

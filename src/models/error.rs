@@ -12,7 +12,7 @@ pub struct Error {
 pub struct ErrorResponse {
     pub status: StatusCode,
     pub errors: Option<Vec<Error>>,
-    pub raw_response: Box<String>,
+    pub raw_response: String,
     pub rate_limit: Option<RateLimitStatus>
 }
 

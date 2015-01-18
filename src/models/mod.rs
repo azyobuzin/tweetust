@@ -8,7 +8,7 @@ pub struct RateLimitStatus {
 #[derive(Clone, Show)]
 pub struct TwitterResponse<T> {
     pub object: T,
-    pub raw_response: Box<String>,
+    pub raw_response: String,
     pub rate_limit: Option<RateLimitStatus>
 }
 
@@ -22,5 +22,15 @@ impl TwitterResponse<()> {
     }
 }
 
+#[derive(Clone, Show, RustcDecodable)]
+pub struct CursorIds {
+    pub previous_cursor: i64,
+    pub next_cursor: i64,
+    pub ids: Vec<u64>
+}
+
 pub mod error;
-pub mod status;
+pub mod entities;
+pub mod places;
+pub mod tweets;
+pub mod users;

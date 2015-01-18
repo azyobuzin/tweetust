@@ -110,7 +110,7 @@ pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()>
                 Ok(body) => match res.status.class() {
                     // 2xx
                     StatusClass::Success => Ok(TwitterResponse {
-                        object: (), raw_response: box body, rate_limit: rate_limit
+                        object: (), raw_response: body, rate_limit: rate_limit
                     }),
                     _ => {
                         // Error response
@@ -119,7 +119,7 @@ pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()>
                         Err(TwitterError::ErrorResponse(ErrorResponse {
                             status: res.status,
                             errors: errors,
-                            raw_response: box body,
+                            raw_response: body,
                             rate_limit: rate_limit
                         }))
                     }

@@ -5,6 +5,7 @@ use oauthcli::{self, SignatureMethod};
 use url::Url;
 use super::{Authenticator, is_multipart, Parameter, send_request};
 
+/// OAuth 1.0 wrapper
 #[derive(Clone, Show)]
 pub struct OAuthAuthenticator {
     pub consumer_key: String,

@@ -52,108 +52,84 @@ struct ApiDef {
 }
 
 pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
-    let client_name;
-    let deftts;
-    match args {
-        [
-            ast::TtToken(_, token::Ident(client_name_id, token::Plain)),
-            ast::TtToken(_, token::Comma),
-            ast::TtDelimited(_, ref delim)
-        ] if delim.delim == token::Bracket => {
-            client_name = client_name_id.to_string();
-            deftts = delim.tts.clone();
-        }
-        _ => {
-            cx.span_err(sp, "invalid arguments");
-            cx.span_note(sp, format!("{:?}", args).as_slice());
-            return DummyResult::any(sp);
-        }
-    }
+    let mut p = cx.new_parser_from_tts(args);
 
-    let mut defs = Vec::with_capacity(deftts.len());
-    for tt in deftts.into_iter() {
-        let defspan;
-        let tts;
-        match tt {
-            ast::TtDelimited(span, ref delim) => match delim.delim {
-                token::Paren => {
-                    defspan = span;
-                    tts = delim.tts.clone();
-                },
-                _ => {
-                    cx.span_err(span, "an API definition must be surrounded by ()");
-                    return DummyResult::any(sp);
+    let client_name = p.parse_ident().to_string();
+    p.expect(&token::Comma);
+    p.expect(&token::OpenDelim(token::Bracket));
+
+    let defs = p.parse_seq_to_end(
+        &token::CloseDelim(token::Bracket),
+        SeqSep {
+            sep: Some(token::Comma),
+            trailing_sep_allowed: true
+        },
+        |p| {
+            p.expect(&token::OpenDelim(token::Paren));
+
+            let method_name = p.parse_ident().to_string();
+            let mut request_struct_name = String::with_capacity(method_name.len() + 14);
+            let mut is_next_upper = true;
+            for c in method_name.as_slice().chars() {
+                if c == '_' {
+                    is_next_upper = true;
+                } else {
+                    request_struct_name.push(
+                        if is_next_upper {
+                            is_next_upper = false;
+                            c.to_uppercase()
+                        } else {
+                            c
+                        }
+                    );
                 }
-            },
-            ast::TtToken(span, _) | ast::TtSequence(span, _) => {
-                cx.span_err(span, "invalid API definition");
-                return DummyResult::any(sp);
+            }
+            request_struct_name.push_str("RequestBuilder");
+
+            p.expect(&token::Comma);
+            let http_method = p.parse_expr().to_source();
+
+            p.expect(&token::Comma);
+            let url = p.parse_str().0.get().to_source();
+
+            p.expect(&token::Comma);
+            p.expect(&token::OpenDelim(token::Bracket));
+            let required_params = p.parse_seq_to_end(
+                &token::CloseDelim(token::Bracket),
+                SeqSep {
+                    sep: Some(token::Comma),
+                    trailing_sep_allowed: true
+                },
+                |p| p.parse_arg()
+            );
+
+            p.expect(&token::Comma);
+            p.expect(&token::OpenDelim(token::Bracket));
+            let optional_params = p.parse_seq_to_end(
+                &token::CloseDelim(token::Bracket),
+                SeqSep {
+                    sep: Some(token::Comma),
+                    trailing_sep_allowed: true
+                },
+                |p| p.parse_arg()
+            );
+
+            p.expect(&token::Comma);
+            let return_type = p.parse_ty().to_source();
+            p.eat(&token::Comma);
+            p.expect(&token::CloseDelim(token::Paren));
+
+            ApiDef {
+                method_name: method_name,
+                request_struct_name: request_struct_name,
+                http_method: http_method,
+                url: url,
+                required_params: required_params,
+                optional_params: optional_params,
+                return_type: return_type
             }
         }
-
-        let mut p = cx.new_parser_from_tts(tts.as_slice());
-
-        let method_name = p.parse_ident().to_string();
-        let mut request_struct_name = String::with_capacity(method_name.len() + 14);
-        let mut is_next_upper = true;
-        for c in method_name.as_slice().chars() {
-            if c == '_' {
-                is_next_upper = true;
-            } else {
-                request_struct_name.push(
-                    if is_next_upper {
-                        is_next_upper = false;
-                        c.to_uppercase()
-                    } else {
-                        c
-                    }
-                );
-            }
-        }
-        request_struct_name.push_str("RequestBuilder");
-
-        p.expect(&token::Comma);
-        let http_method = p.parse_expr().to_source();
-
-        p.expect(&token::Comma);
-        let url = p.parse_str().0.get().to_source();
-
-        p.expect(&token::Comma);
-        p.expect(&token::OpenDelim(token::Bracket));
-        let required_params = p.parse_seq_to_end(
-            &token::CloseDelim(token::Bracket),
-            SeqSep {
-                sep: Some(token::Comma),
-                trailing_sep_allowed: true
-            },
-            |p| p.parse_arg()
-        );
-
-        p.expect(&token::Comma);
-        p.expect(&token::OpenDelim(token::Bracket));
-        let optional_params = p.parse_seq_to_end(
-            &token::CloseDelim(token::Bracket),
-            SeqSep {
-                sep: Some(token::Comma),
-                trailing_sep_allowed: true
-            },
-            |p| p.parse_arg()
-        );
-
-        p.expect(&token::Comma);
-        let return_type = p.parse_ty().to_source();
-        p.eat(&token::Comma);
-
-        defs.push(ApiDef {
-            method_name: method_name,
-            request_struct_name: request_struct_name,
-            http_method: http_method,
-            url: url,
-            required_params: required_params,
-            optional_params: optional_params,
-            return_type: return_type
-        });
-    }
+    );
 
     // client struct, client impl, API struct, API impl
     let mut items = Vec::with_capacity(defs.len() * 2 + 2);
@@ -170,12 +146,20 @@ pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacR
     for ref def in defs.iter() {
         write!(&mut client_impl, "pub fn {}(&self, ", def.method_name);
         for ref p in def.required_params.iter() {
-            write!(&mut client_impl, "{}, ", p.to_source());
+            if p.ty.to_source() == "String" {
+                write!(&mut client_impl, "{}: &str, ", p.pat.to_source());
+            } else {
+                write!(&mut client_impl, "{}, ", p.to_source());
+            }
         }
         writeln!(&mut client_impl,
             ") -> {0}<T> {{\n{0} {{\n_auth: self.0.clone(),", def.request_struct_name);
         for ref p in def.required_params.iter() {
-            writeln!(&mut client_impl, "{0}: {0},", p.pat.to_source());
+            write!(&mut client_impl, "{0}: {0}", p.pat.to_source());
+            client_impl.push_str(
+                if p.ty.to_source() == "String" { ".to_string(),\n" }
+                else { ",\n" }
+            );
         }
         for ref p in def.optional_params.iter() {
             writeln!(&mut client_impl, "{}: None,", p.pat.to_source());
@@ -206,42 +190,56 @@ pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacR
             def.request_struct_name
         );
         for ref p in def.optional_params.iter() {
+            let ty = p.ty.to_source();
+            let is_str = ty == "String";
             writeln!(&mut request_impl, "pub fn {0}(mut self, val: {1}) -> Self {{
-self.{0} = Some(val);\nself\n}}",
+self.{0} = Some(val{2});\nself\n}}",
                 p.pat.to_source(),
-                p.ty.to_source()
+                if is_str { "&str" } else { ty.as_slice() },
+                if is_str { ".to_string()" } else { "" }
             );
         }
-        writeln!(&mut request_impl, "pub fn execute(&self) -> TwitterResult<::std::boxed::Box<{}>> {{
+        writeln!(&mut request_impl, "pub fn execute(&self) -> TwitterResult<{}> {{
 let mut params: Vec<conn::Parameter> = Vec::with_capacity({});",
             def.return_type, def.required_params.len() + def.optional_params.len()
         );
-        for ref p in def.required_params.iter() {
+        let need_format = def.url.as_slice().contains("{}");
+        let mut reqparam_iter = def.required_params.iter();
+        if need_format { reqparam_iter.next(); }
+        for ref p in reqparam_iter {
             writeln!(&mut request_impl,
-                "params.push(conn::ToParameter::to_parameter(self.{0}, \"{0}\"));",
+                "params.push(conn::ToParameter::to_parameter(self.{0}.clone(), \"{0}\"));",
                 p.pat.to_source()
             );
         }
         for ref p in def.optional_params.iter() {
             writeln!(&mut request_impl, "match self.{0} {{
-    Some(x) => params.push(conn::ToParameter::to_parameter(x, \"{0}\")),
+    Some(ref x) => params.push(conn::ToParameter::to_parameter(x, \"{0}\")),
     None => ()\n}}",
                 p.pat.to_source()
             );
         }
-        write!(&mut request_impl, "let url = {};
+        request_impl.push_str("let url = ");
+        if need_format {
+            write!(&mut request_impl, "format!({}, self.{})",
+                def.url, def.required_params[0].pat.to_source());
+        } else {
+            request_impl.push_str(def.url.as_slice());
+        }
+        write!(&mut request_impl, ";
 let result = conn::read_to_twitter_result(
-    conn::Authenticator::send_request(&*self._auth, {}, url, params.as_slice())
+    conn::Authenticator::send_request(&*self._auth, {}, url{}, params.as_slice())
 );
 match result {{
     Ok(res) => match ::rustc_serialize::json::decode(res.raw_response.as_slice()) {{
-        Ok(j) => Ok(res.object(box j)),
+        Ok(j) => Ok(res.object({}j)),
         Err(e) => Err(TwitterError::JsonError(e, res))
     }},
     Err(e) => Err(e)
 }}\n}}\n}}",
-            def.url,
-            def.http_method
+            def.http_method,
+            if need_format { ".as_slice()" } else { "" },
+            if def.return_type.as_slice().contains("Box<") { "box " } else { "" }
         );
         items.push(cx.parse_item(request_impl));
     }
