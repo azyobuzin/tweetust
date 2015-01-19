@@ -1,16 +1,19 @@
-use std::str::FromStr;
+//! The low-level functions for connecting to Twitter with any authorization.
+//! Usually, you will not use this module.
+
 use std::string::ToString;
 use hyper;
 use hyper::{header, mime, HttpError, HttpResult, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
 use hyper::status::StatusClass;
-use rustc_serialize::json;
+use rustc_serialize::{json, Decodable};
 use url::{form_urlencoded, Url};
-use super::{TwitterError, TwitterResult};
-use super::models::*;
-use super::models::error::{Error, ErrorResponse};
+use ::{TwitterError, TwitterResult};
+use models::*;
+use models::error::{Error, ErrorResponse};
 
+pub mod application_only_authenticator;
 pub mod oauth_authenticator;
 
 pub enum Parameter<'a> {
@@ -92,13 +95,13 @@ pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()>
             // Parse headers
             let limit = res.headers.get_raw("X-Rate-Limit-Limit")
                 .and_then(|x| x.first())
-                .and_then(|x| FromStr::from_str(String::from_utf8_lossy(x.as_slice()).as_slice()));
+                .and_then(|x| String::from_utf8_lossy(x.as_slice()).as_slice().parse());
             let remaining = res.headers.get_raw("X-Rate-Limit-Remaining")
                 .and_then(|x| x.first())
-                .and_then(|x| FromStr::from_str(String::from_utf8_lossy(x.as_slice()).as_slice()));
+                .and_then(|x| String::from_utf8_lossy(x.as_slice()).as_slice().parse());
             let reset = res.headers.get_raw("X-Rate-Limit-Reset")
                 .and_then(|x| x.first())
-                .and_then(|x| FromStr::from_str(String::from_utf8_lossy(x.as_slice()).as_slice()));
+                .and_then(|x| String::from_utf8_lossy(x.as_slice()).as_slice().parse());
             let rate_limit = limit.and(remaining).and(reset)
                 .map(|_| RateLimitStatus {
                     limit: limit.unwrap(),
@@ -139,4 +142,10 @@ impl<T: ToString> ToParameter for T {
     fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a> {
         Parameter::Value(key, self.to_string())
     }
+}
+
+/// Parse the JSON string to T with rustc-serialize.
+/// As a stopgap measure, this function renames `type` to `type_`.
+pub fn parse_json<T: Decodable>(s: &str) -> json::DecodeResult<T> {
+    json::decode(s.replace("\"type\":", "\"type_\":").as_slice())
 }

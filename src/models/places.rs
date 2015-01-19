@@ -1,6 +1,8 @@
+use std::collections::BTreeMap;
+
 #[derive(Clone, Show, RustcDecodable)]
 pub struct Place {
-    //pub attributes: BTreeMap<String, json::Json>,
+    pub attributes: BTreeMap<String, String>,
     pub bounding_box: BoundingBox,
     pub country: String,
     pub country_code: String,
@@ -14,5 +16,5 @@ pub struct Place {
 #[derive(Clone, Show, RustcDecodable)]
 pub struct BoundingBox {
     pub coordinates: Vec<Vec<Vec<f64>>>,
-    //pub type: String
+    pub type_: String
 }

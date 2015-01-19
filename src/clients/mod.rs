@@ -1,5 +1,7 @@
 use std::rc::Rc;
-use super::conn::Authenticator;
+use conn::Authenticator;
+
+pub mod statuses;
 
 pub struct TwitterClient<T: Authenticator>(pub Rc<T>);
 
@@ -12,5 +14,3 @@ impl<T: Authenticator> TwitterClient<T> {
         statuses::StatusesClient(self.0.clone())
     }
 }
-
-pub mod statuses;

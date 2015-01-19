@@ -1,15 +1,19 @@
 //! Tweetust is the simple wrapper for Twitter API.
+//!
 //! # Getting started
 //! This is a Twitter API wrapper, so you must lean Twitter API.
 //! [Visit the official document](https://dev.twitter.com/).
 //!
 //! After getting the API key, let's start using tweetust.
+//!
 //! # How to get the access token
-//! See [request_token function](auth/fn.request_token.html).
-//! After getting the access token, you can use [to_authenticator function](auth/struct.AccessTokenResult.html#method.to_authenticator)
+//! See [oauth::request_token function](oauth/fn.request_token.html).
+//! After getting the access token, you can use [to_authenticator function](oauth/struct.AccessTokenResult.html#method.to_authenticator)
 //! to make [OAuthAuthenticator](conn/oauth_authenticator/struct.OAuthAuthenticator.html).
+//!
 //! # How to create OAuthAuthenticator with an access token string
 //! See [OAuthAuthenticator::new](conn/oauth_authenticator/struct.OAuthAuthenticator.html#method.new).
+//!
 //! # The first tweeting
 //! When you created OAuthAuthenticator and set to `auth` variable, you can tweet in a minute.
 //!
@@ -27,8 +31,6 @@
 #![experimental]
 #![feature(box_syntax, plugin)]
 
-//TODO: `type` field
-
 extern crate hyper;
 extern crate oauthcli;
 extern crate "rustc-serialize" as rustc_serialize;
@@ -42,14 +44,15 @@ use std::error::{Error, FromError};
 use rustc_serialize::json;
 use models::TwitterResponse;
 
-pub use auth::{access_token, request_token};
 pub use clients::TwitterClient;
+pub use conn::application_only_authenticator::ApplicationOnlyAuthenticator;
 pub use conn::oauth_authenticator::OAuthAuthenticator;
 
-pub mod auth;
 pub mod clients;
 pub mod conn;
 pub mod models;
+pub mod oauth;
+pub mod oauth2;
 
 #[derive(Show)]
 pub enum TwitterError {

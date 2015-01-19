@@ -48,7 +48,7 @@ pub struct Contributor {
 #[derive(Clone, Show, RustcDecodable)]
 pub struct Coordinates {
     pub coordinates: Vec<f64>,
-    //pub type: String
+    pub type_: String
 }
 
 #[derive(Clone, Copy, Show, RustcDecodable)]

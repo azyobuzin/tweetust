@@ -1,7 +1,6 @@
 use hyper::{Get, Post};
-use super::super::{conn, TwitterError, TwitterResult};
-use super::super::models::CursorIds;
-use super::super::models::tweets::{LookupMap, Tweet};
+use models::CursorIds;
+use models::tweets::{LookupMap, Tweet};
 
 client!(StatusesClient, [
     (

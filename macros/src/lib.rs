@@ -135,12 +135,12 @@ pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacR
     let mut items = Vec::with_capacity(defs.len() * 2 + 2);
 
     items.push(cx.parse_item(format!(
-        "pub struct {}<T: conn::Authenticator>(pub ::std::rc::Rc<T>);",
+        "pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
         client_name
     )));
 
     let mut client_impl = format!(
-        "impl<T: conn::Authenticator> {}<T> {{\n",
+        "impl<T: ::conn::Authenticator> {}<T> {{\n",
         client_name
     );
     for ref def in defs.iter() {
@@ -171,7 +171,7 @@ pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacR
 
     for ref def in defs.iter() {
         let mut request_struct = format!(
-            "pub struct {}<T: conn::Authenticator> {{\n_auth: ::std::rc::Rc<T>,\n",
+            "pub struct {}<T: ::conn::Authenticator> {{\n_auth: ::std::rc::Rc<T>,\n",
             def.request_struct_name
         );
         for ref p in def.required_params.iter() {
@@ -186,7 +186,7 @@ pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacR
         items.push(cx.parse_item(request_struct));
 
         let mut request_impl = format!(
-            "impl<T: conn::Authenticator> {}<T> {{\n",
+            "impl<T: ::conn::Authenticator> {}<T> {{\n",
             def.request_struct_name
         );
         for ref p in def.optional_params.iter() {
@@ -199,8 +199,8 @@ self.{0} = Some(val{2});\nself\n}}",
                 if is_str { ".to_string()" } else { "" }
             );
         }
-        writeln!(&mut request_impl, "pub fn execute(&self) -> TwitterResult<{}> {{
-let mut params: Vec<conn::Parameter> = Vec::with_capacity({});",
+        writeln!(&mut request_impl, "pub fn execute(&self) -> ::TwitterResult<{}> {{
+let mut params: Vec<::conn::Parameter> = Vec::with_capacity({});",
             def.return_type, def.required_params.len() + def.optional_params.len()
         );
         let need_format = def.url.as_slice().contains("{}");
@@ -208,13 +208,13 @@ let mut params: Vec<conn::Parameter> = Vec::with_capacity({});",
         if need_format { reqparam_iter.next(); }
         for ref p in reqparam_iter {
             writeln!(&mut request_impl,
-                "params.push(conn::ToParameter::to_parameter(self.{0}.clone(), \"{0}\"));",
+                "params.push(::conn::ToParameter::to_parameter(self.{0}.clone(), \"{0}\"));",
                 p.pat.to_source()
             );
         }
         for ref p in def.optional_params.iter() {
             writeln!(&mut request_impl, "match self.{0} {{
-    Some(ref x) => params.push(conn::ToParameter::to_parameter(x, \"{0}\")),
+    Some(ref x) => params.push(::conn::ToParameter::to_parameter(x, \"{0}\")),
     None => ()\n}}",
                 p.pat.to_source()
             );
@@ -227,13 +227,13 @@ let mut params: Vec<conn::Parameter> = Vec::with_capacity({});",
             request_impl.push_str(def.url.as_slice());
         }
         write!(&mut request_impl, ";
-let result = conn::read_to_twitter_result(
-    conn::Authenticator::send_request(&*self._auth, {}, url{}, params.as_slice())
+let result = ::conn::read_to_twitter_result(
+    ::conn::Authenticator::send_request(&*self._auth, {}, url{}, params.as_slice())
 );
 match result {{
-    Ok(res) => match ::rustc_serialize::json::decode(res.raw_response.as_slice()) {{
+    Ok(res) => match ::conn::parse_json(res.raw_response.as_slice()) {{
         Ok(j) => Ok(res.object({}j)),
-        Err(e) => Err(TwitterError::JsonError(e, res))
+        Err(e) => Err(::TwitterError::JsonError(e, res))
     }},
     Err(e) => Err(e)
 }}\n}}\n}}",

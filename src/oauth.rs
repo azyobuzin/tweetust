@@ -1,8 +1,11 @@
-use std::str::FromStr;
+//! The functions to get your access token for
+//! [3-legged OAuth](https://dev.twitter.com/oauth/3-legged) or
+//! [PIN-based OAuth](https://dev.twitter.com/oauth/pin-based).
+
 use hyper::{Post, Url};
 use oauthcli::{self, SignatureMethod};
 use url::form_urlencoded;
-use super::{OAuthAuthenticator, TwitterError, TwitterResult};
+use ::{OAuthAuthenticator, TwitterError, TwitterResult};
 use conn::{send_request, read_to_twitter_result};
 use conn::Parameter::Value;
 
@@ -60,16 +63,16 @@ impl RequestTokenRequestBuilder {
                 let v = form_urlencoded::parse(res.raw_response.as_bytes());
                 let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
                 let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
-                let oauth_callback_confirmed = v.iter().find(|x| x.0 == "oauth_callback_confirmed");
-                match oauth_token.and(oauth_token_secret).and(oauth_callback_confirmed) {
+                let oauth_callback_confirmed = v.iter()
+                    .find(|x| x.0 == "oauth_callback_confirmed")
+                    .and_then(|x| x.1.as_slice().parse());
+                match oauth_token.and(oauth_token_secret) {
                     Some(_) => Ok(res.object(RequestTokenResult {
                         consumer_key: self.consumer_key.clone(),
                         consumer_secret: self.consumer_secret.clone(),
                         oauth_token: oauth_token.unwrap().1.clone(),
                         oauth_token_secret: oauth_token_secret.unwrap().1.clone(),
-                        oauth_callback_confirmed: FromStr::from_str(
-                            oauth_callback_confirmed.unwrap().1.as_slice()
-                        ).unwrap_or(false)
+                        oauth_callback_confirmed: oauth_callback_confirmed.unwrap_or(false)
                     })),
                     None => Err(TwitterError::ParseError(res))
                 }
@@ -145,7 +148,7 @@ impl AccessTokenRequestBuilder {
                 let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
                 let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
                 let user_id = v.iter().find(|x| x.0 == "user_id")
-                    .and_then(|x| FromStr::from_str(x.1.as_slice()));
+                    .and_then(|x| x.1.as_slice().parse());
                 let screen_name = v.iter().find(|x| x.0 == "screen_name");
                 match oauth_token.and(oauth_token_secret).and(user_id).and(screen_name) {
                     Some(_) => Ok(res.object(AccessTokenResult {

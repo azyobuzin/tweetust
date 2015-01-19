@@ -6,7 +6,7 @@ use url::Url;
 use super::{Authenticator, is_multipart, Parameter, send_request};
 
 /// OAuth 1.0 wrapper
-#[derive(Clone, Show)]
+#[derive(Clone, Show, Eq, PartialEq)]
 pub struct OAuthAuthenticator {
     pub consumer_key: String,
     pub consumer_secret: String,
@@ -30,7 +30,7 @@ impl OAuthAuthenticator {
 impl Authenticator for OAuthAuthenticator {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter]) -> HttpResult<Response> {
         match Url::parse(url) {
-            Ok(u) => {
+            Ok(ref u) => {
                 let multipart = is_multipart(params);
                 let mut auth_params = Vec::<(String, String)>::new();
                 if !multipart {

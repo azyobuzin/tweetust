@@ -39,7 +39,7 @@ pub struct Medium {
     pub media_url_https: String,
     pub sizes: Sizes,
     pub source_status_id: Option<u64>,
-    //pub type: String,
+    pub type_: String,
     pub url: String,
     pub video_info: Option<VideoInfo>
 }
