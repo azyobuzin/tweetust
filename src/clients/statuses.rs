@@ -1,6 +1,23 @@
+use std::fmt;
 use hyper::{Get, Post};
 use models::CursorIds;
-use models::tweets::{LookupMap, Tweet};
+use models::tweets::{LookupMap, OEmbed, Tweet};
+
+#[derive(Clone, Copy, Show)]
+pub enum Align {
+    Left, Right, Center, None
+}
+
+impl fmt::String for Align {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        f.write_str(match *self {
+            Align::Left => "left",
+            Align::Right => "right",
+            Align::Center => "center",
+            Align::None => "none"
+        })
+    }
+}
 
 client!(StatusesClient, [
     (
@@ -84,7 +101,17 @@ client!(StatusesClient, [
         [trim_user: bool],
         Box<Tweet>
     ),
-    //TODO: oembed
+    (
+        oembed, Get,
+        "https://api.twitter.com/1.1/statuses/oembed.json",
+        [],
+        [
+            id: u64, url: String, maxwidth: i32, hide_media: bool,
+            hide_thread: bool, omit_script: bool, align: Align,
+            related: String, lang: String
+        ],
+        Box<OEmbed>
+    ),
     (
         retweeters_ids, Get,
         "https://api.twitter.com/1.1/statuses/retweeters/ids.json",

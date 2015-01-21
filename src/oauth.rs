@@ -10,12 +10,24 @@ use conn::request_twitter;
 use conn::Parameter::Value;
 
 #[derive(Clone, Show)]
-pub struct RequestTokenResult {
+pub struct RequestTokenResponse {
     consumer_key: String,
     consumer_secret: String,
     pub oauth_token: String,
     pub oauth_token_secret: String,
     pub oauth_callback_confirmed: bool
+}
+
+impl RequestTokenResponse {
+    pub fn access_token(&self, oauth_verifier: &str) -> AccessTokenRequestBuilder {
+        access_token(
+            self.consumer_key.as_slice(),
+            self.consumer_secret.as_slice(),
+            self.oauth_token.as_slice(),
+            self.oauth_token_secret.as_slice(),
+            oauth_verifier
+        )
+    }
 }
 
 #[derive(Clone, Show)]
@@ -32,7 +44,7 @@ impl RequestTokenRequestBuilder {
         self
     }
 
-    pub fn execute(&self) -> TwitterResult<RequestTokenResult> {
+    pub fn execute(&self) -> TwitterResult<RequestTokenResponse> {
         let request_token_url = Url::parse("https://api.twitter.com/oauth/request_token").unwrap();
         let mut params = Vec::new();
         match self.x_auth_access_type {
@@ -66,7 +78,7 @@ impl RequestTokenRequestBuilder {
             .find(|x| x.0 == "oauth_callback_confirmed")
             .and_then(|x| x.1.as_slice().parse());
         match oauth_token.and(oauth_token_secret) {
-            Some(_) => Ok(res.object(RequestTokenResult {
+            Some(_) => Ok(res.object(RequestTokenResponse {
                 consumer_key: self.consumer_key.clone(),
                 consumer_secret: self.consumer_secret.clone(),
                 oauth_token: oauth_token.unwrap().1.clone(),
@@ -90,7 +102,7 @@ pub fn request_token(consumer_key: &str, consumer_secret: &str, oauth_callback: 
 }
 
 #[derive(Clone, Show)]
-pub struct AccessTokenResult {
+pub struct AccessTokenResponse {
     consumer_key: String,
     consumer_secret: String,
     pub oauth_token: String,
@@ -99,7 +111,7 @@ pub struct AccessTokenResult {
     pub screen_name: String
 }
 
-impl AccessTokenResult {
+impl AccessTokenResponse {
     pub fn to_authenticator(&self) -> OAuthAuthenticator {
         OAuthAuthenticator::new(
             self.consumer_key.as_slice(),
@@ -120,7 +132,7 @@ pub struct AccessTokenRequestBuilder {
 }
 
 impl AccessTokenRequestBuilder {
-    pub fn execute(&self) -> TwitterResult<AccessTokenResult> {
+    pub fn execute(&self) -> TwitterResult<AccessTokenResponse> {
         let access_token_url = Url::parse("https://api.twitter.com/oauth/access_token").unwrap();
         let authorization = oauthcli::authorization_header(
             "POST",
@@ -146,7 +158,7 @@ impl AccessTokenRequestBuilder {
             .and_then(|x| x.1.as_slice().parse());
         let screen_name = v.iter().find(|x| x.0 == "screen_name");
         match oauth_token.and(oauth_token_secret).and(user_id).and(screen_name) {
-            Some(_) => Ok(res.object(AccessTokenResult {
+            Some(_) => Ok(res.object(AccessTokenResponse {
                 consumer_key: self.consumer_key.to_string(),
                 consumer_secret: self.consumer_secret.to_string(),
                 oauth_token: oauth_token.unwrap().1.clone(),
@@ -169,17 +181,5 @@ pub fn access_token(consumer_key: &str, consumer_secret: &str,
         oauth_token: oauth_token.to_string(),
         oauth_token_secret: oauth_token_secret.to_string(),
         oauth_verifier: oauth_verifier.to_string()
-    }
-}
-
-impl RequestTokenResult {
-    pub fn access_token(&self, oauth_verifier: &str) -> AccessTokenRequestBuilder {
-        access_token(
-            self.consumer_key.as_slice(),
-            self.consumer_secret.as_slice(),
-            self.oauth_token.as_slice(),
-            self.oauth_token_secret.as_slice(),
-            oauth_verifier
-        )
     }
 }

@@ -32,5 +32,6 @@ pub struct CursorIds {
 pub mod error;
 pub mod entities;
 pub mod places;
+pub mod search;
 pub mod tweets;
 pub mod users;

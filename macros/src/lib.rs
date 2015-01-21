@@ -50,7 +50,7 @@ struct ApiDef {
     return_type: String
 }
 
-pub fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
+fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
     let mut p = cx.new_parser_from_tts(args);
 
     let client_name = p.parse_ident().to_string();

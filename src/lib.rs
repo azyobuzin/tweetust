@@ -8,7 +8,7 @@
 //!
 //! # How to get the access token
 //! See [oauth::request_token function](oauth/fn.request_token.html).
-//! After getting the access token, you can use [to_authenticator function](oauth/struct.AccessTokenResult.html#method.to_authenticator)
+//! After getting the access token, you can use [to_authenticator function](oauth/struct.AccessTokenResponse.html#method.to_authenticator)
 //! to make [OAuthAuthenticator](conn/oauth_authenticator/struct.OAuthAuthenticator.html).
 //!
 //! # How to create OAuthAuthenticator with an access token string

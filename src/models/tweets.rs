@@ -60,3 +60,18 @@ pub struct CurrentUserRetweet {
 pub struct LookupMap {
     pub id: BTreeMap<String, Option<Tweet>>
 }
+
+#[derive(Clone, Show, RustcDecodable)]
+pub struct OEmbed {
+    pub cache_age: String,
+    pub url: String,
+    pub provider_url: String,
+    pub provider_name: String,
+    pub author_name: String,
+    pub version: String,
+    pub author_url: String,
+    pub type_: String,
+    pub html: String,
+    pub height: Option<i32>,
+    pub width: Option<i32>
+}

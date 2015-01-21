@@ -31,12 +31,12 @@ fn basic_authorization(consumer_key: &str, consumer_secret: &str) -> String {
 }
 
 #[derive(Clone, Show, RustcDecodable)]
-pub struct TokenResult {
+pub struct TokenResponse {
     pub token_type: String,
     pub access_token: String
 }
 
-impl TokenResult {
+impl TokenResponse {
     pub fn to_authenticator(self) -> ApplicationOnlyAuthenticator {
         ApplicationOnlyAuthenticator(self.access_token)
     }
@@ -55,7 +55,7 @@ impl TokenRequestBuilder {
         self
     }
 
-    pub fn execute(&self) -> TwitterResult<TokenResult> {
+    pub fn execute(&self) -> TwitterResult<TokenResponse> {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/token").unwrap(),
@@ -79,7 +79,7 @@ pub fn token(consumer_key: &str, consumer_secret: &str) -> TokenRequestBuilder {
 }
 
 #[derive(Clone, Show, RustcDecodable)]
-pub struct InvalidateTokenResult {
+pub struct InvalidateTokenResponse {
     pub access_token: String
 }
 
@@ -91,7 +91,7 @@ pub struct InvalidateTokenRequestBuilder {
 }
 
 impl InvalidateTokenRequestBuilder {
-    pub fn execute(&self) -> TwitterResult<InvalidateTokenResult> {
+    pub fn execute(&self) -> TwitterResult<InvalidateTokenResponse> {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/invalidate_token").unwrap(),
