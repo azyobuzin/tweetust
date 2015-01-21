@@ -24,12 +24,18 @@ pub enum Parameter<'a> {
 pub trait Authenticator: Clone {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter])
         -> HttpResult<Response>;
+
+    fn request_twitter(&self, method: Method, url: &str, params: &[Parameter])
+        -> TwitterResult<()>
+    {
+        read_to_twitter_result(self.send_request(method, url, params))
+    }
 }
 
 fn is_multipart(params: &[Parameter]) -> bool {
     params.iter().any(|x| match *x {
-        Parameter::Value(_, _) => false,
-        Parameter::File(_, _) => true
+        Parameter::Value(..) => false,
+        Parameter::File(..) => true
     })
 }
 
@@ -89,7 +95,7 @@ struct InternalErrorResponse {
     error: Option<Vec<Error>>
 }
 
-pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
+fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
     match source {
         Ok(mut res) => {
             // Parse headers
@@ -132,6 +138,12 @@ pub fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()>
         },
         Err(e) => Err(TwitterError::HttpError(e))
     }
+}
+
+pub fn request_twitter(method: Method, url: Url, params: &[Parameter],
+    authorization: String) -> TwitterResult<()>
+{
+    read_to_twitter_result(send_request(method, url, params, authorization))
 }
 
 pub trait ToParameter {

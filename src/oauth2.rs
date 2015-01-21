@@ -5,7 +5,7 @@ use hyper::Post;
 use rustc_serialize::base64::{self, ToBase64};
 use url::{percent_encoding, Url};
 use ::{ApplicationOnlyAuthenticator, TwitterError, TwitterResult};
-use conn::{send_request, read_to_twitter_result, parse_json};
+use conn::{request_twitter, parse_json};
 use conn::Parameter::Value;
 
 #[inline]
@@ -56,19 +56,16 @@ impl TokenRequestBuilder {
     }
 
     pub fn execute(&self) -> TwitterResult<TokenResult> {
-        let result = send_request(
+        let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/token").unwrap(),
             &[Value("grant_type", self.grant_type.clone())],
             basic_authorization(
                 self.consumer_key.as_slice(), self.consumer_secret.as_slice())
-        );
-        match read_to_twitter_result(result) {
-            Ok(res) => match parse_json(res.raw_response.as_slice()) {
-                Ok(j) => Ok(res.object(j)),
-                Err(e) => Err(TwitterError::JsonError(e, res))
-            },
-            Err(e) => Err(e)
+        ));
+        match parse_json(res.raw_response.as_slice()) {
+            Ok(j) => Ok(res.object(j)),
+            Err(e) => Err(TwitterError::JsonError(e, res))
         }
     }
 }
@@ -95,20 +92,17 @@ pub struct InvalidateTokenRequestBuilder {
 
 impl InvalidateTokenRequestBuilder {
     pub fn execute(&self) -> TwitterResult<InvalidateTokenResult> {
-        let result = send_request(
+        let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/invalidate_token").unwrap(),
             &[Value("access_token", percent_encoding::lossy_utf8_percent_decode(
                 self.access_token.as_bytes()))],
             basic_authorization(
                 self.consumer_key.as_slice(), self.consumer_secret.as_slice())
-        );
-        match read_to_twitter_result(result) {
-            Ok(res) => match parse_json(res.raw_response.as_slice()) {
-                Ok(j) => Ok(res.object(j)),
-                Err(e) => Err(TwitterError::JsonError(e, res))
-            },
-            Err(e) => Err(e)
+        ));
+        match parse_json(res.raw_response.as_slice()) {
+            Ok(j) => Ok(res.object(j)),
+            Err(e) => Err(TwitterError::JsonError(e, res))
         }
     }
 }

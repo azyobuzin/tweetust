@@ -1,5 +1,5 @@
 //! # How to use client!
-//! ```rust
+//! ```ignore
 //! client!(
 //!     StatusesClient,
 //!     [ // APIs
@@ -21,7 +21,7 @@
 
 #![crate_type = "dylib"]
 #![feature(plugin_registrar)]
-#![allow(unstable)]
+#![allow(unstable, unused_must_use)]
 
 extern crate rustc;
 extern crate syntax;
@@ -29,12 +29,11 @@ extern crate syntax;
 use std::fmt::Writer;
 use rustc::plugin::Registry;
 use syntax::ast::{self, TokenTree};
-use syntax::ext::base::{DummyResult, ExtCtxt, MacItems, MacResult};
+use syntax::ext::base::{ExtCtxt, MacItems, MacResult};
 use syntax::ext::quote::rt::{ExtParseUtils, ToSource};
 use syntax::codemap::Span;
 use syntax::parse::common::SeqSep;
 use syntax::parse::token;
-use syntax::parse::parser::Parser;
 
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
@@ -51,7 +50,7 @@ struct ApiDef {
     return_type: String
 }
 
-pub fn expand_client(cx: &mut ExtCtxt, sp: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
+pub fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
     let mut p = cx.new_parser_from_tts(args);
 
     let client_name = p.parse_ident().to_string();
@@ -227,15 +226,11 @@ let mut params: Vec<::conn::Parameter> = Vec::with_capacity({});",
             request_impl.push_str(def.url.as_slice());
         }
         write!(&mut request_impl, ";
-let result = ::conn::read_to_twitter_result(
-    ::conn::Authenticator::send_request(&*self._auth, {}, url{}, params.as_slice())
-);
-match result {{
-    Ok(res) => match ::conn::parse_json(res.raw_response.as_slice()) {{
-        Ok(j) => Ok(res.object({}j)),
-        Err(e) => Err(::TwitterError::JsonError(e, res))
-    }},
-    Err(e) => Err(e)
+let res = try!(::conn::Authenticator::request_twitter(
+    &*self._auth, {}, url{}, params.as_slice()));
+match ::conn::parse_json(res.raw_response.as_slice()) {{
+    Ok(j) => Ok(res.object({}j)),
+    Err(e) => Err(::TwitterError::JsonError(e, res))
 }}\n}}\n}}",
             def.http_method,
             if need_format { ".as_slice()" } else { "" },

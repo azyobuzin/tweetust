@@ -6,7 +6,7 @@ use hyper::{Post, Url};
 use oauthcli::{self, SignatureMethod};
 use url::form_urlencoded;
 use ::{OAuthAuthenticator, TwitterError, TwitterResult};
-use conn::{send_request, read_to_twitter_result};
+use conn::request_twitter;
 use conn::Parameter::Value;
 
 #[derive(Clone, Show)]
@@ -57,27 +57,23 @@ impl RequestTokenRequestBuilder {
                 _ => unreachable!()
             })
         );
-        let result = send_request(Post, request_token_url.clone(), params.as_slice(), authorization);
-        match read_to_twitter_result(result) {
-            Ok(res) => {
-                let v = form_urlencoded::parse(res.raw_response.as_bytes());
-                let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
-                let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
-                let oauth_callback_confirmed = v.iter()
-                    .find(|x| x.0 == "oauth_callback_confirmed")
-                    .and_then(|x| x.1.as_slice().parse());
-                match oauth_token.and(oauth_token_secret) {
-                    Some(_) => Ok(res.object(RequestTokenResult {
-                        consumer_key: self.consumer_key.clone(),
-                        consumer_secret: self.consumer_secret.clone(),
-                        oauth_token: oauth_token.unwrap().1.clone(),
-                        oauth_token_secret: oauth_token_secret.unwrap().1.clone(),
-                        oauth_callback_confirmed: oauth_callback_confirmed.unwrap_or(false)
-                    })),
-                    None => Err(TwitterError::ParseError(res))
-                }
-            },
-            Err(e) => Err(e)
+        let res = try!(request_twitter(
+            Post, request_token_url.clone(), params.as_slice(), authorization));
+        let v = form_urlencoded::parse(res.raw_response.as_bytes());
+        let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
+        let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
+        let oauth_callback_confirmed = v.iter()
+            .find(|x| x.0 == "oauth_callback_confirmed")
+            .and_then(|x| x.1.as_slice().parse());
+        match oauth_token.and(oauth_token_secret) {
+            Some(_) => Ok(res.object(RequestTokenResult {
+                consumer_key: self.consumer_key.clone(),
+                consumer_secret: self.consumer_secret.clone(),
+                oauth_token: oauth_token.unwrap().1.clone(),
+                oauth_token_secret: oauth_token_secret.unwrap().1.clone(),
+                oauth_callback_confirmed: oauth_callback_confirmed.unwrap_or(false)
+            })),
+            None => Err(TwitterError::ParseError(res))
         }
     }
 }
@@ -141,28 +137,24 @@ impl AccessTokenRequestBuilder {
             Some(self.oauth_verifier.as_slice()),
             Vec::new().into_iter()
         );
-        let result = send_request(Post, access_token_url.clone(), &[], authorization);
-        match read_to_twitter_result(result) {
-            Ok(res) => {
-                let v = form_urlencoded::parse(res.raw_response.as_bytes());
-                let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
-                let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
-                let user_id = v.iter().find(|x| x.0 == "user_id")
-                    .and_then(|x| x.1.as_slice().parse());
-                let screen_name = v.iter().find(|x| x.0 == "screen_name");
-                match oauth_token.and(oauth_token_secret).and(user_id).and(screen_name) {
-                    Some(_) => Ok(res.object(AccessTokenResult {
-                        consumer_key: self.consumer_key.to_string(),
-                        consumer_secret: self.consumer_secret.to_string(),
-                        oauth_token: oauth_token.unwrap().1.clone(),
-                        oauth_token_secret: oauth_token_secret.unwrap().1.clone(),
-                        user_id: user_id.unwrap(),
-                        screen_name: screen_name.unwrap().1.clone()
-                    })),
-                    None => Err(TwitterError::ParseError(res))
-                }
-            },
-            Err(e) => Err(e)
+        let res = try!(request_twitter(
+            Post, access_token_url.clone(), &[], authorization));
+        let v = form_urlencoded::parse(res.raw_response.as_bytes());
+        let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
+        let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
+        let user_id = v.iter().find(|x| x.0 == "user_id")
+            .and_then(|x| x.1.as_slice().parse());
+        let screen_name = v.iter().find(|x| x.0 == "screen_name");
+        match oauth_token.and(oauth_token_secret).and(user_id).and(screen_name) {
+            Some(_) => Ok(res.object(AccessTokenResult {
+                consumer_key: self.consumer_key.to_string(),
+                consumer_secret: self.consumer_secret.to_string(),
+                oauth_token: oauth_token.unwrap().1.clone(),
+                oauth_token_secret: oauth_token_secret.unwrap().1.clone(),
+                user_id: user_id.unwrap(),
+                screen_name: screen_name.unwrap().1.clone()
+            })),
+            None => Err(TwitterError::ParseError(res))
         }
     }
 }

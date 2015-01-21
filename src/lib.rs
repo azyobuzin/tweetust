@@ -17,7 +17,7 @@
 //! # The first tweeting
 //! When you created OAuthAuthenticator and set to `auth` variable, you can tweet in a minute.
 //!
-//! ```rust
+//! ```ignore
 //! // extern crate tweetust; or use tweetust;
 //! let your_tweet =
 //!   tweetust::TwitterClient::new(&auth)
@@ -28,6 +28,7 @@
 //! It's easy for people who have leaned about Twitter, isn't it?
 
 #![allow(unstable)]
+#![warn(unused_import_braces, unused_typecasts)]
 #![experimental]
 #![feature(box_syntax, plugin)]
 
@@ -43,6 +44,7 @@ extern crate tweetust_macros;
 use std::error::{Error, FromError};
 use rustc_serialize::json;
 use models::TwitterResponse;
+use models::error::ErrorResponse;
 
 pub use clients::TwitterClient;
 pub use conn::application_only_authenticator::ApplicationOnlyAuthenticator;
@@ -56,7 +58,7 @@ pub mod oauth2;
 
 #[derive(Show)]
 pub enum TwitterError {
-    ErrorResponse(models::error::ErrorResponse),
+    ErrorResponse(ErrorResponse),
     HttpError(hyper::HttpError),
     JsonError(json::DecoderError, TwitterResponse<()>),
     ParseError(TwitterResponse<()>)
@@ -74,6 +76,12 @@ impl Error for TwitterError {
             TwitterError::JsonError(ref e, _) => Some(e),
             TwitterError::ParseError(_) => None
         }
+    }
+}
+
+impl FromError<ErrorResponse> for TwitterError {
+    fn from_error(err: ErrorResponse) -> TwitterError {
+        TwitterError::ErrorResponse(err)
     }
 }
 
