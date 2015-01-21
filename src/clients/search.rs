@@ -2,20 +2,7 @@ use std::fmt;
 use hyper::Get;
 use models::search::SearchResponse;
 
-#[derive(Clone, Copy, Show)]
-pub enum ResultType {
-    Mixed, Recent, Popular
-}
-
-impl fmt::String for ResultType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.write_str(match *self {
-            ResultType::Mixed => "mixed",
-            ResultType::Recent => "recent",
-            ResultType::Popular => "popular"
-        })
-    }
-}
+paramenum!(ResultType { mixed, recent, popular });
 
 #[derive(Clone, Copy, Show)]
 pub struct UntilDate {

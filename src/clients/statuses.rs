@@ -1,23 +1,8 @@
-use std::fmt;
 use hyper::{Get, Post};
 use models::CursorIds;
 use models::tweets::{LookupMap, OEmbed, Tweet};
 
-#[derive(Clone, Copy, Show)]
-pub enum Align {
-    Left, Right, Center, None
-}
-
-impl fmt::String for Align {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.write_str(match *self {
-            Align::Left => "left",
-            Align::Right => "right",
-            Align::Center => "center",
-            Align::None => "none"
-        })
-    }
-}
+paramenum!(Align { left, right, center, none });
 
 client!(StatusesClient, [
     (

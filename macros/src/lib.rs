@@ -1,4 +1,4 @@
-//! # How to use client!
+//! # client!
 //! ```ignore
 //! client!(
 //!     StatusesClient,
@@ -18,6 +18,13 @@
 //! );
 //! ```
 //! If the API endpoint has `"{}"`, inserts the first argument there.
+//!
+//! #paramenum!
+//! Make Pascal Case enum members and implement fmt::String.
+//!
+//! ```ignore
+//! paramenum!(EnumName { a, b, c });
+//! ```
 
 #![crate_type = "dylib"]
 #![feature(plugin_registrar)]
@@ -38,6 +45,27 @@ use syntax::parse::token;
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
     reg.register_macro("client", expand_client);
+    reg.register_macro("paramenum", expand_paramenum);
+}
+
+fn to_pascal_case(s: &str) -> String {
+    let mut res = String::new();
+    let mut is_next_upper = true;
+    for c in s.chars() {
+        if c == '_' {
+            is_next_upper = true;
+        } else {
+            res.push(
+                if is_next_upper {
+                    is_next_upper = false;
+                    c.to_uppercase()
+                } else {
+                    c
+                }
+            );
+        }
+    }
+    res
 }
 
 struct ApiDef {
@@ -67,22 +95,7 @@ fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult
             p.expect(&token::OpenDelim(token::Paren));
 
             let method_name = p.parse_ident().to_string();
-            let mut request_struct_name = String::with_capacity(method_name.len() + 14);
-            let mut is_next_upper = true;
-            for c in method_name.as_slice().chars() {
-                if c == '_' {
-                    is_next_upper = true;
-                } else {
-                    request_struct_name.push(
-                        if is_next_upper {
-                            is_next_upper = false;
-                            c.to_uppercase()
-                        } else {
-                            c
-                        }
-                    );
-                }
-            }
+            let mut request_struct_name = to_pascal_case(method_name.as_slice());
             request_struct_name.push_str("RequestBuilder");
 
             p.expect(&token::Comma);
@@ -240,4 +253,38 @@ match ::conn::parse_json(res.raw_response.as_slice()) {{
     }
 
     MacItems::new(items.into_iter())
+}
+
+fn expand_paramenum(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
+    let mut p = cx.new_parser_from_tts(args);
+    let name = p.parse_ident().to_string();
+    p.expect(&token::OpenDelim(token::Brace));
+    let items = p.parse_seq_to_end(
+        &token::CloseDelim(token::Brace),
+        SeqSep {
+            sep: Some(token::Comma),
+            trailing_sep_allowed: true
+        },
+        |p| {
+            let i = p.parse_ident();
+            (i.to_string(), to_pascal_case(i.as_str()))
+        }
+    );
+    p.expect(&token::Eof);
+
+    let mut e = format!("#[derive(Clone, Copy, Show)] pub enum {} {{\n    ", name);
+    for x in items.iter() {
+        write!(&mut e, "{}, ", x.1);
+    }
+    e.push_str("\n}");
+
+    let mut i = format!("impl ::std::fmt::String for {} {{
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {{
+        f.write_str(match *self {{\n", name);
+    for x in items.iter() {
+        writeln!(&mut i, "          {}::{} => \"{}\",", name, x.1, x.0);
+    }
+    i.push_str("        })\n    }\n}");
+
+    MacItems::new(vec![cx.parse_item(e), cx.parse_item(i)].into_iter())
 }
