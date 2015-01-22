@@ -27,8 +27,8 @@
 //! ```
 
 #![crate_type = "dylib"]
-#![feature(plugin_registrar, quote)]
-//#![allow(unstable, unused_must_use)]
+#![feature(plugin_registrar)]
+#![allow(unstable, unused_must_use)]
 
 extern crate rustc;
 extern crate syntax;
@@ -41,7 +41,6 @@ use syntax::ext::quote::rt::{ExtParseUtils, ToSource};
 use syntax::codemap::Span;
 use syntax::parse::common::SeqSep;
 use syntax::parse::token;
-use syntax::ptr::P;
 
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
@@ -50,7 +49,7 @@ pub fn plugin_registrar(reg: &mut Registry) {
 }
 
 fn to_pascal_case(s: &str) -> String {
-    let mut res = String::with_capacity(s.len());
+    let mut res = String::new();
     let mut is_next_upper = true;
     for c in s.chars() {
         if c == '_' {
@@ -69,10 +68,20 @@ fn to_pascal_case(s: &str) -> String {
     res
 }
 
+struct ApiDef {
+    method_name: String,
+    request_struct_name: String,
+    http_method: String,
+    url: String,
+    required_params: Vec<ast::Arg>,
+    optional_params: Vec<ast::Arg>,
+    return_type: String
+}
+
 fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
     let mut p = cx.new_parser_from_tts(args);
 
-    let client_name = p.parse_ident();
+    let client_name = p.parse_ident().to_string();
     p.expect(&token::Comma);
     p.expect(&token::OpenDelim(token::Bracket));
 
@@ -85,16 +94,15 @@ fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult
         |p| {
             p.expect(&token::OpenDelim(token::Paren));
 
-            let method_name = p.parse_ident();
-            let mut request_struct_name = to_pascal_case(method_name.as_str());
+            let method_name = p.parse_ident().to_string();
+            let mut request_struct_name = to_pascal_case(method_name.as_slice());
             request_struct_name.push_str("RequestBuilder");
-            let request_struct_name = cx.ident_of(&request_struct_name[]);
 
             p.expect(&token::Comma);
-            let http_method = p.parse_expr();
+            let http_method = p.parse_expr().to_source();
 
             p.expect(&token::Comma);
-            let (url, _) = p.parse_str();
+            let url = p.parse_str().0.get().to_source();
 
             p.expect(&token::Comma);
             p.expect(&token::OpenDelim(token::Bracket));
@@ -119,146 +127,132 @@ fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult
             );
 
             p.expect(&token::Comma);
-            let return_type = p.parse_ty();
+            let return_type = p.parse_ty().to_source();
             p.eat(&token::Comma);
             p.expect(&token::CloseDelim(token::Paren));
 
-            let request_struct = {
-                let request_struct_items = required_params.iter()
-                    .map(|x| quote_tokens!(cx, $x,))
-                    .chain(optional_params.iter().map(|ref x| {
-                        let ref ty = x.ty;
-                        let ref pat = x.pat;
-                        quote_tokens!(cx, $pat: Option<$ty>,)
-                    }))
-                    .flat_map(|x| x.into_iter())
-                    .collect::<Vec<_>>();
-                quote_item!(cx,
-                    pub struct $request_struct_name<T: ::conn::Authenticator> {
-                        _auth: ::std::rc::Rc<T>,
-                        $request_struct_items
-                    }
-                )
-            };
-
-            let request_impl = {
-                let optional_params_fns = optional_params.iter().map(|ref x| {
-                    let ref ty = x.ty;
-                    let ref pat = x.pat;
-                    if ty.to_source() == "String" {
-                        quote_tokens!(cx, pub fn $pat(mut self, val: &str) -> Self {
-                            self.$pat = Some(val.to_string());
-                            self
-                        })
-                    } else {
-                        quote_tokens!(cx, pub fn $pat(mut self, val: $ty) -> Self {
-                            self.$pat = Some(val);
-                            self
-                        })
-                    }
-                }).flat_map(|x| x.into_iter()).collect::<Vec<_>>();
-                let params_len = required_params.len() + optional_params.len();
-                let need_format = url.get().contains("{}");
-                let push = {
-                    let mut reqparam_iter = required_params.iter();
-                    if need_format { reqparam_iter.next(); }
-                    reqparam_iter.map(|ref x| {
-                        let ref pat = x.pat;
-                        let n = pat.to_source();
-                        let n = &n[];
-                        quote_tokens!(cx, params.push(
-                            ::conn::ToParameter::to_parameter(self.$pat.clone(), $n));)
-                    }).chain(optional_params.iter().map(|ref x| {
-                        let ref pat = x.pat;
-                        let n = pat.to_source();
-                        let n = &n[];
-                        quote_tokens!(cx, match $pat {
-                            Some(ref x) => params.push(::conn::ToParameter::to_parameter($x, $n)),
-                            None => ()
-                        })
-                    })).flat_map(|x| x.into_iter()).collect::<Vec<_>>()
-                };
-                let url_format = {
-                    let url = url.get();
-                    if need_format {
-                        let ref f = required_params[0].pat;
-                        quote_tokens!(cx,
-                            let url = format!($url, self.$f);
-                            let url = &url[];
-                        )
-                    } else { quote_tokens!(cx, let url = $url;) }
-                };
-                let object =
-                    if return_type.to_source().as_slice().contains("Box<") { quote_tokens!(cx, box j) }
-                    else { quote_tokens!(cx, j) };
-                quote_item!(cx,
-                    impl<T: ::conn::Authenticator> $request_struct_name<T> {
-                        $optional_params_fns
-
-                        pub fn execute(&self) -> ::TwitterResult<$return_type> {
-                            let mut params: Vec<::conn::Parameter> = Vec::with_capacity($params_len);
-                            $push
-                            $url_format
-                            let res = try!(::conn::Authenticator::request_twitter(
-                                &*self._auth, $http_method, url, params.as_slice()));
-                            match ::conn::parse_json(res.raw_response.as_slice()) {
-                                Ok(j) => Ok(res.object($object)),
-                                Err(e) => Err(::TwitterError::JsonError(e, res))
-                            }
-                        }
-                    }
-                )
-            };
-
-            let client_fn = {
-                let mut fn_args = Vec::new();
-                let mut setters = Vec::new();
-                for ref x in required_params.iter() {
-                    let ref pat = x.pat;
-                    if x.ty.to_source() == "String" {
-                        fn_args.extend(quote_tokens!(cx, $pat: &str,).into_iter());
-                        setters.extend(quote_tokens!(cx, $pat: $pat.to_string(),).into_iter());
-                    } else {
-                        fn_args.extend(quote_tokens!(cx, $x,).into_iter());
-                        setters.extend(quote_tokens!(cx, $pat: $pat,).into_iter());
-                    }
-                }
-                setters.extend(optional_params.iter().flat_map(|ref x| {
-                    let ref pat = x.pat;
-                    quote_tokens!(cx, $pat: None,).into_iter()
-                }));
-                quote_tokens!(cx, pub fn $method_name(&self, $fn_args) -> $request_struct_name {
-                    $request_struct_name {
-                        _auth: self.0.clone(),
-                        $setters
-                    }
-                })
-            };
-
-            (request_struct, request_impl, client_fn)
+            ApiDef {
+                method_name: method_name,
+                request_struct_name: request_struct_name,
+                http_method: http_method,
+                url: url,
+                required_params: required_params,
+                optional_params: optional_params,
+                return_type: return_type
+            }
         }
     );
 
-    p.eat(&token::Comma);
-    p.expect(&token::Eof);
-
     // client struct, client impl, API struct, API impl
     let mut items = Vec::with_capacity(defs.len() * 2 + 2);
-    let mut client_fns = Vec::with_capacity(defs.len());
-    for (request_struct, request_impl, client_fn) in defs.into_iter() {
-        items.push(request_struct);
-        items.push(request_impl);
-        client_fns.push(client_fn);
+
+    items.push(cx.parse_item(format!(
+        "pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
+        client_name
+    )));
+
+    let mut client_impl = format!(
+        "impl<T: ::conn::Authenticator> {}<T> {{\n",
+        client_name
+    );
+    for ref def in defs.iter() {
+        write!(&mut client_impl, "pub fn {}(&self, ", def.method_name);
+        for ref p in def.required_params.iter() {
+            if p.ty.to_source() == "String" {
+                write!(&mut client_impl, "{}: &str, ", p.pat.to_source());
+            } else {
+                write!(&mut client_impl, "{}, ", p.to_source());
+            }
+        }
+        writeln!(&mut client_impl,
+            ") -> {0}<T> {{\n{0} {{\n_auth: self.0.clone(),", def.request_struct_name);
+        for ref p in def.required_params.iter() {
+            write!(&mut client_impl, "{0}: {0}", p.pat.to_source());
+            client_impl.push_str(
+                if p.ty.to_source() == "String" { ".to_string(),\n" }
+                else { ",\n" }
+            );
+        }
+        for ref p in def.optional_params.iter() {
+            writeln!(&mut client_impl, "{}: None,", p.pat.to_source());
+        }
+        client_impl.push_str("}\n}\n");
+    }
+    client_impl.push('}');
+    items.push(cx.parse_item(client_impl));
+
+    for ref def in defs.iter() {
+        let mut request_struct = format!(
+            "pub struct {}<T: ::conn::Authenticator> {{\n_auth: ::std::rc::Rc<T>,\n",
+            def.request_struct_name
+        );
+        for ref p in def.required_params.iter() {
+            writeln!(&mut request_struct, "{},", p.to_source());
+        }
+        for ref p in def.optional_params.iter() {
+            writeln!(&mut request_struct, "{}: Option<{}>,",
+                p.pat.to_source(), p.ty.to_source()
+            );
+        }
+        request_struct.push('}');
+        items.push(cx.parse_item(request_struct));
+
+        let mut request_impl = format!(
+            "impl<T: ::conn::Authenticator> {}<T> {{\n",
+            def.request_struct_name
+        );
+        for ref p in def.optional_params.iter() {
+            let ty = p.ty.to_source();
+            let is_str = ty == "String";
+            writeln!(&mut request_impl, "pub fn {0}(mut self, val: {1}) -> Self {{
+self.{0} = Some(val{2});\nself\n}}",
+                p.pat.to_source(),
+                if is_str { "&str" } else { ty.as_slice() },
+                if is_str { ".to_string()" } else { "" }
+            );
+        }
+        writeln!(&mut request_impl, "pub fn execute(&self) -> ::TwitterResult<{}> {{
+let mut params: Vec<::conn::Parameter> = Vec::with_capacity({});",
+            def.return_type, def.required_params.len() + def.optional_params.len()
+        );
+        let need_format = def.url.as_slice().contains("{}");
+        let mut reqparam_iter = def.required_params.iter();
+        if need_format { reqparam_iter.next(); }
+        for ref p in reqparam_iter {
+            writeln!(&mut request_impl,
+                "params.push(::conn::ToParameter::to_parameter(self.{0}.clone(), \"{0}\"));",
+                p.pat.to_source()
+            );
+        }
+        for ref p in def.optional_params.iter() {
+            writeln!(&mut request_impl, "match self.{0} {{
+    Some(ref x) => params.push(::conn::ToParameter::to_parameter(x, \"{0}\")),
+    None => ()\n}}",
+                p.pat.to_source()
+            );
+        }
+        request_impl.push_str("let url = ");
+        if need_format {
+            write!(&mut request_impl, "format!({}, self.{})",
+                def.url, def.required_params[0].pat.to_source());
+        } else {
+            request_impl.push_str(def.url.as_slice());
+        }
+        write!(&mut request_impl, ";
+let res = try!(::conn::Authenticator::request_twitter(
+    &*self._auth, {}, url{}, params.as_slice()));
+match ::conn::parse_json(res.raw_response.as_slice()) {{
+    Ok(j) => Ok(res.object({}j)),
+    Err(e) => Err(::TwitterError::JsonError(e, res))
+}}\n}}\n}}",
+            def.http_method,
+            if need_format { ".as_slice()" } else { "" },
+            if def.return_type.as_slice().contains("Box<") { "box " } else { "" }
+        );
+        items.push(cx.parse_item(request_impl));
     }
 
-    items.push(quote_item!(cx,
-        pub struct $client_name<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);
-    ));
-
-    items.push(quote_item!(cx,
-        impl<T: ::conn::Authenticator> $client_name<T> { $client_fns }));
-
-    MacItems::new(items.into_iter().map(|x| x.unwrap()))
+    MacItems::new(items.into_iter())
 }
 
 fn expand_paramenum(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
