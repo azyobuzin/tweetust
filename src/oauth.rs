@@ -9,7 +9,7 @@ use ::{OAuthAuthenticator, TwitterError, TwitterResult};
 use conn::request_twitter;
 use conn::Parameter::Value;
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct RequestTokenResponse {
     consumer_key: String,
     consumer_secret: String,
@@ -30,7 +30,7 @@ impl RequestTokenResponse {
     }
 }
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct RequestTokenRequestBuilder {
     consumer_key: String,
     consumer_secret: String,
@@ -101,7 +101,7 @@ pub fn request_token(consumer_key: &str, consumer_secret: &str, oauth_callback: 
     }
 }
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct AccessTokenResponse {
     consumer_key: String,
     consumer_secret: String,
@@ -122,7 +122,7 @@ impl AccessTokenResponse {
     }
 }
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct AccessTokenRequestBuilder {
     consumer_key: String,
     consumer_secret: String,

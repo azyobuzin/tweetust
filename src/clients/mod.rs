@@ -4,6 +4,7 @@ use conn::Authenticator;
 pub mod search;
 pub mod statuses;
 
+#[derive(Clone, Debug)]
 pub struct TwitterClient<T: Authenticator>(pub Rc<T>);
 
 impl<T: Authenticator> TwitterClient<T> {

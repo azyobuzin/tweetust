@@ -42,6 +42,7 @@ extern crate url;
 extern crate tweetust_macros;
 
 use std::error::{Error, FromError};
+use std::fmt;
 use rustc_serialize::json;
 use models::TwitterResponse;
 use models::error::ErrorResponse;
@@ -56,7 +57,7 @@ pub mod models;
 pub mod oauth;
 pub mod oauth2;
 
-#[derive(Show)]
+#[derive(Debug)]
 pub enum TwitterError {
     ErrorResponse(ErrorResponse),
     HttpError(hyper::HttpError),
@@ -75,6 +76,17 @@ impl Error for TwitterError {
             TwitterError::HttpError(ref e) => Some(e),
             TwitterError::JsonError(ref e, _) => Some(e),
             TwitterError::ParseError(_) => None
+        }
+    }
+}
+
+impl fmt::Display for TwitterError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            TwitterError::ErrorResponse(ref e) => fmt::Display::fmt(e, f),
+            TwitterError::HttpError(ref e) => fmt::Display::fmt(e, f),
+            TwitterError::JsonError(..) => fmt::Debug::fmt(self, f),
+            TwitterError::ParseError(ref e) => write!(f, "ParseError: {:?}", e)
         }
     }
 }

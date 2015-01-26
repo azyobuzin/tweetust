@@ -25,10 +25,12 @@
 //! ```ignore
 //! paramenum!(EnumName { a, b, c });
 //! ```
+//!
+//! #[id_eq]
+//! Implement `PartialEq` and `Eq` by comparing the IDs.
 
-#![crate_type = "dylib"]
-#![feature(plugin_registrar)]
 #![allow(unstable, unused_must_use)]
+#![feature(box_syntax, plugin_registrar)]
 
 extern crate rustc;
 extern crate syntax;
@@ -36,16 +38,25 @@ extern crate syntax;
 use std::fmt::Writer;
 use rustc::plugin::Registry;
 use syntax::ast::{self, TokenTree};
-use syntax::ext::base::{ExtCtxt, MacItems, MacResult};
+use syntax::ext::base::{self, ExtCtxt, IdentMacroExpanderFn, MacItems, MacResult};
 use syntax::ext::quote::rt::{ExtParseUtils, ToSource};
 use syntax::codemap::Span;
 use syntax::parse::common::SeqSep;
 use syntax::parse::token;
+use syntax::ptr::P;
 
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
     reg.register_macro("client", expand_client);
-    reg.register_macro("paramenum", expand_paramenum);
+    let expand_paramenum: IdentMacroExpanderFn = expand_paramenum;
+    reg.register_syntax_extension(
+        token::intern("paramenum"),
+        base::IdentTT(box expand_paramenum, None)
+    );
+    reg.register_syntax_extension(
+        token::intern("id_eq"),
+        base::Decorator(box expand_id_eq)
+    );
 }
 
 fn to_pascal_case(s: &str) -> String {
@@ -147,7 +158,8 @@ fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult
     let mut items = Vec::with_capacity(defs.len() * 2 + 2);
 
     items.push(cx.parse_item(format!(
-        "pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
+        "#[derive(Clone, Debug)]
+pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
         client_name
     )));
 
@@ -255,24 +267,22 @@ match ::conn::parse_json(res.raw_response.as_slice()) {{
     MacItems::new(items.into_iter())
 }
 
-fn expand_paramenum(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
-    let mut p = cx.new_parser_from_tts(args);
-    let name = p.parse_ident().to_string();
-    p.expect(&token::OpenDelim(token::Brace));
+fn expand_paramenum(cx: &mut ExtCtxt, _: Span, ident: ast::Ident, args: Vec<TokenTree>) -> Box<MacResult + 'static> {
+    let mut p = cx.new_parser_from_tts(&args[]);
     let items = p.parse_seq_to_end(
-        &token::CloseDelim(token::Brace),
+        &token::Eof,
         SeqSep {
             sep: Some(token::Comma),
             trailing_sep_allowed: true
         },
         |p| {
             let i = p.parse_ident();
-            (i.to_string(), to_pascal_case(i.as_str()))
+            (i, to_pascal_case(i.as_str()))
         }
     );
     p.expect(&token::Eof);
 
-    let mut e = format!("#[derive(Clone, Copy, Show)] pub enum {} {{\n    ", name);
+    let mut e = format!("#[derive(Clone, Copy, Debug)] pub enum {} {{\n    ", ident);
     for x in items.iter() {
         write!(&mut e, "{}, ", x.1);
     }
@@ -280,11 +290,22 @@ fn expand_paramenum(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacRes
 
     let mut i = format!("impl ::std::fmt::String for {} {{
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {{
-        f.write_str(match *self {{\n", name);
+        f.write_str(match *self {{\n", ident);
     for x in items.iter() {
-        writeln!(&mut i, "          {}::{} => \"{}\",", name, x.1, x.0);
+        writeln!(&mut i, "          {}::{} => \"{}\",", ident, x.1, x.0);
     }
     i.push_str("        })\n    }\n}");
 
     MacItems::new(vec![cx.parse_item(e), cx.parse_item(i)].into_iter())
+}
+
+fn expand_id_eq(cx: &mut ExtCtxt, _: Span, _: &ast::MetaItem, item: &ast::Item, mut push: Box<FnMut(P<ast::Item>)>) {
+    let name = item.ident;
+    push(cx.parse_item(format!("impl ::std::cmp::Eq for {} {{}}", name)));
+    push(cx.parse_item(format!(
+"impl ::std::cmp::PartialEq for {0} {{
+    fn eq(&self, other: &{0}) -> bool {{ self.id == other.id }}
+}}",
+        name
+    )));
 }

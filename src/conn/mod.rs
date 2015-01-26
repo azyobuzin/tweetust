@@ -89,7 +89,7 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
     req.header(header::Authorization(authorization)).send()
 }
 
-#[derive(RustcDecodable)]
+#[derive(Debug, RustcDecodable)]
 struct InternalErrorResponse {
     errors: Option<Vec<Error>>,
     error: Option<Vec<Error>>

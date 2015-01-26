@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
+#[id_eq]
 pub struct Place {
     pub attributes: BTreeMap<String, String>,
     pub bounding_box: BoundingBox,
@@ -13,7 +14,7 @@ pub struct Place {
     pub url: String
 }
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct BoundingBox {
     pub coordinates: Vec<Vec<Vec<f64>>>,
     pub type_: String

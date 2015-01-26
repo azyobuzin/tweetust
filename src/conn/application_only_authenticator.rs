@@ -4,7 +4,7 @@ use hyper::method::Method;
 use url::Url;
 use super::{Authenticator, Parameter, send_request};
 
-#[derive(Clone, Show, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ApplicationOnlyAuthenticator(pub String);
 
 impl Authenticator for ApplicationOnlyAuthenticator {

@@ -30,7 +30,7 @@ fn basic_authorization(consumer_key: &str, consumer_secret: &str) -> String {
     )
 }
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct TokenResponse {
     pub token_type: String,
     pub access_token: String
@@ -42,7 +42,7 @@ impl TokenResponse {
     }
 }
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct TokenRequestBuilder {
     consumer_key: String,
     consumer_secret: String,
@@ -78,12 +78,12 @@ pub fn token(consumer_key: &str, consumer_secret: &str) -> TokenRequestBuilder {
     }
 }
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct InvalidateTokenResponse {
     pub access_token: String
 }
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct InvalidateTokenRequestBuilder {
     consumer_key: String,
     consumer_secret: String,

@@ -6,7 +6,7 @@ use url::Url;
 use super::{Authenticator, is_multipart, Parameter, send_request};
 
 /// OAuth 1.0 wrapper
-#[derive(Clone, Show, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OAuthAuthenticator {
     pub consumer_key: String,
     pub consumer_secret: String,

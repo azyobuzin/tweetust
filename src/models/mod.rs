@@ -1,11 +1,11 @@
-#[derive(Clone, Copy, Show)]
+#[derive(Clone, Copy, Debug)]
 pub struct RateLimitStatus {
     pub limit: i32,
     pub remaining: i32,
     pub reset: i64
 }
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct TwitterResponse<T> {
     pub object: T,
     pub raw_response: String,
@@ -22,7 +22,7 @@ impl TwitterResponse<()> {
     }
 }
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct CursorIds {
     pub previous_cursor: i64,
     pub next_cursor: i64,

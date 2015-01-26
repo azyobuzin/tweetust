@@ -1,14 +1,14 @@
-use std;
+use std::{self, fmt};
 use hyper::status::StatusCode;
 use super::RateLimitStatus;
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct Error {
     pub code: i32,
     pub message: String
 }
 
-#[derive(Clone, Show)]
+#[derive(Clone, Debug)]
 pub struct ErrorResponse {
     pub status: StatusCode,
     pub errors: Option<Vec<Error>>,
@@ -20,15 +20,16 @@ impl std::error::Error for ErrorResponse {
     fn description(&self) -> &str {
         "the server returned an error response"
     }
+}
 
-    fn detail(&self) -> Option<String> {
-        let s = match self.errors {
+impl fmt::Display for ErrorResponse {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.errors {
             Some(ref x) => {
                 let ref e = x[0];
-                format!("{}: {} {}", self.status, e.code, e.message)
+                write!(f, "{}: {} {}", self.status, e.code, e.message)
             },
-            None => format!("{}: {}", self.status, self.raw_response)
-        };
-        Some(s)
+            None => write!(f, "{}: {}", self.status, self.raw_response)
+        }
     }
 }

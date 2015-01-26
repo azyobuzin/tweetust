@@ -2,9 +2,9 @@ use std::fmt;
 use hyper::Get;
 use models::search::SearchResponse;
 
-paramenum!(ResultType { mixed, recent, popular });
+paramenum! ResultType { mixed, recent, popular }
 
-#[derive(Clone, Copy, Show)]
+#[derive(Clone, Copy, Debug)]
 pub struct UntilDate {
     /// Years
     pub y: i32,
@@ -20,7 +20,7 @@ impl UntilDate {
     }
 }
 
-impl fmt::String for UntilDate {
+impl fmt::Display for UntilDate {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         write!(f, "{:04}-{:02}-{:02}", self.y, self.m, self.d)
     }

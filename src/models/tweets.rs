@@ -3,7 +3,8 @@ use super::entities::{Entities, ExtendedEntities};
 use super::places::Place;
 use super::users::User;
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
+#[id_eq]
 pub struct Tweet {
     pub contributors: Option<Vec<Contributor>>,
     pub coordinates: Option<Coordinates>,
@@ -33,35 +34,30 @@ pub struct Tweet {
     pub withheld_scope: Option<String>
 }
 
-impl PartialEq for Tweet {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
-    }
-}
-
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
+#[id_eq]
 pub struct Contributor {
     pub id: u64,
     pub screen_name: String
 }
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct Coordinates {
     pub coordinates: Vec<f64>,
     pub type_: String
 }
 
-#[derive(Clone, Copy, Show, RustcDecodable)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, RustcDecodable)]
 pub struct CurrentUserRetweet {
     pub id: u64
 }
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct LookupMap {
     pub id: BTreeMap<String, Option<Tweet>>
 }
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
 pub struct OEmbed {
     pub cache_age: String,
     pub url: String,

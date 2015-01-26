@@ -2,7 +2,7 @@ use hyper::{Get, Post};
 use models::CursorIds;
 use models::tweets::{LookupMap, OEmbed, Tweet};
 
-paramenum!(Align { left, right, center, none });
+paramenum! Align { left, right, center, none }
 
 client!(StatusesClient, [
     (

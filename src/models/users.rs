@@ -1,7 +1,8 @@
 use super::entities::UserEntities;
 use super::tweets::Tweet;
 
-#[derive(Clone, Show, RustcDecodable)]
+#[derive(Clone, Debug, RustcDecodable)]
+#[id_eq]
 pub struct User {
     pub contributors_enabled: bool,
     pub created_at: String,
