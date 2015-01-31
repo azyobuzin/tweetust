@@ -2,16 +2,3 @@ language: rust
 
 notifications:
   email: false
-
-env:
-  global:
-    - secure: frXAFTwbd/10/aJRtTy0Q6hucRpW0lnaghy/MsbG91TUj3yS+uyVjTFSP93BvIkhAfQEfeFG3bWarFdvJclfHGC1ii5RiDvRanZWfR7yjCKMMh9uB0PoTBQLPvMYneWA0w7JvIzZ8oRxB08SRYgxzIlsm5oPvdrAziOatGqt4wQ=
-
-script:
-  - cargo build
-  - cargo test
-  - cargo doc
-
-after_script:
-  - cd target
-  - curl http://www.rust-ci.org/artifacts/put?t=$RUSTCI_TOKEN | sh
