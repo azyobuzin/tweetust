@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 #[derive(Clone, Copy, Debug)]
 pub struct RateLimitStatus {
     pub limit: i32,
@@ -8,7 +10,7 @@ pub struct RateLimitStatus {
 #[derive(Clone, Debug)]
 pub struct TwitterResponse<T> {
     pub object: T,
-    pub raw_response: String,
+    pub raw_response: Rc<String>,
     pub rate_limit: Option<RateLimitStatus>
 }
 

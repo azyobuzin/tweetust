@@ -1,6 +1,7 @@
 //! The low-level functions for connecting to Twitter with any authorization.
 //! Usually, you will not use this module.
 
+use std::rc::Rc;
 use std::string::ToString;
 use hyper;
 use hyper::{header, mime, HttpError, HttpResult, Get, Delete, Head};
@@ -135,7 +136,7 @@ fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
                 Ok(body) => match res.status.class() {
                     // 2xx
                     StatusClass::Success => Ok(TwitterResponse {
-                        object: (), raw_response: body, rate_limit: rate_limit
+                        object: (), raw_response: Rc::new(body), rate_limit: rate_limit
                     }),
                     _ => {
                         // Error response
