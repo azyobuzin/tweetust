@@ -1,0 +1,1 @@
+{"name":"rustc-serialize","counts":{"unstable":24,"stable":25,"unmarked":234},"submodules":[{"name":"base64","counts":{"unstable":3,"stable":4,"unmarked":18},"submodules":[]},{"name":"hex","counts":{"unstable":3,"stable":1,"unmarked":8},"submodules":[]},{"name":"json","counts":{"unstable":18,"stable":20,"unmarked":126},"submodules":[]}]}

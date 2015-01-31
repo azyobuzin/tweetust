@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `conn` mod in crate `tweetust`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, conn">
+
+    <title>tweetust::conn - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>tweetust</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='../clients/index.html' title=''>clients</a><a class='mod current' href='../conn/index.html' title='The low-level functions for connecting to Twitter with any authorization. Usually, you will not use this module.'>conn</a><a class='mod ' href='../models/index.html' title=''>models</a><a class='mod ' href='../oauth/index.html' title='The functions to get your access token for [3-legged OAuth](https://dev.twitter.com/oauth/3-legged) or [PIN-based OAuth](https://dev.twitter.com/oauth/pin-based).'>oauth</a><a class='mod ' href='../oauth2/index.html' title='The functions to get and invalidate your access token for [Application-only authentication](https://dev.twitter.com/oauth/application-only).'>oauth2</a></div><div class='block enum'><h2>Enums</h2><a class='enum ' href='../enum.TwitterError.html' title=''>TwitterError</a></div>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tweetust</a>::<wbr><a class='mod' href=''>conn</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]
+            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span></span></h1>
+<div class='docblock'><p>The low-level functions for connecting to Twitter with any authorization.
+Usually, you will not use this module.</p>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='application_only_authenticator/index.html'
+                               title='tweetust::conn::application_only_authenticator'>application_only_authenticator</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='oauth_authenticator/index.html'
+                               title='tweetust::conn::oauth_authenticator'>oauth_authenticator</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.Parameter.html'
+                               title='tweetust::conn::Parameter'>Parameter</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Authenticator.html'
+                               title='tweetust::conn::Authenticator'>Authenticator</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.ToParameter.html'
+                               title='tweetust::conn::ToParameter'>ToParameter</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.parse_json.html'
+                               title='tweetust::conn::parse_json'>parse_json</a></td>
+                        <td class='docblock short'><p>Parse the JSON string to T with rustc-serialize.
+As a stopgap measure, this function renames <code>type</code> to <code>type_</code>.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.request_twitter.html'
+                               title='tweetust::conn::request_twitter'>request_twitter</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.send_request.html'
+                               title='tweetust::conn::send_request'>send_request</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "tweetust";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>
