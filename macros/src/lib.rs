@@ -29,8 +29,8 @@
 //! #[id_eq]
 //! Implement `PartialEq` and `Eq` by comparing the IDs.
 
-#![allow(unstable, unused_must_use)]
-#![feature(box_syntax, plugin_registrar)]
+#![allow(unused_must_use)]
+#![feature(box_syntax, core, plugin_registrar, rustc_private, unicode)]
 
 extern crate rustc;
 extern crate syntax;
@@ -80,7 +80,7 @@ fn to_pascal_case(s: &str) -> String {
 }
 
 struct ApiDef {
-    method_name: String,
+    method_name: ast::Ident,
     request_struct_name: String,
     http_method: String,
     url: String,
@@ -92,7 +92,7 @@ struct ApiDef {
 fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult + 'static> {
     let mut p = cx.new_parser_from_tts(args);
 
-    let client_name = p.parse_ident().to_string();
+    let client_name = p.parse_ident();
     p.expect(&token::Comma);
     p.expect(&token::OpenDelim(token::Bracket));
 
@@ -105,8 +105,8 @@ fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult
         |p| {
             p.expect(&token::OpenDelim(token::Paren));
 
-            let method_name = p.parse_ident().to_string();
-            let mut request_struct_name = to_pascal_case(method_name.as_slice());
+            let method_name = p.parse_ident();
+            let mut request_struct_name = to_pascal_case(method_name.as_str());
             request_struct_name.push_str("RequestBuilder");
 
             p.expect(&token::Comma);
@@ -288,7 +288,7 @@ fn expand_paramenum(cx: &mut ExtCtxt, _: Span, ident: ast::Ident, args: Vec<Toke
     }
     e.push_str("\n}");
 
-    let mut i = format!("impl ::std::fmt::String for {} {{
+    let mut i = format!("impl ::std::fmt::Display for {} {{
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {{
         f.write_str(match *self {{\n", ident);
     for x in items.iter() {

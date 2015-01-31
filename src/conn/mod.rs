@@ -7,8 +7,9 @@ use hyper::{header, mime, HttpError, HttpResult, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
 use hyper::status::StatusClass;
+use oauthcli;
 use rustc_serialize::{json, Decodable};
-use url::{form_urlencoded, Url};
+use url::{percent_encoding, Url};
 use ::{TwitterError, TwitterResult};
 use models::*;
 use models::error::{Error, ErrorResponse};
@@ -39,6 +40,22 @@ fn is_multipart(params: &[Parameter]) -> bool {
     })
 }
 
+fn create_query<'a, I>(mut pairs: I) -> String
+    where I: Iterator<Item=(&'a str, &'a str)>
+{
+    let es = oauthcli::encode_set();
+    let mut s = String::new();
+    for (key, val) in pairs {
+        if s.len() > 0 {
+            s.push('&');
+        }
+        percent_encoding::utf8_percent_encode_to(key, es, &mut s);
+        s.push('=');
+        percent_encoding::utf8_percent_encode_to(val, es, &mut s);
+    }
+    s
+}
+
 pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
     authorization: String) -> HttpResult<Response>
 {
@@ -52,26 +69,25 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
             Some(x) => x,
             None => Vec::new()
         };
-        url.set_query_from_pairs(
+        url.query = Some(create_query(
             query.iter().map(|x| (x.0.as_slice(), x.1.as_slice())).chain(
                 params.iter().map(|x| match x {
                     &Parameter::Value(key, ref val) => (key, val.as_slice()),
                     _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
-        );
+        ));
     }
 
     let mut client = hyper::Client::new();
-    let mut req = client.request(method, url);
-
     let body;
+    let mut req = client.request(method, url);
 
     if has_body {
         if is_multipart(params) {
             unimplemented!();
         } else {
-            body = form_urlencoded::serialize(
+            body = create_query(
                 params.iter().map(|x| match x {
                     &Parameter::Value(key, ref val) => (key, val.as_slice()),
                     _ => unreachable!()

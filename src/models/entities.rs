@@ -46,9 +46,9 @@ pub struct Medium {
 
 #[derive(Clone, Debug, RustcDecodable)]
 pub struct Size {
-    pub h: i32,
+    pub h: u32,
     pub resize: String,
-    pub w: i32
+    pub w: u32
 }
 
 #[derive(Clone, Debug, RustcDecodable)]
@@ -61,13 +61,14 @@ pub struct Sizes {
 
 #[derive(Clone, Debug, RustcDecodable)]
 pub struct VideoInfo {
-    pub aspect_ratio: Vec<i32>,
+    pub aspect_ratio: Vec<u32>,
+    pub duration_millis: Option<u32>,
     pub variants: Vec<Variant>
 }
 
 #[derive(Clone, Debug, RustcDecodable)]
 pub struct Variant {
-    pub bitrate: i32,
+    pub bitrate: Option<u32>,
     pub content_type: String,
     pub url: String
 }

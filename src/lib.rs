@@ -27,10 +27,8 @@
 //! ```
 //! It's easy for people who have leaned about Twitter, isn't it?
 
-#![allow(unstable)]
 #![warn(unused_import_braces, unused_typecasts)]
-#![experimental]
-#![feature(box_syntax, plugin)]
+#![feature(box_syntax, collections, core, io, plugin)]
 
 extern crate hyper;
 extern crate oauthcli;
