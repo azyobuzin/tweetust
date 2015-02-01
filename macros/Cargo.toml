@@ -1,9 +1,9 @@
 [package]
 name = "tweetust_macros"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "Macros used in tweetust"
-documentation = "http://www.rust-ci.org/azyobuzin/tweetust/doc/tweetust_macros/"
+documentation = "http://azyobuzin.github.io/tweetust/tweetust_macros/"
 repository = "https://github.com/azyobuzin/tweetust"
 license = "MIT"
 

@@ -27,6 +27,7 @@
 //! ```
 //! It's easy for people who have leaned about Twitter, isn't it?
 
+#![allow(unused_must_use)]
 #![warn(unused_import_braces, unused_typecasts)]
 #![feature(box_syntax, collections, core, io, plugin)]
 

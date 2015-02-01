@@ -170,10 +170,17 @@ pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
     for ref def in defs.iter() {
         write!(&mut client_impl, "pub fn {}(&self, ", def.method_name);
         for ref p in def.required_params.iter() {
+            let ty = p.ty.to_source();
             if p.ty.to_source() == "String" {
                 write!(&mut client_impl, "{}: &str, ", p.pat.to_source());
             } else {
-                write!(&mut client_impl, "{}, ", p.to_source());
+                let ty = &ty[];
+                if ty.starts_with("Vec<") {
+                    write!(&mut client_impl, "{}: &[{}]",
+                        p.pat.to_source(), ty.slice(4, ty.len() - 1));
+                } else {
+                    write!(&mut client_impl, "{}, ", p.to_source());
+                }
             }
         }
         writeln!(&mut client_impl,
@@ -181,8 +188,11 @@ pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
         for ref p in def.required_params.iter() {
             write!(&mut client_impl, "{0}: {0}", p.pat.to_source());
             client_impl.push_str(
-                if p.ty.to_source() == "String" { ".to_string(),\n" }
-                else { ",\n" }
+                match &p.ty.to_source()[] {
+                    "String" =>  ".to_string(),\n",
+                    x if x.starts_with("Vec<") => ".to_vec(),\n",
+                    _ => ",\n"
+                }
             );
         }
         for ref p in def.optional_params.iter() {
@@ -215,18 +225,32 @@ pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
         );
         for ref p in def.optional_params.iter() {
             let ty = p.ty.to_source();
+            let ty = &ty[];
             let is_str = ty == "String";
+            let is_vec = ty.starts_with("Vec<");
+            let vec_t = if is_vec {
+                format!("&[{}]", ty.slice(4, ty.len() - 1))
+            } else {
+                String::new()
+            };
             writeln!(&mut request_impl, "pub fn {0}(mut self, val: {1}) -> Self {{
 self.{0} = Some(val{2});\nself\n}}",
                 p.pat.to_source(),
-                if is_str { "&str" } else { ty.as_slice() },
-                if is_str { ".to_string()" } else { "" }
+                if is_str { "&str" } else if is_vec { &vec_t[] } else { ty },
+                if is_str { ".to_string()" } else if is_vec { ".to_vec()" } else { "" }
             );
         }
-        writeln!(&mut request_impl, "pub fn execute(&self) -> ::TwitterResult<{}> {{
-let mut params: Vec<::conn::Parameter> = Vec::with_capacity({});",
-            def.return_type, def.required_params.len() + def.optional_params.len()
-        );
+        writeln!(&mut request_impl,
+            "pub fn execute(&self) -> ::TwitterResult<{}> {{", def.return_type);
+        let capacity = def.required_params.len() + def.optional_params.len();
+        if capacity == 0 {
+            request_impl.push_str("let params = Vec::<::conn::Parameter>::new();\n");
+        } else {
+            writeln!(&mut request_impl,
+                "let mut params = Vec::with_capacity({});",
+                capacity
+            );
+        }
         let need_format = def.url.as_slice().contains("{}");
         let mut reqparam_iter = def.required_params.iter();
         if need_format { reqparam_iter.next(); }
@@ -238,7 +262,7 @@ let mut params: Vec<::conn::Parameter> = Vec::with_capacity({});",
         }
         for ref p in def.optional_params.iter() {
             writeln!(&mut request_impl, "match self.{0} {{
-    Some(ref x) => params.push(::conn::ToParameter::to_parameter(x, \"{0}\")),
+    Some(ref x) => params.push(::conn::ToParameter::to_parameter(x.clone(), \"{0}\")),
     None => ()\n}}",
                 p.pat.to_source()
             );

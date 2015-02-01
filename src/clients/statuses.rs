@@ -75,7 +75,7 @@ client!(StatusesClient, [
         [
             in_reply_to_status_id: u64, possibly_sensitive: bool, lat: f64,
             long: f64, place_id: String, display_coordinates: bool,
-            trim_user: bool, media_ids: String
+            trim_user: bool, media_ids: Vec<u64>
         ],
         Box<Tweet>
     ),
@@ -107,14 +107,14 @@ client!(StatusesClient, [
     (
         lookup, Get,
         "https://api.twitter.com/1.1/statuses/lookup.json",
-        [id: String],
+        [id: Vec<u64>],
         [include_entities: bool, trim_user: bool],
         Vec<Tweet>
     ),
     (
         lookup_map, Get,
         "https://api.twitter.com/1.1/statuses/lookup.json?map=true",
-        [id: String],
+        [id: Vec<u64>],
         [include_entities: bool, trim_user: bool],
         LookupMap
     )

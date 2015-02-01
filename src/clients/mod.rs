@@ -2,6 +2,7 @@ use std::rc::Rc;
 use conn::Authenticator;
 
 pub mod direct_messages;
+pub mod friendships;
 pub mod search;
 pub mod statuses;
 
@@ -15,6 +16,10 @@ impl<T: Authenticator> TwitterClient<T> {
 
     pub fn direct_messages(&self) -> direct_messages::DirectMessagesClient<T> {
         direct_messages::DirectMessagesClient(self.0.clone())
+    }
+
+    pub fn friendships(&self) -> friendships::FriendshipsClient<T> {
+        friendships::FriendshipsClient(self.0.clone())
     }
 
     pub fn search(&self) -> search::SearchClient<T> {

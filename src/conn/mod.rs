@@ -1,6 +1,7 @@
 //! The low-level functions for connecting to Twitter with any authorization.
 //! Usually, you will not use this module.
 
+use std::fmt::{self, Writer};
 use std::rc::Rc;
 use std::string::ToString;
 use hyper;
@@ -170,6 +171,20 @@ pub trait ToParameter {
 impl<T: ToString> ToParameter for T {
     fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a> {
         Parameter::Value(key, self.to_string())
+    }
+}
+
+impl <T: fmt::Display> ToParameter for Vec<T> {
+    fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a> {
+        let mut val = String::new();
+        for elm in self.into_iter() {
+            if val.len() > 0 {
+                val.push(',');
+            }
+            write!(&mut val, "{}", elm);
+        }
+
+        Parameter::Value(key, val)
     }
 }
 

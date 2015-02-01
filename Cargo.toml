@@ -1,9 +1,9 @@
 [package]
 name = "tweetust"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "Experimental Twitter Library"
-documentation = "http://azyobuzin.github.io/tweetust/tweetust/index.html"
+documentation = "http://azyobuzin.github.io/tweetust/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 keywords = ["twitter", "tweet"]
 license = "MIT"
@@ -16,4 +16,4 @@ url = "*"
 
 [dependencies.tweetust_macros]
 path = "macros"
-version = "0.0.2"
+version = "0.0.3"
