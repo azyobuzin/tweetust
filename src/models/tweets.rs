@@ -28,7 +28,7 @@ pub struct Tweet {
     pub retweeted_status: Option<Box<Tweet>>,
     pub source: String,
     pub text: String,
-    pub user: User,
+    pub user: Option<User>,
     pub withheld_copyright: Option<bool>,
     pub withheld_in_countries: Option<Vec<String>>,
     pub withheld_scope: Option<String>

@@ -43,5 +43,13 @@ pub struct User {
     pub utc_offset: Option<i32>,
     pub verified: bool,
     pub withheld_in_countries: Option<String>,
-    pub withheld_scope: Option<String>
+    pub withheld_scope: Option<String>,
+    pub muting: Option<bool>
+}
+
+#[derive(Clone, Debug, RustcDecodable)]
+pub struct CursorUsers {
+    pub previous_cursor: i64,
+    pub next_cursor: i64,
+    pub users: Vec<User>
 }
