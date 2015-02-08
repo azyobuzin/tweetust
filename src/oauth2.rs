@@ -61,9 +61,9 @@ impl TokenRequestBuilder {
             Url::parse("https://api.twitter.com/oauth2/token").unwrap(),
             &[Value("grant_type", self.grant_type.clone())],
             basic_authorization(
-                self.consumer_key.as_slice(), self.consumer_secret.as_slice())
+                &self.consumer_key[], &self.consumer_secret[])
         ));
-        match parse_json(res.raw_response.as_slice()) {
+        match parse_json(&res.raw_response[]) {
             Ok(j) => Ok(res.object(j)),
             Err(e) => Err(TwitterError::JsonError(e, res))
         }
@@ -98,9 +98,9 @@ impl InvalidateTokenRequestBuilder {
             &[Value("access_token", percent_encoding::lossy_utf8_percent_decode(
                 self.access_token.as_bytes()))],
             basic_authorization(
-                self.consumer_key.as_slice(), self.consumer_secret.as_slice())
+                &self.consumer_key[], &self.consumer_secret[])
         ));
-        match parse_json(res.raw_response.as_slice()) {
+        match parse_json(&res.raw_response[]) {
             Ok(j) => Ok(res.object(j)),
             Err(e) => Err(TwitterError::JsonError(e, res))
         }

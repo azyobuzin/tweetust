@@ -42,7 +42,7 @@ fn is_multipart(params: &[Parameter]) -> bool {
     })
 }
 
-fn create_query<'a, I>(mut pairs: I) -> String
+fn create_query<'a, I>(pairs: I) -> String
     where I: Iterator<Item=(&'a str, &'a str)>
 {
     let es = oauthcli::encode_set();
@@ -72,9 +72,9 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
             None => Vec::new()
         };
         url.query = Some(create_query(
-            query.iter().map(|x| (x.0.as_slice(), x.1.as_slice())).chain(
+            query.iter().map(|x| (&x.0[], &x.1[])).chain(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(key, ref val) => (key, val.as_slice()),
+                    &Parameter::Value(key, ref val) => (key, &val[]),
                     _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
@@ -91,11 +91,11 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
         } else {
             body = create_query(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(key, ref val) => (key, val.as_slice()),
+                    &Parameter::Value(key, ref val) => (key, &val[]),
                     _ => unreachable!()
                 })
             );
-            req = req.body(body.as_slice())
+            req = req.body(&body[])
                 .header(header::ContentType(mime::Mime(
                     mime::TopLevel::Application,
                     mime::SubLevel::WwwFormUrlEncoded,
@@ -119,13 +119,13 @@ fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
             // Parse headers
             let limit = res.headers.get_raw("X-Rate-Limit-Limit")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(x.as_slice()).as_slice().parse());
+                .and_then(|x| String::from_utf8_lossy(&x[]).as_slice().parse().ok());
             let remaining = res.headers.get_raw("X-Rate-Limit-Remaining")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(x.as_slice()).as_slice().parse());
+                .and_then(|x| String::from_utf8_lossy(&x[]).as_slice().parse().ok());
             let reset = res.headers.get_raw("X-Rate-Limit-Reset")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(x.as_slice()).as_slice().parse());
+                .and_then(|x| String::from_utf8_lossy(&x[]).as_slice().parse().ok());
             let rate_limit = limit.and(remaining).and(reset)
                 .map(|_| RateLimitStatus {
                     limit: limit.unwrap(),
@@ -141,7 +141,7 @@ fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
                     }),
                     _ => {
                         // Error response
-                        let dec: json::DecodeResult<InternalErrorResponse> = json::decode(body.as_slice());
+                        let dec: json::DecodeResult<InternalErrorResponse> = json::decode(&body[]);
                         let errors = dec.ok().and_then(|x| x.errors.or(x.error));
                         Err(TwitterError::ErrorResponse(ErrorResponse {
                             status: res.status,
@@ -191,5 +191,5 @@ impl <T: fmt::Display> ToParameter for Vec<T> {
 /// Parse the JSON string to T with rustc-serialize.
 /// As a stopgap measure, this function renames `type` to `type_`.
 pub fn parse_json<T: Decodable>(s: &str) -> json::DecodeResult<T> {
-    json::decode(s.replace("\"type\":", "\"type_\":").as_slice())
+    json::decode(&s.replace("\"type\":", "\"type_\":")[])
 }

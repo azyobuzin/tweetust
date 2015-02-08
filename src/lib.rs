@@ -29,7 +29,7 @@
 
 #![allow(unused_must_use)]
 #![warn(unused_import_braces, unused_typecasts)]
-#![feature(box_syntax, collections, core, io, plugin)]
+#![feature(box_syntax, core, io, plugin)]
 
 extern crate hyper;
 extern crate oauthcli;

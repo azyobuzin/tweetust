@@ -21,10 +21,10 @@ pub struct RequestTokenResponse {
 impl RequestTokenResponse {
     pub fn access_token(&self, oauth_verifier: &str) -> AccessTokenRequestBuilder {
         access_token(
-            self.consumer_key.as_slice(),
-            self.consumer_secret.as_slice(),
-            self.oauth_token.as_slice(),
-            self.oauth_token_secret.as_slice(),
+            &self.consumer_key[],
+            &self.consumer_secret[],
+            &self.oauth_token[],
+            &self.oauth_token_secret[],
             oauth_verifier
         )
     }
@@ -55,14 +55,14 @@ impl RequestTokenRequestBuilder {
             "POST",
             request_token_url.clone(),
             None,
-            self.consumer_key.as_slice(),
-            self.consumer_secret.as_slice(),
+            &self.consumer_key[],
+            &self.consumer_secret[],
             None,
             None,
             SignatureMethod::HmacSha1,
             oauthcli::timestamp(),
             oauthcli::nonce(),
-            Some(self.oauth_callback.as_slice()),
+            Some(&self.oauth_callback[]),
             None,
             params.iter().map(|x| match x {
                 &Value(key, ref val) => (key.to_string(), val.clone()),
@@ -70,13 +70,13 @@ impl RequestTokenRequestBuilder {
             })
         );
         let res = try!(request_twitter(
-            Post, request_token_url.clone(), params.as_slice(), authorization));
+            Post, request_token_url.clone(), &params[], authorization));
         let v = form_urlencoded::parse(res.raw_response.as_bytes());
         let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
         let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
         let oauth_callback_confirmed = v.iter()
             .find(|x| x.0 == "oauth_callback_confirmed")
-            .and_then(|x| x.1.as_slice().parse());
+            .and_then(|x| x.1.as_slice().parse().ok());
         match oauth_token.and(oauth_token_secret) {
             Some(_) => Ok(res.object(RequestTokenResponse {
                 consumer_key: self.consumer_key.clone(),
@@ -114,10 +114,10 @@ pub struct AccessTokenResponse {
 impl AccessTokenResponse {
     pub fn to_authenticator(&self) -> OAuthAuthenticator {
         OAuthAuthenticator::new(
-            self.consumer_key.as_slice(),
-            self.consumer_secret.as_slice(),
-            self.oauth_token.as_slice(),
-            self.oauth_token_secret.as_slice()
+            &self.consumer_key[],
+            &self.consumer_secret[],
+            &self.oauth_token[],
+            &self.oauth_token_secret[]
         )
     }
 }
@@ -138,15 +138,15 @@ impl AccessTokenRequestBuilder {
             "POST",
             access_token_url.clone(),
             None,
-            self.consumer_key.as_slice(),
-            self.consumer_secret.as_slice(),
-            Some(self.oauth_token.as_slice()),
-            Some(self.oauth_token_secret.as_slice()),
+            &self.consumer_key[],
+            &self.consumer_secret[],
+            Some(&self.oauth_token[]),
+            Some(&self.oauth_token_secret[]),
             SignatureMethod::HmacSha1,
             oauthcli::timestamp(),
             oauthcli::nonce(),
             None,
-            Some(self.oauth_verifier.as_slice()),
+            Some(&self.oauth_verifier[]),
             Vec::new().into_iter()
         );
         let res = try!(request_twitter(
@@ -155,7 +155,7 @@ impl AccessTokenRequestBuilder {
         let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
         let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
         let user_id = v.iter().find(|x| x.0 == "user_id")
-            .and_then(|x| x.1.as_slice().parse());
+            .and_then(|x| x.1.as_slice().parse().ok());
         let screen_name = v.iter().find(|x| x.0 == "screen_name");
         match oauth_token.and(oauth_token_secret).and(user_id).and(screen_name) {
             Some(_) => Ok(res.object(AccessTokenResponse {

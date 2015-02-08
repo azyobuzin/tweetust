@@ -41,13 +41,13 @@ impl Authenticator for OAuthAuthenticator {
                 }
 
                 let authorization = oauthcli::authorization_header(
-                    method.to_string().as_slice(),
+                    &method.to_string()[],
                     u.clone(),
                     None,
-                    self.consumer_key.as_slice(),
-                    self.consumer_secret.as_slice(),
-                    Some(self.access_token.as_slice()),
-                    Some(self.access_token_secret.as_slice()),
+                    &self.consumer_key[],
+                    &self.consumer_secret[],
+                    Some(&self.access_token[]),
+                    Some(&self.access_token_secret[]),
                     SignatureMethod::HmacSha1,
                     oauthcli::timestamp(),
                     oauthcli::nonce(),
