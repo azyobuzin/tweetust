@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.9/src/header/common/cookie.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/header/common/cookie.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>cookie.rs.html -- source</title>
@@ -189,8 +189,8 @@
                 <span class='prelude-val'>Ok</span>(<span class='ident'>cookies_str</span>) <span class='op'>=&gt;</span> {
                     <span class='kw'>for</span> <span class='ident'>cookie_str</span> <span class='kw'>in</span> <span class='ident'>cookies_str</span>.<span class='ident'>split</span>(<span class='string'>&#39;;&#39;</span>) {
                         <span class='kw'>match</span> <span class='ident'>cookie_str</span>.<span class='ident'>trim</span>().<span class='ident'>parse</span>() {
-                            <span class='prelude-val'>Some</span>(<span class='ident'>cookie</span>) <span class='op'>=&gt;</span> <span class='ident'>cookies</span>.<span class='ident'>push</span>(<span class='ident'>cookie</span>),
-                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                            <span class='prelude-val'>Ok</span>(<span class='ident'>cookie</span>) <span class='op'>=&gt;</span> <span class='ident'>cookies</span>.<span class='ident'>push</span>(<span class='ident'>cookie</span>),
+                            <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
                         }
                     }
                 },

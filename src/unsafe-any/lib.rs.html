@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/unsafe-any-0.2.1/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/unsafe-any-0.2.2/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -190,7 +190,9 @@
 <span id="148">148</span>
 <span id="149">149</span>
 <span id="150">150</span>
+<span id="151">151</span>
 </pre><pre class='rust '>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>feature</span>(<span class='ident'>core</span>, <span class='ident'>box_syntax</span>))]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>deny</span>(<span class='ident'>missing_docs</span>, <span class='ident'>warnings</span>)]</span>
 
 <span class='doccomment'>//! Traits for unsafe downcasting from trait objects to &amp; or &amp;mut references of</span>
@@ -282,39 +284,39 @@
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>any</span>::<span class='ident'>Any</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='kw'>fn</span> <span class='ident'>test_simple_downcast_ext</span>() {
-        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7u</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Any</span><span class='op'>&gt;</span>;
-        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_ref_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>(), <span class='number'>7u</span>); }
+        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7us</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Any</span><span class='op'>&gt;</span>;
+        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_ref_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>(), <span class='number'>7us</span>); }
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7u</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Any</span><span class='op'>&gt;</span>;
-        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>(), <span class='number'>7u</span>); }
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7us</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Any</span><span class='op'>&gt;</span>;
+        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>(), <span class='number'>7us</span>); }
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7u</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Any</span><span class='op'>&gt;</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7us</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Any</span><span class='op'>&gt;</span>;
         <span class='kw'>unsafe</span> {
-            <span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>() <span class='op'>=</span> <span class='number'>8u</span>;
-            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>(), <span class='number'>8u</span>);
+            <span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>() <span class='op'>=</span> <span class='number'>8us</span>;
+            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>(), <span class='number'>8us</span>);
         }
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='kw'>fn</span> <span class='ident'>test_simple_downcast_inherent</span>() {
-        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7u</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>UnsafeAny</span><span class='op'>&gt;</span>;
-        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_ref_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>(), <span class='number'>7u</span>); }
+        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7us</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>UnsafeAny</span><span class='op'>&gt;</span>;
+        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_ref_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>(), <span class='number'>7us</span>); }
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7u</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>UnsafeAny</span><span class='op'>&gt;</span>;
-        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>(), <span class='number'>7u</span>); }
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7us</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>UnsafeAny</span><span class='op'>&gt;</span>;
+        <span class='kw'>unsafe</span> { <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>(), <span class='number'>7us</span>); }
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7u</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>UnsafeAny</span><span class='op'>&gt;</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='number'>7us</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>UnsafeAny</span><span class='op'>&gt;</span>;
         <span class='kw'>unsafe</span> {
-            <span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>() <span class='op'>=</span> <span class='number'>8u</span>;
-            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>(), <span class='number'>8u</span>);
+            <span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>() <span class='op'>=</span> <span class='number'>8us</span>;
+            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>a</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>(), <span class='number'>8us</span>);
         }
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='kw'>fn</span> <span class='ident'>test_box_downcast_no_double_free</span>() {
-        <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='ident'>AtomicUint</span>, <span class='ident'>Ordering</span>};
+        <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='ident'>AtomicUsize</span>, <span class='ident'>Ordering</span>};
         <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
 
         <span class='kw'>struct</span> <span class='ident'>Dropper</span> {
-            <span class='ident'>x</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>AtomicUint</span><span class='op'>&gt;</span>
+            <span class='ident'>x</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>AtomicUsize</span><span class='op'>&gt;</span>
         }
 
         <span class='kw'>impl</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>Dropper</span> {
@@ -323,7 +325,7 @@
             }
         }
 
-        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>AtomicUint</span>::<span class='ident'>new</span>(<span class='number'>0</span>));
+        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>AtomicUsize</span>::<span class='ident'>new</span>(<span class='number'>0</span>));
         <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Dropper</span> { <span class='ident'>x</span>: <span class='ident'>x</span>.<span class='ident'>clone</span>() } <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>UnsafeAny</span><span class='op'>&gt;</span>;
 
         <span class='kw'>let</span> <span class='ident'>dropper</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>a</span>.<span class='ident'>downcast_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Dropper</span><span class='op'>&gt;</span>() };
@@ -331,7 +333,7 @@
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>x</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>), <span class='number'>1</span>);
 
-        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>AtomicUint</span>::<span class='ident'>new</span>(<span class='number'>0</span>));
+        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>AtomicUsize</span>::<span class='ident'>new</span>(<span class='number'>0</span>));
         <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Dropper</span> { <span class='ident'>x</span>: <span class='ident'>x</span>.<span class='ident'>clone</span>() } <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Any</span><span class='op'>&gt;</span>;
 
         <span class='kw'>let</span> <span class='ident'>dropper</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>a</span>.<span class='ident'>downcast_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Dropper</span><span class='op'>&gt;</span>() };

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.14/src/fortuna.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.15/src/fortuna.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>fortuna.rs.html -- source</title>
@@ -598,7 +598,7 @@
  * say) then you need to EXPLICITLY RESEED THE RNG AFTER FORKING.
  */</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>::{<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>};
+<span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>::<span class='ident'>precise_time_s</span>;
 
 <span class='kw'>use</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Encryptor</span>;
@@ -804,7 +804,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>SeedableRng</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u8</span>]<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Fortuna</span> {
     <span class='kw'>fn</span> <span class='ident'>from_seed</span>(<span class='ident'>seed</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>Fortuna</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ret</span> <span class='op'>=</span> <span class='ident'>Fortuna</span>::<span class='ident'>new_unseeded</span>(); 
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ret</span> <span class='op'>=</span> <span class='ident'>Fortuna</span>::<span class='ident'>new_unseeded</span>();
         <span class='ident'>ret</span>.<span class='ident'>reseed</span>(<span class='ident'>seed</span>);
         <span class='ident'>ret</span>
     }
@@ -818,9 +818,9 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>::{<span class='ident'>SeedableRng</span>, <span class='ident'>Rng</span>};
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::<span class='ident'>Duration</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>timer</span>;
+    <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>SeedableRng</span>, <span class='ident'>Rng</span>};
 
     <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>Fortuna</span>, <span class='ident'>Pool</span>, <span class='ident'>NUM_POOLS</span>};
 
@@ -1019,7 +1019,7 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>::{<span class='ident'>SeedableRng</span>, <span class='ident'>Rng</span>};
+    <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>SeedableRng</span>, <span class='ident'>Rng</span>};
     <span class='kw'>use</span> <span class='ident'>test</span>::<span class='ident'>Bencher</span>;
 
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>Fortuna</span>;

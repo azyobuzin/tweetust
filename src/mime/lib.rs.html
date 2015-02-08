@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/mime-0.0.7/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/mime-0.0.8/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -447,6 +447,9 @@
 <span id="405">405</span>
 <span id="406">406</span>
 <span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! # Mime</span>
 <span class='doccomment'>//!</span>
@@ -470,7 +473,8 @@
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;http://hyperium.github.io/mime.rs&quot;</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>deny</span>(<span class='ident'>warnings</span>))]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>unstable</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>feature</span>(<span class='ident'>test</span>))]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>, <span class='ident'>std_misc</span>)]</span>
 
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>log</span>;
@@ -487,7 +491,7 @@
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>inspect</span>(
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>s</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> ({
         <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>t</span>;
-        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;inspect {}: {:?}&quot;</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>s</span>, <span class='ident'>t</span>);
+        <span class='macro'>trace</span><span class='macro'>!</span>(<span class='string'>&quot;inspect {}: {:?}&quot;</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>s</span>, <span class='ident'>t</span>);
         <span class='ident'>t</span>
     })
 );
@@ -547,8 +551,9 @@
         }
 
         <span class='kw'>impl</span> <span class='ident'>FromStr</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>en</span> {
-            <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>en</span><span class='op'>&gt;</span> {
-                <span class='prelude-val'>Some</span>(<span class='kw'>match</span> <span class='ident'>s</span> {
+            <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> ();
+            <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>en</span>, ()<span class='op'>&gt;</span> {
+                <span class='prelude-val'>Ok</span>(<span class='kw'>match</span> <span class='ident'>s</span> {
                     $(<span class='ident'>_s</span> <span class='kw'>if</span> <span class='ident'>_s</span> <span class='op'>==</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>text</span> <span class='op'>=&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>en</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>),<span class='op'>*</span>,
                     <span class='ident'>s</span> <span class='op'>=&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>en</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ext</span>(<span class='macro'>inspect</span><span class='macro'>!</span>(<span class='macro'>stringify</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ext</span>), <span class='ident'>s</span>).<span class='ident'>to_string</span>())
                 })
@@ -621,7 +626,8 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>FromStr</span> <span class='kw'>for</span> <span class='ident'>Mime</span> {
-    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>raw</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Mime</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> ();
+    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>raw</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Mime</span>, ()<span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>ascii</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>to_ascii_lowercase</span>(); <span class='comment'>// lifetimes :(</span>
         <span class='kw'>let</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='ident'>ascii</span>;
         <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>len</span>();
@@ -635,14 +641,14 @@
                 <span class='prelude-val'>Some</span>((<span class='number'>0</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>is_restricted_name_first_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
                 <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_restricted_name_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
                 <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='string'>&#39;/&#39;</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='number'>0</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[..<span class='ident'>i</span>]) {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>t</span>) <span class='op'>=&gt;</span> {
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>t</span>) <span class='op'>=&gt;</span> {
                         <span class='ident'>top</span> <span class='op'>=</span> <span class='ident'>t</span>;
                         <span class='ident'>start</span> <span class='op'>=</span> <span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>;
                         <span class='kw'>break</span>;
                     }
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                    <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(())
                 },
-                _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span> <span class='comment'>// EOF and no toplevel is no Mime</span>
+                _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(()) <span class='comment'>// EOF and no toplevel is no Mime</span>
             };
 
         }
@@ -654,18 +660,18 @@
                 <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>==</span> <span class='ident'>start</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_restricted_name_first_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
                 <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='ident'>start</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_restricted_name_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
                 <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='string'>&#39;;&#39;</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='ident'>start</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[<span class='ident'>start</span>..<span class='ident'>i</span>]) {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> {
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> {
                         <span class='ident'>sub</span> <span class='op'>=</span> <span class='ident'>s</span>;
                         <span class='ident'>start</span> <span class='op'>=</span> <span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>;
                         <span class='kw'>break</span>;
                     }
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                    <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(())
                 },
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[<span class='ident'>start</span>..]) {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Some</span>(<span class='ident'>Mime</span>(<span class='ident'>top</span>, <span class='ident'>s</span>, <span class='ident'>params</span>)),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Mime</span>(<span class='ident'>top</span>, <span class='ident'>s</span>, <span class='ident'>params</span>)),
+                    <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(())
                 },
-                _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(())
             };
         }
 
@@ -684,7 +690,7 @@
             }
         }
 
-        <span class='prelude-val'>Some</span>(<span class='ident'>Mime</span>(<span class='ident'>top</span>, <span class='ident'>sub</span>, <span class='ident'>params</span>))
+        <span class='prelude-val'>Ok</span>(<span class='ident'>Mime</span>(<span class='ident'>top</span>, <span class='ident'>sub</span>, <span class='ident'>params</span>))
     }
 }
 
@@ -697,12 +703,12 @@
             <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>==</span> <span class='ident'>start</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_restricted_name_first_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
             <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='ident'>start</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_restricted_name_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
             <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='string'>&#39;=&#39;</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='ident'>start</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[<span class='ident'>start</span>..<span class='ident'>i</span>]) {
-                <span class='prelude-val'>Some</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
+                <span class='prelude-val'>Ok</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
                     <span class='ident'>attr</span> <span class='op'>=</span> <span class='macro'>inspect</span><span class='macro'>!</span>(<span class='string'>&quot;attr&quot;</span>, <span class='ident'>a</span>);
                     <span class='ident'>start</span> <span class='op'>=</span> <span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>;
                     <span class='kw'>break</span>;
                 },
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
             },
             _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
         }
@@ -719,29 +725,29 @@
             },
             <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>==</span> <span class='ident'>start</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_restricted_name_first_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
             <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='string'>&#39;&quot;&#39;</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='ident'>start</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_quoted</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[<span class='ident'>start</span>..<span class='ident'>i</span>]) {
-                <span class='prelude-val'>Some</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> {
+                <span class='prelude-val'>Ok</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> {
                     <span class='ident'>value</span> <span class='op'>=</span> <span class='ident'>v</span>;
                     <span class='ident'>start</span> <span class='op'>=</span> <span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>;
                     <span class='kw'>break</span>;
                 },
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
             },
             <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='ident'>start</span> <span class='op'>&amp;&amp;</span> <span class='ident'>is_quoted</span> <span class='op'>||</span> <span class='ident'>is_restricted_name_char</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> (),
             <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='string'>&#39;;&#39;</span>)) <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='ident'>start</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[<span class='ident'>start</span>..<span class='ident'>i</span>]) {
-                <span class='prelude-val'>Some</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> {
+                <span class='prelude-val'>Ok</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> {
                     <span class='ident'>value</span> <span class='op'>=</span> <span class='ident'>v</span>;
                     <span class='ident'>start</span> <span class='op'>=</span> <span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>;
                     <span class='kw'>break</span>;
                 },
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
             },
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[<span class='ident'>start</span>..]) {
-                <span class='prelude-val'>Some</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> {
+                <span class='prelude-val'>Ok</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> {
                     <span class='ident'>value</span> <span class='op'>=</span> <span class='ident'>v</span>;
                     <span class='ident'>start</span> <span class='op'>=</span> <span class='ident'>raw</span>.<span class='ident'>len</span>();
                     <span class='kw'>break</span>;
                 },
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
+                <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
             },
 
             _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>None</span>
@@ -831,12 +837,12 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_mime_from_str</span>() {
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;text/plain&quot;</span>), <span class='prelude-val'>Some</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[])));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;TEXT/PLAIN&quot;</span>), <span class='prelude-val'>Some</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[])));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;text/plain; charset=utf-8&quot;</span>), <span class='prelude-val'>Some</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='ident'>Attr</span>::<span class='ident'>Charset</span>, <span class='ident'>Value</span>::<span class='ident'>Utf8</span>)])));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;text/plain;charset=\&quot;utf-8\&quot;&quot;</span>), <span class='prelude-val'>Some</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='ident'>Attr</span>::<span class='ident'>Charset</span>, <span class='ident'>Value</span>::<span class='ident'>Utf8</span>)])));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;text/plain&quot;</span>), <span class='prelude-val'>Ok</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[])));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;TEXT/PLAIN&quot;</span>), <span class='prelude-val'>Ok</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[])));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;text/plain; charset=utf-8&quot;</span>), <span class='prelude-val'>Ok</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='ident'>Attr</span>::<span class='ident'>Charset</span>, <span class='ident'>Value</span>::<span class='ident'>Utf8</span>)])));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;text/plain;charset=\&quot;utf-8\&quot;&quot;</span>), <span class='prelude-val'>Ok</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='ident'>Attr</span>::<span class='ident'>Charset</span>, <span class='ident'>Value</span>::<span class='ident'>Utf8</span>)])));
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='string'>&quot;text/plain; charset=utf-8; foo=bar&quot;</span>),
-            <span class='prelude-val'>Some</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='ident'>Attr</span>::<span class='ident'>Charset</span>, <span class='ident'>Value</span>::<span class='ident'>Utf8</span>),
+            <span class='prelude-val'>Ok</span>(<span class='ident'>Mime</span>(<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>, <span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>, <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='ident'>Attr</span>::<span class='ident'>Charset</span>, <span class='ident'>Value</span>::<span class='ident'>Utf8</span>),
                                         (<span class='ident'>Attr</span>::<span class='ident'>Ext</span>(<span class='string'>&quot;foo&quot;</span>.<span class='ident'>to_string</span>()), <span class='ident'>Value</span>::<span class='ident'>Ext</span>(<span class='string'>&quot;bar&quot;</span>.<span class='ident'>to_string</span>())) ])));
     }
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.9/src/http.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/http.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>http.rs.html -- source</title>
@@ -918,7 +918,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>min</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::{<span class='self'>self</span>, <span class='ident'>Reader</span>, <span class='ident'>IoResult</span>, <span class='ident'>BufWriter</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>from_u16</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::{<span class='self'>self</span>, <span class='ident'>FromStr</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>string</span>::<span class='ident'>CowString</span>;
 
 <span class='kw'>use</span> <span class='ident'>url</span>::<span class='ident'>Url</span>;
@@ -1500,7 +1500,7 @@
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>StatusLine</span> <span class='op'>=</span> (<span class='ident'>HttpVersion</span>, <span class='ident'>RawStatus</span>);
 
 <span class='doccomment'>/// The raw status code and reason-phrase.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RawStatus</span>(<span class='kw'>pub</span> <span class='ident'>u16</span>, <span class='kw'>pub</span> <span class='ident'>CowString</span><span class='op'>&lt;</span><span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>);
 
 <span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>RawStatus</span> {
@@ -1539,7 +1539,7 @@
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>stream</span>.<span class='ident'>read_byte</span>()),
     ];
 
-    <span class='kw'>let</span> <span class='ident'>code</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>str</span>::<span class='ident'>from_utf8</span>(<span class='ident'>code</span>.<span class='ident'>as_slice</span>()).<span class='ident'>ok</span>().<span class='ident'>and_then</span>(<span class='ident'>FromStr</span>::<span class='ident'>from_str</span>) {
+    <span class='kw'>let</span> <span class='ident'>code</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>str</span>::<span class='ident'>from_utf8</span>(<span class='ident'>code</span>.<span class='ident'>as_slice</span>()).<span class='ident'>ok</span>().<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>parse</span>().<span class='ident'>ok</span>()) {
         <span class='prelude-val'>Some</span>(<span class='ident'>num</span>) <span class='op'>=&gt;</span> <span class='ident'>num</span>,
         <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>HttpStatusError</span>)
     };

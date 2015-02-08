@@ -144,6 +144,7 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
+<span id="105">105</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Tweetust is the simple wrapper for Twitter API.</span>
 <span class='doccomment'>//!</span>
@@ -174,8 +175,9 @@
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//! It&#39;s easy for people who have leaned about Twitter, isn&#39;t it?</span>
 
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>unused_must_use</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>warn</span>(<span class='ident'>unused_import_braces</span>, <span class='ident'>unused_typecasts</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>, <span class='ident'>collections</span>, <span class='ident'>core</span>, <span class='ident'>io</span>, <span class='ident'>plugin</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>, <span class='ident'>core</span>, <span class='ident'>io</span>, <span class='ident'>plugin</span>)]</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hyper</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>oauthcli</span>;

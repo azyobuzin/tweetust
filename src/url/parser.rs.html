@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.17/src/parser.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.20/src/parser.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>parser.rs.html -- source</title>
@@ -1308,7 +1308,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>path_part</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ends_with_slash</span> <span class='op'>=</span> <span class='boolval'>false</span>;
         <span class='ident'>end</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>len</span>();
-        <span class='kw'>for</span> (<span class='ident'>i</span>, <span class='ident'>c</span>, <span class='ident'>next_i</span>) <span class='kw'>in</span> <span class='ident'>iter</span> {
+        <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>((<span class='ident'>i</span>, <span class='ident'>c</span>, <span class='ident'>next_i</span>)) <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>next</span>() {
             <span class='kw'>match</span> <span class='ident'>c</span> {
                 <span class='string'>&#39;/&#39;</span> <span class='op'>=&gt;</span> {
                     <span class='ident'>ends_with_slash</span> <span class='op'>=</span> <span class='boolval'>true</span>;

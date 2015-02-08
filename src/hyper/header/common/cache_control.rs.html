@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.9/src/header/common/cache_control.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/header/common/cache_control.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>cache_control.rs.html -- source</title>
@@ -205,6 +205,7 @@
 <span id="163">163</span>
 <span id="164">164</span>
 <span id="165">165</span>
+<span id="166">166</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
@@ -304,28 +305,29 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>FromStr</span> <span class='kw'>for</span> <span class='ident'>CacheDirective</span> {
-    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>CacheDirective</span><span class='op'>&gt;</span> {
+    <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;&lt;</span><span class='ident'>u32</span> <span class='kw'>as</span> <span class='ident'>FromStr</span><span class='op'>&gt;</span>::<span class='prelude-val'>Err</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>CacheDirective</span>, <span class='prelude-ty'>Option</span><span class='op'>&lt;&lt;</span><span class='ident'>u32</span> <span class='kw'>as</span> <span class='ident'>FromStr</span><span class='op'>&gt;</span>::<span class='prelude-val'>Err</span><span class='op'>&gt;&gt;</span> {
         <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>CacheDirective</span>::<span class='op'>*</span>;
         <span class='kw'>match</span> <span class='ident'>s</span> {
-            <span class='string'>&quot;no-cache&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>NoCache</span>),
-            <span class='string'>&quot;no-store&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>NoStore</span>),
-            <span class='string'>&quot;no-transform&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>NoTransform</span>),
-            <span class='string'>&quot;only-if-cached&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>OnlyIfCached</span>),
-            <span class='string'>&quot;must-revalidate&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>MustRevalidate</span>),
-            <span class='string'>&quot;public&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Public</span>),
-            <span class='string'>&quot;private&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Private</span>),
-            <span class='string'>&quot;proxy-revalidate&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>ProxyRevalidate</span>),
-            <span class='string'>&quot;&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+            <span class='string'>&quot;no-cache&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>NoCache</span>),
+            <span class='string'>&quot;no-store&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>NoStore</span>),
+            <span class='string'>&quot;no-transform&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>NoTransform</span>),
+            <span class='string'>&quot;only-if-cached&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>OnlyIfCached</span>),
+            <span class='string'>&quot;must-revalidate&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>MustRevalidate</span>),
+            <span class='string'>&quot;public&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Public</span>),
+            <span class='string'>&quot;private&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Private</span>),
+            <span class='string'>&quot;proxy-revalidate&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>ProxyRevalidate</span>),
+            <span class='string'>&quot;&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='prelude-val'>None</span>),
             _ <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>find</span>(<span class='string'>&#39;=&#39;</span>) {
                 <span class='prelude-val'>Some</span>(<span class='ident'>idx</span>) <span class='kw'>if</span> <span class='ident'>idx</span><span class='op'>+</span><span class='number'>1</span> <span class='op'>&lt;</span> <span class='ident'>s</span>.<span class='ident'>len</span>() <span class='op'>=&gt;</span> <span class='kw'>match</span> (<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..<span class='ident'>idx</span>], <span class='kw-2'>&amp;</span><span class='ident'>s</span>[<span class='ident'>idx</span><span class='op'>+</span><span class='number'>1</span>..].<span class='ident'>trim_matches</span>(<span class='string'>&#39;&quot;&#39;</span>)) {
-                    (<span class='string'>&quot;max-age&quot;</span> , <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>MaxAge</span>),
-                    (<span class='string'>&quot;max-stale&quot;</span>, <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>MaxStale</span>),
-                    (<span class='string'>&quot;min-fresh&quot;</span>, <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>MinFresh</span>),
-                    (<span class='string'>&quot;s-maxage&quot;</span>, <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>SMaxAge</span>),
-                    (<span class='ident'>left</span>, <span class='ident'>right</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Extension</span>(<span class='ident'>left</span>.<span class='ident'>to_string</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>right</span>.<span class='ident'>to_string</span>())))
+                    (<span class='string'>&quot;max-age&quot;</span> , <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>MaxAge</span>).<span class='ident'>map_err</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='prelude-val'>Some</span>(<span class='ident'>x</span>)),
+                    (<span class='string'>&quot;max-stale&quot;</span>, <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>MaxStale</span>).<span class='ident'>map_err</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='prelude-val'>Some</span>(<span class='ident'>x</span>)),
+                    (<span class='string'>&quot;min-fresh&quot;</span>, <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>MinFresh</span>).<span class='ident'>map_err</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='prelude-val'>Some</span>(<span class='ident'>x</span>)),
+                    (<span class='string'>&quot;s-maxage&quot;</span>, <span class='ident'>secs</span>) <span class='op'>=&gt;</span> <span class='ident'>secs</span>.<span class='ident'>parse</span>().<span class='ident'>map</span>(<span class='ident'>SMaxAge</span>).<span class='ident'>map_err</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='prelude-val'>Some</span>(<span class='ident'>x</span>)),
+                    (<span class='ident'>left</span>, <span class='ident'>right</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Extension</span>(<span class='ident'>left</span>.<span class='ident'>to_string</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>right</span>.<span class='ident'>to_string</span>())))
                 },
-                <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>Extension</span>(<span class='ident'>s</span>.<span class='ident'>to_string</span>(), <span class='prelude-val'>None</span>))
+                <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='prelude-val'>None</span>),
+                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Extension</span>(<span class='ident'>s</span>.<span class='ident'>to_string</span>(), <span class='prelude-val'>None</span>))
             }
         }
     }

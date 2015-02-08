@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.2.10/src/json.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.2.12/src/json.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>json.rs.html -- source</title>
@@ -3931,6 +3931,7 @@
 <span id="3889">3889</span>
 <span id="3890">3890</span>
 <span id="3891">3891</span>
+<span id="3892">3892</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2012-2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -4190,7 +4191,7 @@
 <span class='kw'>use</span> <span class='ident'>Encodable</span>;
 
 <span class='doccomment'>/// Represents a json value</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>PartialOrd</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>PartialOrd</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Json</span> {
     <span class='ident'>I64</span>(<span class='ident'>i64</span>),
     <span class='ident'>U64</span>(<span class='ident'>u64</span>),
@@ -4232,7 +4233,7 @@
     <span class='ident'>NotUtf8</span>,
 }
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>ParserError</span> {
     <span class='doccomment'>/// msg, line, col</span>
     <span class='ident'>SyntaxError</span>(<span class='ident'>ErrorCode</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>),
@@ -4242,7 +4243,7 @@
 <span class='comment'>// Builder and Parser have the same errors.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>BuilderError</span> <span class='op'>=</span> <span class='ident'>ParserError</span>;
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>DecoderError</span> {
     <span class='ident'>ParseError</span>(<span class='ident'>ParserError</span>),
     <span class='ident'>ExpectedError</span>(<span class='ident'>string</span>::<span class='ident'>String</span>, <span class='ident'>string</span>::<span class='ident'>String</span>),
@@ -4251,7 +4252,7 @@
     <span class='ident'>ApplicationError</span>(<span class='ident'>string</span>::<span class='ident'>String</span>)
 }
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>EncoderError</span> {
     <span class='ident'>FmtError</span>(<span class='ident'>fmt</span>::<span class='ident'>Error</span>),
     <span class='ident'>BadHashmapKey</span>,
@@ -4871,7 +4872,7 @@
     }
 
     <span class='doccomment'>/// Borrow this json object as a pretty object to generate a pretty</span>
-    <span class='doccomment'>/// representation for it via `Show`.</span>
+    <span class='doccomment'>/// representation for it via `Display`.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pretty</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>PrettyJson</span> {
         <span class='ident'>PrettyJson</span> { <span class='ident'>inner</span>: <span class='self'>self</span> }
     }
@@ -5076,7 +5077,7 @@
 }
 
 <span class='doccomment'>/// The output of the streaming parser.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>JsonEvent</span> {
     <span class='ident'>ObjectStart</span>,
     <span class='ident'>ObjectEnd</span>,
@@ -5091,7 +5092,7 @@
     <span class='ident'>Error</span>(<span class='ident'>ParserError</span>),
 }
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>enum</span> <span class='ident'>ParserState</span> {
     <span class='comment'>// Parse a value in an array, true means first element.</span>
     <span class='ident'>ParseArray</span>(<span class='ident'>bool</span>),
@@ -5120,7 +5121,7 @@
 <span class='doccomment'>/// StackElements compose a Stack.</span>
 <span class='doccomment'>/// For example, Key(&quot;foo&quot;), Key(&quot;bar&quot;), Index(3) and Key(&quot;x&quot;) are the</span>
 <span class='doccomment'>/// StackElements compositing the stack that represents foo.bar[3].x</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>StackElement</span><span class='op'>&lt;</span><span class='lifetime'>&#39;l</span><span class='op'>&gt;</span> {
     <span class='ident'>Index</span>(<span class='ident'>u32</span>),
     <span class='ident'>Key</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;l</span> <span class='ident'>str</span>),
@@ -5128,7 +5129,7 @@
 
 <span class='comment'>// Internally, Key elements are stored as indices in a buffer to avoid</span>
 <span class='comment'>// allocating a string for every member of an object.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>, <span class='ident'>Show</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>enum</span> <span class='ident'>InternalStackElement</span> {
     <span class='ident'>InternalIndex</span>(<span class='ident'>u32</span>),
     <span class='ident'>InternalKey</span>(<span class='ident'>u16</span>, <span class='ident'>u16</span>), <span class='comment'>// start, size</span>
@@ -5945,8 +5946,8 @@
                 <span class='comment'>// re: #12967.. a type w/ numeric keys (ie HashMap&lt;usize, V&gt; etc)</span>
                 <span class='comment'>// is going to have a string here, as per JSON spec.</span>
                 <span class='ident'>Json</span>::<span class='ident'>String</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>parse</span>() {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>f</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>f</span>),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ExpectedError</span>(<span class='string'>&quot;Number&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>s</span>)),
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>f</span>)  <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>f</span>),
+                    <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ExpectedError</span>(<span class='string'>&quot;Number&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>s</span>)),
                 },
                 <span class='ident'>value</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ExpectedError</span>(<span class='string'>&quot;Number&quot;</span>.<span class='ident'>to_string</span>(), <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>value</span>))),
             }
@@ -5983,8 +5984,8 @@
                 <span class='comment'>// re: #12967.. a type w/ numeric keys (ie HashMap&lt;usize, V&gt; etc)</span>
                 <span class='comment'>// is going to have a string here, as per JSON spec.</span>
                 <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>parse</span>() {
-                    <span class='prelude-val'>Some</span>(<span class='ident'>f</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>f</span>),
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ExpectedError</span>(<span class='string'>&quot;Number&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>s</span>)),
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>f</span>)  <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>f</span>),
+                    <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ExpectedError</span>(<span class='string'>&quot;Number&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>s</span>)),
                 }
             },
             <span class='ident'>Json</span>::<span class='ident'>Null</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>f64</span>::<span class='ident'>NAN</span>),
@@ -6416,8 +6417,9 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>FromStr</span> <span class='kw'>for</span> <span class='ident'>Json</span> {
-    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Json</span><span class='op'>&gt;</span> {
-        <span class='ident'>Json</span>::<span class='ident'>from_str</span>(<span class='ident'>s</span>).<span class='ident'>ok</span>()
+    <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> <span class='ident'>ParserError</span>;
+    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Json</span>, <span class='ident'>ParserError</span><span class='op'>&gt;</span> {
+        <span class='ident'>Json</span>::<span class='ident'>from_str</span>(<span class='ident'>s</span>)
     }
 }
 
@@ -6441,7 +6443,7 @@
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>string</span>;
 
-    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcDecodable</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Show</span>)]</span>
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcDecodable</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
     <span class='kw'>struct</span> <span class='ident'>OptionData</span> {
         <span class='ident'>opt</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>,
     }
@@ -6468,20 +6470,20 @@
                                 <span class='ident'>ExpectedError</span>(<span class='string'>&quot;Number&quot;</span>.<span class='ident'>to_string</span>(), <span class='string'>&quot;false&quot;</span>.<span class='ident'>to_string</span>()));
     }
 
-    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Show</span>)]</span>
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Debug</span>)]</span>
     <span class='kw'>enum</span> <span class='ident'>Animal</span> {
         <span class='ident'>Dog</span>,
         <span class='ident'>Frog</span>(<span class='ident'>string</span>::<span class='ident'>String</span>, <span class='ident'>isize</span>)
     }
 
-    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Show</span>)]</span>
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Debug</span>)]</span>
     <span class='kw'>struct</span> <span class='ident'>Inner</span> {
         <span class='ident'>a</span>: (),
         <span class='ident'>b</span>: <span class='ident'>usize</span>,
         <span class='ident'>c</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>string</span>::<span class='ident'>String</span><span class='op'>&gt;</span>,
     }
 
-    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Show</span>)]</span>
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Debug</span>)]</span>
     <span class='kw'>struct</span> <span class='ident'>Outer</span> {
         <span class='ident'>inner</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Inner</span><span class='op'>&gt;</span>,
     }
@@ -7371,7 +7373,7 @@
     <span class='kw'>fn</span> <span class='ident'>test_hashmap_with_enum_key</span>() {
         <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
         <span class='kw'>use</span> <span class='ident'>json</span>;
-        <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>Eq</span>, <span class='ident'>Hash</span>, <span class='ident'>PartialEq</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Show</span>)]</span>
+        <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>Eq</span>, <span class='ident'>Hash</span>, <span class='ident'>PartialEq</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>Debug</span>)]</span>
         <span class='kw'>enum</span> <span class='ident'>Enum</span> {
             <span class='ident'>Foo</span>,
             <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
@@ -7750,7 +7752,7 @@
         <span class='kw'>struct</span> <span class='ident'>ArbitraryType</span>(<span class='ident'>u32</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>hm</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>ArbitraryType</span>, <span class='ident'>bool</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>HashMap</span>::<span class='ident'>new</span>();
         <span class='ident'>hm</span>.<span class='ident'>insert</span>(<span class='ident'>ArbitraryType</span>(<span class='number'>1</span>), <span class='boolval'>true</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mem_buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mem_buf</span> <span class='op'>=</span> <span class='ident'>string</span>::<span class='ident'>String</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>encoder</span> <span class='op'>=</span> <span class='ident'>Encoder</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>mem_buf</span> <span class='kw'>as</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Writer</span>);
         <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>hm</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>encoder</span>);
         <span class='kw'>match</span> <span class='ident'>result</span>.<span class='ident'>err</span>().<span class='ident'>unwrap</span>() {

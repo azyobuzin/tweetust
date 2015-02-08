@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.9/src/header/common/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/header/common/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -208,6 +208,8 @@
 <span id="166">166</span>
 <span id="167">167</span>
 <span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A Collection of Header implementations for common HTTP Headers.</span>
 <span class='doccomment'>//!</span>
@@ -232,6 +234,7 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>expires</span>::<span class='ident'>Expires</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>host</span>::<span class='ident'>Host</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>if_modified_since</span>::<span class='ident'>IfModifiedSince</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>if_unmodified_since</span>::<span class='ident'>IfUnmodifiedSince</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>last_modified</span>::<span class='ident'>LastModified</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>location</span>::<span class='ident'>Location</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>pragma</span>::<span class='ident'>Pragma</span>;
@@ -368,6 +371,7 @@
 <span class='kw'>mod</span> <span class='ident'>host</span>;
 <span class='kw'>mod</span> <span class='ident'>last_modified</span>;
 <span class='kw'>mod</span> <span class='ident'>if_modified_since</span>;
+<span class='kw'>mod</span> <span class='ident'>if_unmodified_since</span>;
 <span class='kw'>mod</span> <span class='ident'>location</span>;
 <span class='kw'>mod</span> <span class='ident'>pragma</span>;
 <span class='kw'>mod</span> <span class='ident'>referer</span>;

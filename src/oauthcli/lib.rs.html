@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/oauthcli-0.0.4/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/oauthcli-0.0.5/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -291,14 +291,16 @@
 <span id="249">249</span>
 <span id="250">250</span>
 <span id="251">251</span>
+<span id="252">252</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Yet Another OAuth 1.0 Client Library for Rust</span>
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>unused_must_use</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>, <span class='ident'>core</span>, <span class='ident'>rand</span>, <span class='ident'>std_misc</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>std_misc</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>unstable</span>]</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>crypto</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;rustc-serialize&quot;</span> <span class='kw'>as</span> <span class='ident'>serialize</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>time</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>url</span>;
@@ -308,9 +310,9 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Writer</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
 <span class='kw'>use</span> <span class='ident'>crypto</span>::{<span class='ident'>hmac</span>, <span class='ident'>sha1</span>};
 <span class='kw'>use</span> <span class='ident'>crypto</span>::<span class='ident'>mac</span>::<span class='ident'>Mac</span>;
+<span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
 <span class='kw'>use</span> <span class='ident'>serialize</span>::<span class='ident'>base64</span>::{<span class='self'>self</span>, <span class='ident'>ToBase64</span>};
 <span class='kw'>use</span> <span class='ident'>url</span>::{<span class='ident'>percent_encoding</span>, <span class='ident'>Url</span>};
 

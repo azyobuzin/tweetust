@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.9/src/header/common/host.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/header/common/host.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>host.rs.html -- source</title>
@@ -188,7 +188,7 @@
             };
 
             <span class='kw'>let</span> <span class='ident'>port</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>idx</span> {
-                <span class='prelude-val'>Some</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> <span class='ident'>s</span>[<span class='ident'>idx</span> <span class='op'>+</span> <span class='number'>1</span>..].<span class='ident'>parse</span>(),
+                <span class='prelude-val'>Some</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> <span class='ident'>s</span>[<span class='ident'>idx</span> <span class='op'>+</span> <span class='number'>1</span>..].<span class='ident'>parse</span>().<span class='ident'>ok</span>(),
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>
             };
 

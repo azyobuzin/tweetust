@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.9/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -293,10 +293,11 @@
 <span id="251">251</span>
 <span id="252">252</span>
 </pre><pre class='rust '>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>slicing_syntax</span>, <span class='ident'>box_syntax</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>, <span class='ident'>collections</span>, <span class='ident'>hash</span>, <span class='ident'>io</span>, <span class='ident'>os</span>, <span class='ident'>std_misc</span>,
+           <span class='ident'>slicing_syntax</span>, <span class='ident'>box_syntax</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>deny</span>(<span class='ident'>missing_docs</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>unstable</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>deny</span>(<span class='ident'>warnings</span>))]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>feature</span>(<span class='ident'>test</span>))]</span>
 
 <span class='doccomment'>//! # Hyper</span>
 <span class='doccomment'>//! Hyper is a fast, modern HTTP implementation written in and for Rust. It</span>
@@ -428,7 +429,6 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>test</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;unsafe-any&quot;</span> <span class='kw'>as</span> <span class='ident'>uany</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>cookie</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>mucell</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>unicase</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>net</span>::<span class='ident'>ip</span>::{<span class='ident'>SocketAddr</span>, <span class='ident'>IpAddr</span>, <span class='ident'>Ipv4Addr</span>, <span class='ident'>Ipv6Addr</span>, <span class='ident'>Port</span>};

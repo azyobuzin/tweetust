@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/azyobuzin/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.14/src/blockmodes.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.15/src/blockmodes.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>blockmodes.rs.html -- source</title>
@@ -2515,7 +2515,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>out_pos</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>let</span> <span class='ident'>eof</span> <span class='op'>=</span> <span class='ident'>Cell</span>::<span class='ident'>new</span>(<span class='boolval'>false</span>);
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>in_end</span> <span class='op'>=</span> <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>: <span class='ident'>in_pos</span>: <span class='ident'>usize</span>, <span class='ident'>primary</span>: <span class='ident'>bool</span><span class='op'>|</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>in_end</span> <span class='op'>=</span> <span class='op'>|</span><span class='ident'>in_pos</span>: <span class='ident'>usize</span>, <span class='ident'>primary</span>: <span class='ident'>bool</span><span class='op'>|</span> {
             <span class='kw'>if</span> <span class='ident'>eof</span>.<span class='ident'>get</span>() {
                 <span class='kw'>return</span> <span class='ident'>in_len</span>;
             }
@@ -2526,7 +2526,7 @@
             <span class='ident'>cmp</span>::<span class='ident'>min</span>(<span class='ident'>in_len</span>, <span class='ident'>in_pos</span> <span class='op'>+</span> <span class='ident'>cmp</span>::<span class='ident'>max</span>(<span class='ident'>x</span>, <span class='kw'>if</span> <span class='ident'>primary</span> { <span class='number'>1</span> } <span class='kw'>else</span> { <span class='number'>0</span> }))
         };
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>out_end</span> <span class='op'>=</span> <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>: <span class='ident'>out_pos</span>: <span class='ident'>usize</span><span class='op'>|</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>out_end</span> <span class='op'>=</span> <span class='op'>|</span><span class='ident'>out_pos</span>: <span class='ident'>usize</span><span class='op'>|</span> {
             <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>next_out_len</span>();
             <span class='ident'>cmp</span>::<span class='ident'>min</span>(<span class='ident'>out_len</span>, <span class='ident'>out_pos</span> <span class='op'>+</span> <span class='ident'>cmp</span>::<span class='ident'>max</span>(<span class='ident'>x</span>, <span class='number'>1</span>))
         };
@@ -2629,8 +2629,8 @@
                 <span class='ident'>D</span>: <span class='ident'>Decryptor</span>,
                 <span class='ident'>NewEncFunc</span>: <span class='ident'>FnMut</span>() <span class='op'>-&gt;</span> <span class='ident'>E</span>,
                 <span class='ident'>NewDecFunc</span>: <span class='ident'>FnMut</span>() <span class='op'>-&gt;</span> <span class='ident'>D</span>{
-        <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>;
-        <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>::<span class='ident'>Rng</span>;
+        <span class='kw'>use</span> <span class='ident'>rand</span>;
+        <span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
 
         <span class='kw'>let</span> <span class='ident'>tmp</span> : <span class='kw-2'>&amp;</span>[_] <span class='op'>=</span> <span class='kw-2'>&amp;</span>[<span class='number'>1</span>, <span class='number'>2</span>, <span class='number'>3</span>, <span class='number'>4</span>];
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng1</span>: <span class='ident'>rand</span>::<span class='ident'>StdRng</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>tmp</span>);
@@ -2638,10 +2638,10 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng3</span>: <span class='ident'>rand</span>::<span class='ident'>StdRng</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>tmp</span>);
         <span class='kw'>let</span> <span class='ident'>max_size</span> <span class='op'>=</span> <span class='ident'>cmp</span>::<span class='ident'>max</span>(<span class='ident'>test</span>.<span class='ident'>get_plain</span>().<span class='ident'>len</span>(), <span class='ident'>test</span>.<span class='ident'>get_cipher</span>().<span class='ident'>len</span>());
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r1</span> <span class='op'>=</span> <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>:<span class='op'>|</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r1</span> <span class='op'>=</span> <span class='op'>||</span> {
             <span class='ident'>rng1</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='ident'>max_size</span>)
         };
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r2</span> <span class='op'>=</span> <span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>:<span class='op'>|</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r2</span> <span class='op'>=</span> <span class='op'>||</span> {
             <span class='ident'>rng2</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='ident'>max_size</span>)
         };
 
