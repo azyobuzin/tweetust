@@ -2,3 +2,29 @@ language: rust
 
 notifications:
   email: false
+
+env:
+  global:
+    - secure: UFWq/+DBSnfopXVzfTSI9VFQAvalPH2akY8zNVY9Lz8ChM25OaHYj3GR7B3l4bSOWFUkY4N7KugLvEh+fJDOKKcSQWKAkpmd8duS9N55jvQiM/qNXUsGahqFqnsLhGAJW07EfP2P9usCnF0MbKw4tE5LGq91UdBdtfCpMkfLv9M=
+
+before_script:
+  - git clone -b gh-pages "https://$GH_TOKEN@github.com/azyobuzin/tweetust.git" target/doc
+  - pushd target/doc
+  - rm -rf !(.git)
+  - popd
+
+script:
+  - pushd macros
+  - cargo test
+  - popd
+  - cargo build
+  - cargo test
+  - cargo doc
+
+after_success:
+  - cd target/doc
+  - git add --all
+  - git config user.email gh-bot@azyobuzi.net
+  - git config user.name azyobuzin_bot
+  - git commit -m "$TRAVIS_COMMIT"
+  - '[ "$TRAVIS_BRANCH" == "master" ] && git push origin gh-pages'
