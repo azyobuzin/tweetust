@@ -27,18 +27,14 @@
 //! ```
 //! It's easy for people who have leaned about Twitter, isn't it?
 
-#![allow(unused_must_use)]
 #![warn(unused_import_braces, unused_typecasts)]
-#![feature(box_syntax, core, io, plugin)]
+#![feature(box_syntax, core, old_io, plugin)]
+#![plugin(tweetust_macros)]
 
 extern crate hyper;
 extern crate oauthcli;
 extern crate "rustc-serialize" as rustc_serialize;
 extern crate url;
-
-#[plugin]
-#[no_link]
-extern crate tweetust_macros;
 
 use std::error::{Error, FromError};
 use std::fmt;

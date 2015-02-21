@@ -35,7 +35,7 @@
 extern crate rustc;
 extern crate syntax;
 
-use std::fmt::Writer;
+use std::fmt::Write;
 use rustc::plugin::Registry;
 use syntax::ast::{self, TokenTree};
 use syntax::ext::base::{self, ExtCtxt, IdentMacroExpanderFn, MacItems, MacResult};
@@ -113,7 +113,7 @@ fn expand_client(cx: &mut ExtCtxt, _: Span, args: &[TokenTree]) -> Box<MacResult
             let http_method = p.parse_expr().to_source();
 
             p.expect(&token::Comma);
-            let url = p.parse_str().0.get().to_source();
+            let url = (*p.parse_str().0).to_source();
 
             p.expect(&token::Comma);
             p.expect(&token::OpenDelim(token::Bracket));
@@ -174,7 +174,7 @@ pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
             if p.ty.to_source() == "String" {
                 write!(&mut client_impl, "{}: &str, ", p.pat.to_source());
             } else {
-                let ty = &ty[];
+                let ty = &ty[..];
                 if ty.starts_with("Vec<") {
                     write!(&mut client_impl, "{}: &[{}]",
                         p.pat.to_source(), ty.slice(4, ty.len() - 1));
@@ -188,7 +188,7 @@ pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
         for ref p in def.required_params.iter() {
             write!(&mut client_impl, "{0}: {0}", p.pat.to_source());
             client_impl.push_str(
-                match &p.ty.to_source()[] {
+                match &p.ty.to_source()[..] {
                     "String" =>  ".to_string(),\n",
                     x if x.starts_with("Vec<") => ".to_vec(),\n",
                     _ => ",\n"
@@ -225,7 +225,7 @@ pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
         );
         for ref p in def.optional_params.iter() {
             let ty = p.ty.to_source();
-            let ty = &ty[];
+            let ty = &ty[..];
             let is_str = ty == "String";
             let is_vec = ty.starts_with("Vec<");
             let vec_t = if is_vec {
@@ -236,7 +236,7 @@ pub struct {}<T: ::conn::Authenticator>(pub ::std::rc::Rc<T>);",
             writeln!(&mut request_impl, "pub fn {0}(mut self, val: {1}) -> Self {{
 self.{0} = Some(val{2});\nself\n}}",
                 p.pat.to_source(),
-                if is_str { "&str" } else if is_vec { &vec_t[] } else { ty },
+                if is_str { "&str" } else if is_vec { &vec_t[..] } else { ty },
                 if is_str { ".to_string()" } else if is_vec { ".to_vec()" } else { "" }
             );
         }
@@ -292,7 +292,7 @@ match ::conn::parse_json(res.raw_response.as_slice()) {{
 }
 
 fn expand_paramenum(cx: &mut ExtCtxt, _: Span, ident: ast::Ident, args: Vec<TokenTree>) -> Box<MacResult + 'static> {
-    let mut p = cx.new_parser_from_tts(&args[]);
+    let mut p = cx.new_parser_from_tts(&args[..]);
     let items = p.parse_seq_to_end(
         &token::Eof,
         SeqSep {
@@ -323,7 +323,7 @@ fn expand_paramenum(cx: &mut ExtCtxt, _: Span, ident: ast::Ident, args: Vec<Toke
     MacItems::new(vec![cx.parse_item(e), cx.parse_item(i)].into_iter())
 }
 
-fn expand_id_eq(cx: &mut ExtCtxt, _: Span, _: &ast::MetaItem, item: &ast::Item, mut push: Box<FnMut(P<ast::Item>)>) {
+fn expand_id_eq(cx: &mut ExtCtxt, _: Span, _: &ast::MetaItem, item: &ast::Item, push: &mut FnMut(P<ast::Item>)) {
     let name = item.ident;
     push(cx.parse_item(format!("impl ::std::cmp::Eq for {} {{}}", name)));
     push(cx.parse_item(format!(

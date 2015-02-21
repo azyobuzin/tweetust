@@ -27,4 +27,4 @@ after_success:
   - git config user.email gh-bot@azyobuzi.net
   - git config user.name azyobuzin_bot
   - git commit -m "$TRAVIS_COMMIT"
-  - '[ "$TRAVIS_BRANCH" == "master" ] && git push origin gh-pages'
+  - '[ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && git push origin gh-pages'

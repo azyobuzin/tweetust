@@ -1,7 +1,7 @@
 //! The low-level functions for connecting to Twitter with any authorization.
 //! Usually, you will not use this module.
 
-use std::fmt::{self, Writer};
+use std::fmt::{self, Write};
 use std::rc::Rc;
 use std::string::ToString;
 use hyper;
@@ -72,9 +72,9 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
             None => Vec::new()
         };
         url.query = Some(create_query(
-            query.iter().map(|x| (&x.0[], &x.1[])).chain(
+            query.iter().map(|x| (&x.0[..], &x.1[..])).chain(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(key, ref val) => (key, &val[]),
+                    &Parameter::Value(key, ref val) => (key, &val[..]),
                     _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
@@ -91,11 +91,11 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
         } else {
             body = create_query(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(key, ref val) => (key, &val[]),
+                    &Parameter::Value(key, ref val) => (key, &val[..]),
                     _ => unreachable!()
                 })
             );
-            req = req.body(&body[])
+            req = req.body(&body[..])
                 .header(header::ContentType(mime::Mime(
                     mime::TopLevel::Application,
                     mime::SubLevel::WwwFormUrlEncoded,
@@ -119,13 +119,13 @@ fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
             // Parse headers
             let limit = res.headers.get_raw("X-Rate-Limit-Limit")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(&x[]).as_slice().parse().ok());
+                .and_then(|x| String::from_utf8_lossy(&x[..]).as_slice().parse().ok());
             let remaining = res.headers.get_raw("X-Rate-Limit-Remaining")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(&x[]).as_slice().parse().ok());
+                .and_then(|x| String::from_utf8_lossy(&x[..]).as_slice().parse().ok());
             let reset = res.headers.get_raw("X-Rate-Limit-Reset")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(&x[]).as_slice().parse().ok());
+                .and_then(|x| String::from_utf8_lossy(&x[..]).as_slice().parse().ok());
             let rate_limit = limit.and(remaining).and(reset)
                 .map(|_| RateLimitStatus {
                     limit: limit.unwrap(),
@@ -141,7 +141,7 @@ fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
                     }),
                     _ => {
                         // Error response
-                        let dec: json::DecodeResult<InternalErrorResponse> = json::decode(&body[]);
+                        let dec: json::DecodeResult<InternalErrorResponse> = json::decode(&body[..]);
                         let errors = dec.ok().and_then(|x| x.errors.or(x.error));
                         Err(TwitterError::ErrorResponse(ErrorResponse {
                             status: res.status,
@@ -181,7 +181,7 @@ impl <T: fmt::Display> ToParameter for Vec<T> {
             if val.len() > 0 {
                 val.push(',');
             }
-            write!(&mut val, "{}", elm);
+            write!(&mut val, "{}", elm).ok();
         }
 
         Parameter::Value(key, val)
@@ -191,5 +191,5 @@ impl <T: fmt::Display> ToParameter for Vec<T> {
 /// Parse the JSON string to T with rustc-serialize.
 /// As a stopgap measure, this function renames `type` to `type_`.
 pub fn parse_json<T: Decodable>(s: &str) -> json::DecodeResult<T> {
-    json::decode(&s.replace("\"type\":", "\"type_\":")[])
+    json::decode(&s.replace("\"type\":", "\"type_\":")[..])
 }
