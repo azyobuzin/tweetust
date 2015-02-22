@@ -42,21 +42,18 @@
 
     <section id='main' class="content macro">
 <h1 class='fqn'><span class='in-band'><a href='index.html'>log</a>::<wbr><a class='macro' href=''>error!</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-1899' href='../src/log/macros.rs.html#34-40'>[src]</a></span></h1>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-1917' href='../src/log/macros.rs.html#42-46'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>error</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> (
-        <span class='kw'>if</span> <span class='op'>!</span><span class='macro'>cfg</span><span class='macro'>!</span>(<span class='ident'>any</span>(<span class='ident'>log_level</span> <span class='op'>=</span> <span class='string'>&quot;off&quot;</span>)) {
-            <span class='macro'>log</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>LogLevel</span>::<span class='ident'>Error</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>)<span class='op'>*</span>);
-        }
+        <span class='macro'>log</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>LogLevel</span>::<span class='ident'>Error</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>)<span class='op'>*</span>);
     )
 }
 </pre>
 <div class='docblock'><p>Logs a message at the error level.</p>
 
-<p>Logging through this macro is disabled if the <code>log_level = &quot;off&quot;</code> cfg is
+<p>Logging at this level is disabled if the <code>log_level = &quot;off&quot;</code> cfg is
 present.</p>
 </div></section>
     <section id='search' class="content hidden"></section>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/server/response.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/server/response.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>response.rs.html -- source</title>
@@ -192,12 +192,19 @@
 <span id="150">150</span>
 <span id="151">151</span>
 <span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Server Responses</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! These are responses sent by a `hyper::Server` to clients, after</span>
 <span class='doccomment'>//! receiving a request.</span>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>IoResult</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span>;
 
 <span class='kw'>use</span> <span class='ident'>time</span>::<span class='ident'>now_utc</span>;
 
@@ -217,7 +224,9 @@
     <span class='comment'>// The status code for the request.</span>
     <span class='ident'>status</span>: <span class='ident'>status</span>::<span class='ident'>StatusCode</span>,
     <span class='comment'>// The outgoing headers on this response.</span>
-    <span class='ident'>headers</span>: <span class='ident'>header</span>::<span class='ident'>Headers</span>
+    <span class='ident'>headers</span>: <span class='ident'>header</span>::<span class='ident'>Headers</span>,
+
+    <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>W</span><span class='op'>&gt;</span>
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>W</span><span class='op'>&gt;</span> <span class='ident'>Response</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>W</span><span class='op'>&gt;</span> {
@@ -237,7 +246,8 @@
             <span class='ident'>status</span>: <span class='ident'>status</span>,
             <span class='ident'>version</span>: <span class='ident'>version</span>,
             <span class='ident'>body</span>: <span class='ident'>body</span>,
-            <span class='ident'>headers</span>: <span class='ident'>headers</span>
+            <span class='ident'>headers</span>: <span class='ident'>headers</span>,
+            <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span>,
         }
     }
 
@@ -255,7 +265,8 @@
             <span class='ident'>status</span>: <span class='ident'>status</span>::<span class='ident'>StatusCode</span>::<span class='prelude-val'>Ok</span>,
             <span class='ident'>version</span>: <span class='ident'>version</span>::<span class='ident'>HttpVersion</span>::<span class='ident'>Http11</span>,
             <span class='ident'>headers</span>: <span class='ident'>header</span>::<span class='ident'>Headers</span>::<span class='ident'>new</span>(),
-            <span class='ident'>body</span>: <span class='ident'>ThroughWriter</span>(<span class='ident'>stream</span>)
+            <span class='ident'>body</span>: <span class='ident'>ThroughWriter</span>(<span class='ident'>stream</span>),
+            <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span>,
         }
     }
 
@@ -314,7 +325,8 @@
             <span class='ident'>version</span>: <span class='self'>self</span>.<span class='ident'>version</span>,
             <span class='ident'>body</span>: <span class='ident'>stream</span>,
             <span class='ident'>status</span>: <span class='self'>self</span>.<span class='ident'>status</span>,
-            <span class='ident'>headers</span>: <span class='self'>self</span>.<span class='ident'>headers</span>
+            <span class='ident'>headers</span>: <span class='self'>self</span>.<span class='ident'>headers</span>,
+            <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span>,
         })
     }
 

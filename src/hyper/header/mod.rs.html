@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/header/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/header/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -794,19 +794,6 @@
 <span id="752">752</span>
 <span id="753">753</span>
 <span id="754">754</span>
-<span id="755">755</span>
-<span id="756">756</span>
-<span id="757">757</span>
-<span id="758">758</span>
-<span id="759">759</span>
-<span id="760">760</span>
-<span id="761">761</span>
-<span id="762">762</span>
-<span id="763">763</span>
-<span id="764">764</span>
-<span id="765">765</span>
-<span id="766">766</span>
-<span id="767">767</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Headers container, and common header fields.</span>
 <span class='doccomment'>//!</span>
@@ -819,11 +806,10 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>raw</span>::<span class='ident'>TraitObject</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>from_utf8</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>string</span>::<span class='ident'>CowString</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>hash_map</span>::{<span class='ident'>Iter</span>, <span class='ident'>Entry</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>FromIterator</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>IntoCow</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::{<span class='ident'>FromIterator</span>, <span class='ident'>IntoIterator</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::{<span class='ident'>Cow</span>, <span class='ident'>IntoCow</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>mem</span>, <span class='ident'>raw</span>};
 
 <span class='kw'>use</span> <span class='ident'>uany</span>::{<span class='ident'>UnsafeAnyExt</span>};
@@ -840,7 +826,7 @@
 <span class='kw'>mod</span> <span class='ident'>shared</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>parsing</span>;
 
-<span class='kw'>type</span> <span class='ident'>HeaderName</span> <span class='op'>=</span> <span class='ident'>UniCase</span><span class='op'>&lt;</span><span class='ident'>CowString</span><span class='op'>&lt;</span><span class='lifetime'>&#39;static</span><span class='op'>&gt;&gt;</span>;
+<span class='kw'>type</span> <span class='ident'>HeaderName</span> <span class='op'>=</span> <span class='ident'>UniCase</span><span class='op'>&lt;</span><span class='ident'>Cow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;static</span>, <span class='ident'>str</span><span class='op'>&gt;&gt;</span>;
 
 <span class='doccomment'>/// A trait for any object that will represent a header field and value.</span>
 <span class='doccomment'>///</span>
@@ -858,7 +844,7 @@
     <span class='doccomment'>/// it&#39;s not necessarily the case that a Header is *allowed* to have more</span>
     <span class='doccomment'>/// than one field value. If that&#39;s the case, you **should** return `None`</span>
     <span class='doccomment'>/// if `raw.len() &gt; 1`.</span>
-    <span class='kw'>fn</span> <span class='ident'>parse_header</span>(<span class='ident'>raw</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Self</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>parse_header</span>(<span class='ident'>raw</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
 
 }
 
@@ -949,7 +935,7 @@
         <span class='kw'>loop</span> {
             <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>http</span>::<span class='ident'>read_header</span>(<span class='ident'>rdr</span>)) {
                 <span class='prelude-val'>Some</span>((<span class='ident'>name</span>, <span class='ident'>value</span>)) <span class='op'>=&gt;</span> {
-                    <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;raw header: {:?}={:?}&quot;</span>, <span class='ident'>name</span>, <span class='kw-2'>&amp;</span><span class='ident'>value</span>[]);
+                    <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;raw header: {:?}={:?}&quot;</span>, <span class='ident'>name</span>, <span class='kw-2'>&amp;</span><span class='ident'>value</span>[..]);
                     <span class='ident'>count</span> <span class='op'>+=</span> (<span class='ident'>name</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='ident'>value</span>.<span class='ident'>len</span>()) <span class='kw'>as</span> <span class='ident'>u32</span>;
                     <span class='kw'>if</span> <span class='ident'>count</span> <span class='op'>&gt;</span> <span class='ident'>MAX_HEADERS_LENGTH</span> {
                         <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;Max header size reached, aborting&quot;</span>);
@@ -993,14 +979,14 @@
             .<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='ident'>UniCase</span>(<span class='ident'>Borrowed</span>(<span class='kw'>unsafe</span> { <span class='ident'>mem</span>::<span class='ident'>transmute</span>::<span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>(<span class='ident'>name</span>) })))
             .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>item</span><span class='op'>|</span> {
                 <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>raw</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>item</span>.<span class='ident'>raw</span> {
-                    <span class='kw'>return</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[]);
+                    <span class='kw'>return</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[..]);
                 }
 
                 <span class='kw'>let</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>item</span>.<span class='ident'>typed</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>().<span class='ident'>to_string</span>().<span class='ident'>into_bytes</span>()];
                 <span class='ident'>item</span>.<span class='ident'>raw</span>.<span class='ident'>set</span>(<span class='ident'>raw</span>);
 
                 <span class='kw'>let</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='ident'>item</span>.<span class='ident'>raw</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap</span>();
-                <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[])
+                <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[..])
             })
     }
 
@@ -1013,7 +999,7 @@
     <span class='doccomment'>/// # let mut headers = Headers::new();</span>
     <span class='doccomment'>/// headers.set_raw(&quot;content-length&quot;, vec![b&quot;5&quot;.to_vec()]);</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_raw</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>IntoCow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;static</span>, <span class='ident'>String</span>, <span class='ident'>str</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='ident'>K</span>, <span class='ident'>value</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_raw</span><span class='op'>&lt;</span><span class='ident'>K</span>: <span class='ident'>IntoCow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;static</span>, <span class='ident'>str</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='ident'>K</span>, <span class='ident'>value</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span>) {
         <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>insert</span>(<span class='ident'>UniCase</span>(<span class='ident'>name</span>.<span class='ident'>into_cow</span>()), <span class='ident'>Item</span>::<span class='ident'>new_raw</span>(<span class='ident'>value</span>));
     }
 
@@ -1161,7 +1147,7 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Extend</span><span class='op'>&lt;</span><span class='ident'>HeaderView</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Headers</span> {
-    <span class='kw'>fn</span> <span class='ident'>extend</span><span class='op'>&lt;</span><span class='ident'>I</span>: <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>HeaderView</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>iter</span>: <span class='ident'>I</span>) {
+    <span class='kw'>fn</span> <span class='ident'>extend</span><span class='op'>&lt;</span><span class='ident'>I</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>HeaderView</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>iter</span>: <span class='ident'>I</span>) {
         <span class='kw'>for</span> <span class='ident'>header</span> <span class='kw'>in</span> <span class='ident'>iter</span> {
             <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>insert</span>((<span class='op'>*</span><span class='ident'>header</span>.<span class='number'>0</span>).<span class='ident'>clone</span>(), (<span class='op'>*</span><span class='ident'>header</span>.<span class='number'>1</span>).<span class='ident'>clone</span>());
         }
@@ -1169,7 +1155,7 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>FromIterator</span><span class='op'>&lt;</span><span class='ident'>HeaderView</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Headers</span> {
-    <span class='kw'>fn</span> <span class='ident'>from_iter</span><span class='op'>&lt;</span><span class='ident'>I</span>: <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>HeaderView</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>(<span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>Headers</span> {
+    <span class='kw'>fn</span> <span class='ident'>from_iter</span><span class='op'>&lt;</span><span class='ident'>I</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>HeaderView</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>(<span class='ident'>iter</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>Headers</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>headers</span> <span class='op'>=</span> <span class='ident'>Headers</span>::<span class='ident'>new</span>();
         <span class='ident'>headers</span>.<span class='ident'>extend</span>(<span class='ident'>iter</span>);
         <span class='ident'>headers</span>
@@ -1261,7 +1247,7 @@
 
 <span class='kw'>fn</span> <span class='ident'>parse</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Header</span> <span class='op'>+</span> <span class='ident'>HeaderFormat</span><span class='op'>&gt;</span>(<span class='ident'>item</span>: <span class='kw-2'>&amp;</span><span class='ident'>Item</span>) {
     <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>item</span>.<span class='ident'>raw</span> {
-        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>raw</span>) <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>Header</span>::<span class='ident'>parse_header</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[]) {
+        <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>raw</span>) <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>Header</span>::<span class='ident'>parse_header</span>(<span class='kw-2'>&amp;</span><span class='ident'>raw</span>[..]) {
             <span class='prelude-val'>Some</span>::<span class='op'>&lt;</span><span class='ident'>H</span><span class='op'>&gt;</span>(<span class='ident'>h</span>) <span class='op'>=&gt;</span> <span class='ident'>item</span>.<span class='ident'>typed</span>.<span class='ident'>set</span>(<span class='kw'>box</span> <span class='ident'>h</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>HeaderFormat</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span><span class='op'>&gt;</span>),
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> ()
         },
@@ -1286,7 +1272,7 @@
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>raw</span> {
                 <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>raw</span>) <span class='op'>=&gt;</span> {
                     <span class='kw'>for</span> <span class='ident'>part</span> <span class='kw'>in</span> <span class='ident'>raw</span>.<span class='ident'>iter</span>() {
-                        <span class='kw'>match</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>part</span>[]) {
+                        <span class='kw'>match</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>part</span>[..]) {
                             <span class='prelude-val'>Ok</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>fmt</span>.<span class='ident'>write_str</span>(<span class='ident'>s</span>)),
                             <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
                                 <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;raw header value is not utf8. header={:?}, error={:?}&quot;</span>, <span class='ident'>part</span>, <span class='ident'>e</span>);
@@ -1342,12 +1328,9 @@
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>MemReader</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>Cow</span>::<span class='ident'>Borrowed</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::{<span class='ident'>SipHasher</span>, <span class='ident'>hash</span>};
     <span class='kw'>use</span> <span class='ident'>mime</span>::<span class='ident'>Mime</span>;
     <span class='kw'>use</span> <span class='ident'>mime</span>::<span class='ident'>TopLevel</span>::<span class='ident'>Text</span>;
     <span class='kw'>use</span> <span class='ident'>mime</span>::<span class='ident'>SubLevel</span>::<span class='ident'>Plain</span>;
-    <span class='kw'>use</span> <span class='ident'>unicase</span>::<span class='ident'>UniCase</span>;
     <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>Headers</span>, <span class='ident'>Header</span>, <span class='ident'>HeaderFormat</span>, <span class='ident'>ContentLength</span>, <span class='ident'>ContentType</span>,
                 <span class='ident'>Accept</span>, <span class='ident'>Host</span>, <span class='ident'>QualityItem</span>};
 
@@ -1355,15 +1338,6 @@
 
     <span class='kw'>fn</span> <span class='ident'>mem</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>MemReader</span> {
         <span class='ident'>MemReader</span>::<span class='ident'>new</span>(<span class='ident'>s</span>.<span class='ident'>as_bytes</span>().<span class='ident'>to_vec</span>())
-    }
-
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>test_case_insensitive</span>() {
-        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>UniCase</span>(<span class='ident'>Borrowed</span>(<span class='string'>&quot;foobar&quot;</span>));
-        <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>UniCase</span>(<span class='ident'>Borrowed</span>(<span class='string'>&quot;FOOBAR&quot;</span>));
-
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>a</span>, <span class='ident'>b</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>hash</span>::<span class='op'>&lt;</span>_, <span class='ident'>SipHasher</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='ident'>a</span>), <span class='ident'>hash</span>::<span class='op'>&lt;</span>_, <span class='ident'>SipHasher</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='ident'>b</span>));
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1405,7 +1379,7 @@
                 <span class='kw'>return</span> <span class='prelude-val'>None</span>;
             }
             <span class='comment'>// we JUST checked that raw.len() == 1, so raw[0] WILL exist.</span>
-            <span class='kw'>match</span> <span class='ident'>from_utf8</span>(<span class='kw'>unsafe</span> { <span class='kw-2'>&amp;</span><span class='ident'>raw</span>[].<span class='ident'>get_unchecked</span>(<span class='number'>0</span>)[] }) {
+            <span class='kw'>match</span> <span class='ident'>from_utf8</span>(<span class='kw'>unsafe</span> { <span class='kw-2'>&amp;</span><span class='ident'>raw</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>)[..] }) {
                 <span class='prelude-val'>Ok</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='ident'>FromStr</span>::<span class='ident'>from_str</span>(<span class='ident'>s</span>).<span class='ident'>ok</span>(),
                 <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>
             }.<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>u</span><span class='op'>|</span> <span class='ident'>CrazyLength</span>(<span class='prelude-val'>Some</span>(<span class='boolval'>false</span>), <span class='ident'>u</span>))
@@ -1481,7 +1455,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>headers</span> <span class='op'>=</span> <span class='ident'>Headers</span>::<span class='ident'>new</span>();
         <span class='ident'>headers</span>.<span class='ident'>set</span>(<span class='ident'>ContentLength</span>(<span class='number'>10</span>));
         <span class='ident'>headers</span>.<span class='ident'>set_raw</span>(<span class='string'>&quot;content-LENGTH&quot;</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;20&quot;</span>.<span class='ident'>to_vec</span>()]);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>headers</span>.<span class='ident'>get_raw</span>(<span class='string'>&quot;Content-length&quot;</span>).<span class='ident'>unwrap</span>(), <span class='kw-2'>&amp;</span>[<span class='string'>b&quot;20&quot;</span>.<span class='ident'>to_vec</span>()][]);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>headers</span>.<span class='ident'>get_raw</span>(<span class='string'>&quot;Content-length&quot;</span>).<span class='ident'>unwrap</span>(), <span class='kw-2'>&amp;</span>[<span class='string'>b&quot;20&quot;</span>.<span class='ident'>to_vec</span>()][..]);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>headers</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>ContentLength</span>(<span class='number'>20</span>)));
     }
 

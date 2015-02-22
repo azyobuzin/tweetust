@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/header/common/accept_encoding.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/header/common/accept_encoding.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>accept_encoding.rs.html -- source</title>
@@ -62,8 +62,15 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>header</span>::{<span class='self'>self</span>, <span class='ident'>Encoding</span>, <span class='ident'>QualityItem</span>};
+<span class='kw'>use</span> <span class='ident'>header</span>::{<span class='ident'>Encoding</span>, <span class='ident'>QualityItem</span>};
 
 <span class='doccomment'>/// The `Accept-Encoding` header</span>
 <span class='doccomment'>///</span>
@@ -76,14 +83,21 @@
                   <span class='string'>&quot;Accept-Encoding&quot;</span>,
                   <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QualityItem</span><span class='op'>&lt;</span><span class='ident'>Encoding</span><span class='op'>&gt;&gt;</span>);
 
-<span class='attribute'>#[<span class='ident'>test</span>]</span>
-<span class='kw'>fn</span> <span class='ident'>test_parse_header</span>() {
-    <span class='kw'>let</span> <span class='ident'>a</span>: <span class='ident'>AcceptEncoding</span> <span class='op'>=</span> <span class='ident'>header</span>::<span class='ident'>Header</span>::<span class='ident'>parse_header</span>([<span class='string'>b&quot;gzip;q=1.0, identity; q=0.5&quot;</span>.<span class='ident'>to_vec</span>()].<span class='ident'>as_slice</span>()).<span class='ident'>unwrap</span>();
-    <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>AcceptEncoding</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
-        <span class='ident'>QualityItem</span>{<span class='ident'>item</span>: <span class='ident'>Encoding</span>::<span class='ident'>Gzip</span>, <span class='ident'>quality</span>: <span class='number'>1f32</span>},
-        <span class='ident'>QualityItem</span>{<span class='ident'>item</span>: <span class='ident'>Encoding</span>::<span class='ident'>Identity</span>, <span class='ident'>quality</span>: <span class='number'>0.5f32</span>},
-    ]);
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>a</span>, <span class='ident'>b</span>);
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='kw'>mod</span> <span class='ident'>tests</span> {
+    <span class='kw'>use</span> <span class='ident'>header</span>::{<span class='ident'>Encoding</span>, <span class='ident'>Header</span>, <span class='ident'>QualityItem</span>};
+
+    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>test_parse_header</span>() {
+        <span class='kw'>let</span> <span class='ident'>a</span>: <span class='ident'>AcceptEncoding</span> <span class='op'>=</span> <span class='ident'>Header</span>::<span class='ident'>parse_header</span>([<span class='string'>b&quot;gzip;q=1.0, identity; q=0.5&quot;</span>.<span class='ident'>to_vec</span>()].<span class='ident'>as_slice</span>()).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>AcceptEncoding</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
+            <span class='ident'>QualityItem</span>{<span class='ident'>item</span>: <span class='ident'>Encoding</span>::<span class='ident'>Gzip</span>, <span class='ident'>quality</span>: <span class='number'>1f32</span>},
+            <span class='ident'>QualityItem</span>{<span class='ident'>item</span>: <span class='ident'>Encoding</span>::<span class='ident'>Identity</span>, <span class='ident'>quality</span>: <span class='number'>0.5f32</span>},
+        ]);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>a</span>, <span class='ident'>b</span>);
+    }
 }
 </pre>
 </section>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.15/src/aes.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/aes.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>aes.rs.html -- source</title>
@@ -825,6 +825,7 @@
 <span id="783">783</span>
 <span id="784">784</span>
 <span id="785">785</span>
+<span id="786">786</span>
 </pre><pre class='rust '>
 <span class='comment'>// Licensed under the Apache License, Version 2.0 &lt;LICENSE-APACHE or</span>
 <span class='comment'>// http://www.apache.org/licenses/LICENSE-2.0&gt; or the MIT license</span>
@@ -851,7 +852,7 @@
 
 <span class='doccomment'>/// Get the best implementation of an EcbEncryptor</span>
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86&quot;</span>, <span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86_64&quot;</span>))]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ecb_encryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>(
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ecb_encryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(
         <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>,
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span> {
@@ -887,17 +888,17 @@
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>key_size</span> {
-        <span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Encryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>EcbEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_enc</span>, <span class='ident'>padding</span>);
             <span class='ident'>enc</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Encryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>EcbEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_enc</span>, <span class='ident'>padding</span>);
             <span class='ident'>enc</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Encryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>EcbEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_enc</span>, <span class='ident'>padding</span>);
             <span class='ident'>enc</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span>
@@ -907,7 +908,7 @@
 
 <span class='doccomment'>/// Get the best implementation of an EcbDecryptor</span>
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86&quot;</span>, <span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86_64&quot;</span>))]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ecb_decryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>(
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ecb_decryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(
         <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>,
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span> {
@@ -943,17 +944,17 @@
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>key_size</span> {
-        <span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Decryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>EcbDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>padding</span>);
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Decryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>EcbDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>padding</span>);
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Decryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>EcbDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>padding</span>);
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span>
@@ -963,7 +964,7 @@
 
 <span class='doccomment'>/// Get the best implementation of a CbcEncryptor</span>
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86&quot;</span>, <span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86_64&quot;</span>))]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cbc_encryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>(
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cbc_encryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(
         <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>,
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>iv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
@@ -999,19 +1000,19 @@
         <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>,
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>iv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
-        <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span> {
+        <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>key_size</span> {
-        <span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Encryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CbcEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_enc</span>, <span class='ident'>padding</span>, <span class='ident'>iv</span>.<span class='ident'>to_vec</span>());
             <span class='ident'>enc</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Encryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CbcEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_enc</span>, <span class='ident'>padding</span>, <span class='ident'>iv</span>.<span class='ident'>to_vec</span>());
             <span class='ident'>enc</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Encryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CbcEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_enc</span>, <span class='ident'>padding</span>, <span class='ident'>iv</span>.<span class='ident'>to_vec</span>());
             <span class='ident'>enc</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Encryptor</span><span class='op'>&gt;</span>
@@ -1021,7 +1022,7 @@
 
 <span class='doccomment'>/// Get the best implementation of a CbcDecryptor</span>
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86&quot;</span>, <span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86_64&quot;</span>))]</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cbc_decryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span>(
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cbc_decryptor</span><span class='op'>&lt;</span><span class='ident'>X</span>: <span class='ident'>PaddingProcessor</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(
         <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>,
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>iv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
@@ -1057,19 +1058,19 @@
         <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>,
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
         <span class='ident'>iv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
-        <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span> {
+        <span class='ident'>padding</span>: <span class='ident'>X</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>key_size</span> {
-        <span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Decryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CbcDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>padding</span>, <span class='ident'>iv</span>.<span class='ident'>to_vec</span>());
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Decryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CbcDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>padding</span>, <span class='ident'>iv</span>.<span class='ident'>to_vec</span>());
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Decryptor</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CbcDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>padding</span>, <span class='ident'>iv</span>.<span class='ident'>to_vec</span>());
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Decryptor</span><span class='op'>&gt;</span>
@@ -1113,19 +1114,19 @@
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ctr</span>(
         <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>,
         <span class='ident'>key</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>],
-        <span class='ident'>iv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>SynchronousStreamCipher</span><span class='op'>&gt;</span> {
+        <span class='ident'>iv</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>SynchronousStreamCipher</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>key_size</span> {
-        <span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize128</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128EncryptorX8</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CtrModeX8</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>iv</span>);
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>SynchronousStreamCipher</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize192</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192EncryptorX8</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CtrModeX8</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>iv</span>);
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>SynchronousStreamCipher</span><span class='op'>&gt;</span>
         }
-        <span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
+        <span class='ident'>KeySize</span>::<span class='ident'>KeySize256</span> <span class='op'>=&gt;</span> {
             <span class='kw'>let</span> <span class='ident'>aes_dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256EncryptorX8</span>::<span class='ident'>new</span>(<span class='ident'>key</span>);
             <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>CtrModeX8</span>::<span class='ident'>new</span>(<span class='ident'>aes_dec</span>, <span class='ident'>iv</span>);
             <span class='ident'>dec</span> <span class='kw'>as</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>SynchronousStreamCipher</span><span class='op'>&gt;</span>
@@ -1293,10 +1294,10 @@
     <span class='kw'>fn</span> <span class='ident'>run_test</span><span class='op'>&lt;</span><span class='ident'>E</span>: <span class='ident'>BlockEncryptor</span>, <span class='ident'>D</span>: <span class='ident'>BlockDecryptor</span><span class='op'>&gt;</span>(<span class='ident'>enc</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>E</span>, <span class='ident'>dec</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>D</span>, <span class='ident'>test</span>: <span class='kw-2'>&amp;</span><span class='ident'>Test</span>) {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>16</span>];
         <span class='kw'>for</span> <span class='ident'>data</span> <span class='kw'>in</span> <span class='ident'>test</span>.<span class='ident'>data</span>.<span class='ident'>iter</span>() {
-            <span class='ident'>enc</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>plain</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>data</span>.<span class='ident'>cipher</span>[]);
-            <span class='ident'>dec</span>.<span class='ident'>decrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>cipher</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>data</span>.<span class='ident'>plain</span>[]);
+            <span class='ident'>enc</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>plain</span>[..], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>data</span>.<span class='ident'>cipher</span>[..]);
+            <span class='ident'>dec</span>.<span class='ident'>decrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>cipher</span>[..], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>data</span>.<span class='ident'>plain</span>[..]);
         }
     }
 
@@ -1306,8 +1307,8 @@
         <span class='kw'>if</span> <span class='ident'>util</span>::<span class='ident'>supports_aesni</span>() {
             <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>tests128</span>();
             <span class='kw'>for</span> <span class='ident'>t</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize128</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize128</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize128</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize128</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
                 <span class='ident'>run_test</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>enc</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dec</span>, <span class='ident'>t</span>);
             }
         }
@@ -1319,8 +1320,8 @@
         <span class='kw'>if</span> <span class='ident'>util</span>::<span class='ident'>supports_aesni</span>() {
             <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>tests192</span>();
             <span class='kw'>for</span> <span class='ident'>t</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize192</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize192</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize192</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize192</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
                 <span class='ident'>run_test</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>enc</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dec</span>, <span class='ident'>t</span>);
             }
         }
@@ -1332,8 +1333,8 @@
         <span class='kw'>if</span> <span class='ident'>util</span>::<span class='ident'>supports_aesni</span>() {
             <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>tests256</span>();
             <span class='kw'>for</span> <span class='ident'>t</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize256</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize256</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiEncryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize256</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aesni</span>::<span class='ident'>AesNiDecryptor</span>::<span class='ident'>new</span>(<span class='ident'>KeySize256</span>, <span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
                 <span class='ident'>run_test</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>enc</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dec</span>, <span class='ident'>t</span>);
             }
         }
@@ -1343,8 +1344,8 @@
     <span class='kw'>fn</span> <span class='ident'>test_aessafe_128</span>() {
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>tests128</span>();
         <span class='kw'>for</span> <span class='ident'>t</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Encryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Decryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Encryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128Decryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
             <span class='ident'>run_test</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>enc</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dec</span>, <span class='ident'>t</span>);
         }
     }
@@ -1353,8 +1354,8 @@
     <span class='kw'>fn</span> <span class='ident'>test_aessafe_192</span>() {
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>tests192</span>();
         <span class='kw'>for</span> <span class='ident'>t</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Encryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Decryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Encryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192Decryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
             <span class='ident'>run_test</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>enc</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dec</span>, <span class='ident'>t</span>);
         }
     }
@@ -1363,8 +1364,8 @@
     <span class='kw'>fn</span> <span class='ident'>test_aessafe_256</span>() {
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>tests256</span>();
         <span class='kw'>for</span> <span class='ident'>t</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Encryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Decryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[]);
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Encryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256Decryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>t</span>.<span class='ident'>key</span>[..]);
             <span class='ident'>run_test</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>enc</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dec</span>, <span class='ident'>t</span>);
         }
     }
@@ -1415,9 +1416,9 @@
         <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe128DecryptorX8</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>128</span>];
         <span class='ident'>enc</span>.<span class='ident'>encrypt_block_x8</span>(<span class='kw-2'>&amp;</span><span class='ident'>plain</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>cipher</span>[]);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>cipher</span>[..]);
         <span class='ident'>dec</span>.<span class='ident'>decrypt_block_x8</span>(<span class='kw-2'>&amp;</span><span class='ident'>cipher</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>plain</span>[]);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>plain</span>[..]);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1464,9 +1465,9 @@
         <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe192DecryptorX8</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>128</span>];
         <span class='ident'>enc</span>.<span class='ident'>encrypt_block_x8</span>(<span class='kw-2'>&amp;</span><span class='ident'>plain</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>cipher</span>[]);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>cipher</span>[..]);
         <span class='ident'>dec</span>.<span class='ident'>decrypt_block_x8</span>(<span class='kw-2'>&amp;</span><span class='ident'>cipher</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>plain</span>[]);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>plain</span>[..]);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -1515,18 +1516,18 @@
         <span class='kw'>let</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>aessafe</span>::<span class='ident'>AesSafe256DecryptorX8</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>128</span>];
         <span class='ident'>enc</span>.<span class='ident'>encrypt_block_x8</span>(<span class='kw-2'>&amp;</span><span class='ident'>plain</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>cipher</span>[]);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>cipher</span>[..]);
         <span class='ident'>dec</span>.<span class='ident'>decrypt_block_x8</span>(<span class='kw-2'>&amp;</span><span class='ident'>cipher</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[] <span class='op'>==</span> <span class='ident'>plain</span>[]);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>tmp</span>[..] <span class='op'>==</span> <span class='ident'>plain</span>[..]);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>aes_ctr_box</span>() {
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>aes_ctr_tests</span>();
         <span class='kw'>for</span> <span class='ident'>test</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aes</span>::<span class='ident'>ctr</span>(<span class='ident'>aes</span>::<span class='ident'>KeySize</span>::<span class='ident'>KeySize128</span>, <span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>key</span>[], <span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>ctr</span>[]);
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>aes_enc</span> <span class='op'>=</span> <span class='ident'>aes</span>::<span class='ident'>ctr</span>(<span class='ident'>aes</span>::<span class='ident'>KeySize</span>::<span class='ident'>KeySize128</span>, <span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>key</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>ctr</span>[..]);
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>test</span>.<span class='ident'>plain</span>.<span class='ident'>len</span>()).<span class='ident'>collect</span>();
-            <span class='ident'>aes_enc</span>.<span class='ident'>process</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>plain</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>result</span>[]);
+            <span class='ident'>aes_enc</span>.<span class='ident'>process</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>plain</span>[..], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>result</span>[..]);
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>as_slice</span>() <span class='op'>==</span> <span class='ident'>test</span>.<span class='ident'>cipher</span>);
         }
     }
@@ -1562,6 +1563,7 @@
         <span class='ident'>aesni_bench</span>(<span class='ident'>bh</span>, <span class='ident'>KeySize256</span>);
     }
 
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86&quot;</span>, <span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86_64&quot;</span>))]</span>
     <span class='kw'>fn</span> <span class='ident'>aesni_bench</span>(<span class='ident'>bh</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Bencher</span>, <span class='ident'>key_size</span>: <span class='ident'>KeySize</span>) {
         <span class='kw'>if</span> <span class='ident'>util</span>::<span class='ident'>supports_aesni</span>() {
             <span class='kw'>let</span> <span class='ident'>key</span>: [<span class='ident'>u8</span>; <span class='number'>16</span>] <span class='op'>=</span> [<span class='number'>1u8</span>; <span class='number'>16</span>];

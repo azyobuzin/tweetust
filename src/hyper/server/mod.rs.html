@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/server/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/server/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -206,33 +206,12 @@
 <span id="164">164</span>
 <span id="165">165</span>
 <span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! HTTP Server</span>
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::{<span class='ident'>Listener</span>, <span class='ident'>EndOfFile</span>, <span class='ident'>BufferedReader</span>, <span class='ident'>BufferedWriter</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::{<span class='ident'>Listener</span>, <span class='ident'>BufferedReader</span>, <span class='ident'>BufferedWriter</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>net</span>::<span class='ident'>ip</span>::{<span class='ident'>IpAddr</span>, <span class='ident'>Port</span>, <span class='ident'>SocketAddr</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Arc</span>, <span class='ident'>TaskPool</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>::{<span class='ident'>Builder</span>, <span class='ident'>JoinGuard</span>};
-
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>::{<span class='self'>self</span>, <span class='ident'>JoinGuard</span>};
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>request</span>::<span class='ident'>Request</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>response</span>::<span class='ident'>Response</span>;
@@ -247,8 +226,12 @@
           <span class='ident'>HttpAcceptor</span>, <span class='ident'>HttpListener</span>};
 <span class='kw'>use</span> <span class='ident'>version</span>::<span class='ident'>HttpVersion</span>::{<span class='ident'>Http10</span>, <span class='ident'>Http11</span>};
 
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>acceptor</span>::<span class='ident'>AcceptorPool</span>;
+
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>request</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>response</span>;
+
+<span class='kw'>mod</span> <span class='ident'>acceptor</span>;
 
 <span class='doccomment'>/// A server can listen on a TCP socket.</span>
 <span class='doccomment'>///</span>
@@ -282,7 +265,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span>
 <span class='ident'>L</span>: <span class='ident'>NetworkListener</span><span class='op'>&lt;</span><span class='ident'>Acceptor</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Send</span>,
-<span class='ident'>A</span>: <span class='ident'>NetworkAcceptor</span><span class='op'>&lt;</span><span class='ident'>Stream</span><span class='op'>=</span><span class='ident'>S</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+<span class='ident'>A</span>: <span class='ident'>NetworkAcceptor</span><span class='op'>&lt;</span><span class='ident'>Stream</span><span class='op'>=</span><span class='ident'>S</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>,
 <span class='ident'>S</span>: <span class='ident'>NetworkStream</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span> <span class='ident'>Server</span><span class='op'>&lt;</span><span class='ident'>L</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Creates a new server that will handle `HttpStream`s.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_listener</span>(<span class='ident'>ip</span>: <span class='ident'>IpAddr</span>, <span class='ident'>port</span>: <span class='ident'>Port</span>, <span class='ident'>listener</span>: <span class='ident'>L</span>) <span class='op'>-&gt;</span> <span class='ident'>Server</span><span class='op'>&lt;</span><span class='ident'>L</span><span class='op'>&gt;</span> {
@@ -294,102 +277,81 @@
     }
 
     <span class='doccomment'>/// Binds to a socket, and starts handling connections using a task pool.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>listen_threads</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Handler</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>, <span class='ident'>threads</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>HttpResult</span><span class='op'>&lt;</span><span class='ident'>Listening</span><span class='op'>&lt;</span><span class='ident'>L</span>::<span class='ident'>Acceptor</span><span class='op'>&gt;&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>listen_threads</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Handler</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>, <span class='ident'>threads</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>HttpResult</span><span class='op'>&lt;</span><span class='ident'>Listening</span><span class='op'>&lt;</span><span class='ident'>L</span>::<span class='ident'>Acceptor</span><span class='op'>&gt;&gt;</span> {
         <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;binding to {:?}:{:?}&quot;</span>, <span class='self'>self</span>.<span class='ident'>ip</span>, <span class='self'>self</span>.<span class='ident'>port</span>);
         <span class='kw'>let</span> <span class='ident'>acceptor</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>listener</span>.<span class='ident'>listen</span>((<span class='self'>self</span>.<span class='ident'>ip</span>, <span class='self'>self</span>.<span class='ident'>port</span>)));
         <span class='kw'>let</span> <span class='ident'>socket</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>acceptor</span>.<span class='ident'>socket_name</span>());
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>captured</span> <span class='op'>=</span> <span class='ident'>acceptor</span>.<span class='ident'>clone</span>();
-        <span class='kw'>let</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>Builder</span>::<span class='ident'>new</span>().<span class='ident'>name</span>(<span class='string'>&quot;hyper acceptor&quot;</span>.<span class='ident'>to_string</span>()).<span class='ident'>scoped</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-            <span class='kw'>let</span> <span class='ident'>handler</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>handler</span>);
-            <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;threads = {:?}&quot;</span>, <span class='ident'>threads</span>);
-            <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>TaskPool</span>::<span class='ident'>new</span>(<span class='ident'>threads</span>);
-            <span class='kw'>for</span> <span class='ident'>conn</span> <span class='kw'>in</span> <span class='ident'>captured</span>.<span class='ident'>incoming</span>() {
-                <span class='kw'>match</span> <span class='ident'>conn</span> {
-                    <span class='prelude-val'>Ok</span>(<span class='kw-2'>mut</span> <span class='ident'>stream</span>) <span class='op'>=&gt;</span> {
-                        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;Incoming stream&quot;</span>);
-                        <span class='kw'>let</span> <span class='ident'>handler</span> <span class='op'>=</span> <span class='ident'>handler</span>.<span class='ident'>clone</span>();
-                        <span class='ident'>pool</span>.<span class='ident'>execute</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-                            <span class='kw'>let</span> <span class='ident'>addr</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>stream</span>.<span class='ident'>peer_name</span>() {
-                                <span class='prelude-val'>Ok</span>(<span class='ident'>addr</span>) <span class='op'>=&gt;</span> <span class='ident'>addr</span>,
-                                <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
-                                    <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Peer Name error: {:?}&quot;</span>, <span class='ident'>e</span>);
-                                    <span class='kw'>return</span>;
-                                }
-                            };
-                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rdr</span> <span class='op'>=</span> <span class='ident'>BufferedReader</span>::<span class='ident'>new</span>(<span class='ident'>stream</span>.<span class='ident'>clone</span>());
-                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>wrt</span> <span class='op'>=</span> <span class='ident'>BufferedWriter</span>::<span class='ident'>new</span>(<span class='ident'>stream</span>);
+        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;threads = {:?}&quot;</span>, <span class='ident'>threads</span>);
+        <span class='kw'>let</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>AcceptorPool</span>::<span class='ident'>new</span>(<span class='ident'>acceptor</span>.<span class='ident'>clone</span>());
+        <span class='kw'>let</span> <span class='ident'>work</span> <span class='op'>=</span> <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>stream</span><span class='op'>|</span> <span class='ident'>handle_connection</span>(<span class='ident'>stream</span>, <span class='kw-2'>&amp;</span><span class='ident'>handler</span>);
 
-                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keep_alive</span> <span class='op'>=</span> <span class='boolval'>true</span>;
-                            <span class='kw'>while</span> <span class='ident'>keep_alive</span> {
-                                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>Response</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>wrt</span>);
-                                <span class='kw'>let</span> <span class='ident'>req</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>Request</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rdr</span>, <span class='ident'>addr</span>) {
-                                    <span class='prelude-val'>Ok</span>(<span class='ident'>req</span>) <span class='op'>=&gt;</span> <span class='ident'>req</span>,
-                                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span><span class='kw-2'>@</span><span class='ident'>HttpIoError</span>(_)) <span class='op'>=&gt;</span> {
-                                        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;ioerror in keepalive loop = {:?}&quot;</span>, <span class='ident'>e</span>);
-                                        <span class='kw'>return</span>;
-                                    }
-                                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
-                                        <span class='comment'>//TODO: send a 400 response</span>
-                                        <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;request error = {:?}&quot;</span>, <span class='ident'>e</span>);
-                                        <span class='kw'>return</span>;
-                                    }
-                                };
-
-                                <span class='ident'>keep_alive</span> <span class='op'>=</span> <span class='kw'>match</span> (<span class='ident'>req</span>.<span class='ident'>version</span>, <span class='ident'>req</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>::<span class='op'>&lt;</span><span class='ident'>Connection</span><span class='op'>&gt;</span>()) {
-                                    (<span class='ident'>Http10</span>, <span class='prelude-val'>Some</span>(<span class='ident'>conn</span>)) <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>conn</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>KeepAlive</span>) <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
-                                    (<span class='ident'>Http11</span>, <span class='prelude-val'>Some</span>(<span class='ident'>conn</span>)) <span class='kw'>if</span> <span class='ident'>conn</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>Close</span>)  <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
-                                    _ <span class='op'>=&gt;</span> <span class='boolval'>true</span>
-                                };
-                                <span class='ident'>res</span>.<span class='ident'>version</span> <span class='op'>=</span> <span class='ident'>req</span>.<span class='ident'>version</span>;
-                                <span class='ident'>handler</span>.<span class='ident'>handle</span>(<span class='ident'>req</span>, <span class='ident'>res</span>);
-                                <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;keep_alive = {:?}&quot;</span>, <span class='ident'>keep_alive</span>);
-                            }
-
-                        });
-                    },
-                    <span class='prelude-val'>Err</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>) <span class='kw'>if</span> <span class='ident'>e</span>.<span class='ident'>kind</span> <span class='op'>==</span> <span class='ident'>EndOfFile</span> <span class='op'>=&gt;</span> {
-                        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;server closed&quot;</span>);
-                        <span class='kw'>break</span>;
-                    },
-                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
-                        <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Connection failed: {}&quot;</span>, <span class='ident'>e</span>);
-                        <span class='kw'>continue</span>;
-                    }
-                }
-            }
-        });
+        <span class='kw'>let</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>thread</span>::<span class='ident'>scoped</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>pool</span>.<span class='ident'>accept</span>(<span class='ident'>work</span>, <span class='ident'>threads</span>));
 
         <span class='prelude-val'>Ok</span>(<span class='ident'>Listening</span> {
-            <span class='ident'>acceptor</span>: <span class='ident'>acceptor</span>,
-            <span class='ident'>guard</span>: <span class='prelude-val'>Some</span>(<span class='ident'>guard</span>),
+            <span class='ident'>_guard</span>: <span class='ident'>guard</span>,
             <span class='ident'>socket</span>: <span class='ident'>socket</span>,
+            <span class='ident'>acceptor</span>: <span class='ident'>acceptor</span>
         })
     }
 
     <span class='doccomment'>/// Binds to a socket and starts handling connections.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>listen</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Handler</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>) <span class='op'>-&gt;</span> <span class='ident'>HttpResult</span><span class='op'>&lt;</span><span class='ident'>Listening</span><span class='op'>&lt;</span><span class='ident'>L</span>::<span class='ident'>Acceptor</span><span class='op'>&gt;&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>listen</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Handler</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>handler</span>: <span class='ident'>H</span>) <span class='op'>-&gt;</span> <span class='ident'>HttpResult</span><span class='op'>&lt;</span><span class='ident'>Listening</span><span class='op'>&lt;</span><span class='ident'>L</span>::<span class='ident'>Acceptor</span><span class='op'>&gt;&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>listen_threads</span>(<span class='ident'>handler</span>, <span class='ident'>os</span>::<span class='ident'>num_cpus</span>() <span class='op'>*</span> <span class='number'>5</span> <span class='op'>/</span> <span class='number'>4</span>)
     }
 
 }
 
+<span class='kw'>fn</span> <span class='ident'>handle_connection</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>H</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='ident'>stream</span>: <span class='ident'>S</span>, <span class='ident'>handler</span>: <span class='kw-2'>&amp;</span><span class='ident'>H</span>)
+<span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>NetworkStream</span> <span class='op'>+</span> <span class='ident'>Clone</span>, <span class='ident'>H</span>: <span class='ident'>Handler</span> {
+    <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;Incoming stream&quot;</span>);
+    <span class='kw'>let</span> <span class='ident'>addr</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>stream</span>.<span class='ident'>peer_name</span>() {
+        <span class='prelude-val'>Ok</span>(<span class='ident'>addr</span>) <span class='op'>=&gt;</span> <span class='ident'>addr</span>,
+        <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
+            <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;Peer Name error: {:?}&quot;</span>, <span class='ident'>e</span>);
+            <span class='kw'>return</span>;
+        }
+    };
+
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rdr</span> <span class='op'>=</span> <span class='ident'>BufferedReader</span>::<span class='ident'>new</span>(<span class='ident'>stream</span>.<span class='ident'>clone</span>());
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>wrt</span> <span class='op'>=</span> <span class='ident'>BufferedWriter</span>::<span class='ident'>new</span>(<span class='ident'>stream</span>);
+
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keep_alive</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+    <span class='kw'>while</span> <span class='ident'>keep_alive</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>Response</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>wrt</span>);
+        <span class='kw'>let</span> <span class='ident'>req</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>Request</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rdr</span>, <span class='ident'>addr</span>) {
+            <span class='prelude-val'>Ok</span>(<span class='ident'>req</span>) <span class='op'>=&gt;</span> <span class='ident'>req</span>,
+            <span class='prelude-val'>Err</span>(<span class='ident'>e</span><span class='kw-2'>@</span><span class='ident'>HttpIoError</span>(_)) <span class='op'>=&gt;</span> {
+                <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;ioerror in keepalive loop = {:?}&quot;</span>, <span class='ident'>e</span>);
+                <span class='kw'>return</span>;
+            }
+            <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
+                <span class='comment'>//TODO: send a 400 response</span>
+                <span class='macro'>error</span><span class='macro'>!</span>(<span class='string'>&quot;request error = {:?}&quot;</span>, <span class='ident'>e</span>);
+                <span class='kw'>return</span>;
+            }
+        };
+
+        <span class='ident'>keep_alive</span> <span class='op'>=</span> <span class='kw'>match</span> (<span class='ident'>req</span>.<span class='ident'>version</span>, <span class='ident'>req</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>::<span class='op'>&lt;</span><span class='ident'>Connection</span><span class='op'>&gt;</span>()) {
+            (<span class='ident'>Http10</span>, <span class='prelude-val'>Some</span>(<span class='ident'>conn</span>)) <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>conn</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>KeepAlive</span>) <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            (<span class='ident'>Http11</span>, <span class='prelude-val'>Some</span>(<span class='ident'>conn</span>)) <span class='kw'>if</span> <span class='ident'>conn</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>Close</span>)  <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            _ <span class='op'>=&gt;</span> <span class='boolval'>true</span>
+        };
+        <span class='ident'>res</span>.<span class='ident'>version</span> <span class='op'>=</span> <span class='ident'>req</span>.<span class='ident'>version</span>;
+        <span class='ident'>handler</span>.<span class='ident'>handle</span>(<span class='ident'>req</span>, <span class='ident'>res</span>);
+        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;keep_alive = {:?}&quot;</span>, <span class='ident'>keep_alive</span>);
+    }
+}
+
 <span class='doccomment'>/// A listening server, which can later be closed.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Listening</span><span class='op'>&lt;</span><span class='ident'>A</span> <span class='op'>=</span> <span class='ident'>HttpAcceptor</span><span class='op'>&gt;</span> {
     <span class='ident'>acceptor</span>: <span class='ident'>A</span>,
-    <span class='ident'>guard</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>JoinGuard</span><span class='op'>&lt;</span><span class='lifetime'>&#39;static</span>, ()<span class='op'>&gt;&gt;</span>,
+    <span class='ident'>_guard</span>: <span class='ident'>JoinGuard</span><span class='op'>&lt;</span><span class='lifetime'>&#39;static</span>, ()<span class='op'>&gt;</span>,
     <span class='doccomment'>/// The socket addresses that the server is bound to.</span>
     <span class='kw'>pub</span> <span class='ident'>socket</span>: <span class='ident'>SocketAddr</span>,
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>A</span>: <span class='ident'>NetworkAcceptor</span><span class='op'>&gt;</span> <span class='ident'>Listening</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Causes the current thread to wait for this listening to complete.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>await</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>guard</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>guard</span>.<span class='ident'>take</span>() {
-            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>guard</span>.<span class='ident'>join</span>();
-        }
-    }
-
     <span class='doccomment'>/// Stop the server from listening to its socket address.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>close</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>HttpResult</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;closing server&quot;</span>);

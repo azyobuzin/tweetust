@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.15/src/blowfish.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/blowfish.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>blowfish.rs.html -- source</title>
@@ -1138,9 +1138,9 @@
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>eay_test_vectors</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>output</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>8</span>];
         <span class='kw'>for</span> <span class='ident'>test</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>let</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>Blowfish</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>key</span>[]);
-            <span class='ident'>state</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>plaintext</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>[]);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>test</span>.<span class='ident'>ciphertext</span>[] <span class='op'>==</span> <span class='ident'>output</span>[]);
+            <span class='kw'>let</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>Blowfish</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>key</span>[..]);
+            <span class='ident'>state</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>plaintext</span>[..], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>[..]);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>test</span>.<span class='ident'>ciphertext</span>[..] <span class='op'>==</span> <span class='ident'>output</span>[..]);
         }
     }
     
@@ -1149,9 +1149,9 @@
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>eay_test_vectors</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>output</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>8</span>];
         <span class='kw'>for</span> <span class='ident'>test</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>let</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>Blowfish</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>key</span>[]);
-            <span class='ident'>state</span>.<span class='ident'>decrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>ciphertext</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>[]);
-            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>test</span>.<span class='ident'>plaintext</span>[] <span class='op'>==</span> <span class='ident'>output</span>[]);
+            <span class='kw'>let</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>Blowfish</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>key</span>[..]);
+            <span class='ident'>state</span>.<span class='ident'>decrypt_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>test</span>.<span class='ident'>ciphertext</span>[..], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>[..]);
+            <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>test</span>.<span class='ident'>plaintext</span>[..] <span class='op'>==</span> <span class='ident'>output</span>[..]);
         }
     }
 }

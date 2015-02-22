@@ -141,10 +141,6 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Tweetust is the simple wrapper for Twitter API.</span>
 <span class='doccomment'>//!</span>
@@ -175,18 +171,14 @@
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//! It&#39;s easy for people who have leaned about Twitter, isn&#39;t it?</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>unused_must_use</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>warn</span>(<span class='ident'>unused_import_braces</span>, <span class='ident'>unused_typecasts</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>, <span class='ident'>core</span>, <span class='ident'>io</span>, <span class='ident'>plugin</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>, <span class='ident'>core</span>, <span class='ident'>old_io</span>, <span class='ident'>plugin</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>plugin</span>(<span class='ident'>tweetust_macros</span>)]</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hyper</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>oauthcli</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;rustc-serialize&quot;</span> <span class='kw'>as</span> <span class='ident'>rustc_serialize</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>url</span>;
-
-<span class='attribute'>#[<span class='ident'>plugin</span>]</span>
-<span class='attribute'>#[<span class='ident'>no_link</span>]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>tweetust_macros</span>;
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>::{<span class='ident'>Error</span>, <span class='ident'>FromError</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;

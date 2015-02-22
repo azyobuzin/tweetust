@@ -42,23 +42,19 @@
 
     <section id='main' class="content macro">
 <h1 class='fqn'><span class='in-band'><a href='index.html'>log</a>::<wbr><a class='macro' href=''>warn!</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-1900' href='../src/log/macros.rs.html#47-54'>[src]</a></span></h1>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-1918' href='../src/log/macros.rs.html#53-57'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>warn</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> (
-        <span class='kw'>if</span> <span class='op'>!</span><span class='macro'>cfg</span><span class='macro'>!</span>(<span class='ident'>any</span>(<span class='ident'>log_level</span> <span class='op'>=</span> <span class='string'>&quot;off&quot;</span>,
-                     <span class='ident'>log_level</span> <span class='op'>=</span> <span class='string'>&quot;error&quot;</span>)) {
-            <span class='macro'>log</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>LogLevel</span>::<span class='ident'>Warn</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>)<span class='op'>*</span>);
-        }
+        <span class='macro'>log</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>LogLevel</span>::<span class='ident'>Warn</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>)<span class='op'>*</span>);
     )
 }
 </pre>
 <div class='docblock'><p>Logs a message at the warn level.</p>
 
-<p>Logging through this macro is disabled if any of the following cfgs are
-present: <code>log_level = &quot;off&quot;</code> or <code>log_level = &quot;error&quot;</code>.</p>
+<p>Logging at this level is disabled if any of the following cfgs are present:
+<code>log_level = &quot;off&quot;</code> or <code>log_level = &quot;error&quot;</code>.</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 

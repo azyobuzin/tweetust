@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/header/common/host.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/header/common/host.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>host.rs.html -- source</title>
@@ -170,7 +170,7 @@
             <span class='comment'>// FIXME: use rust-url to parse this</span>
             <span class='comment'>// https://github.com/servo/rust-url/issues/42</span>
             <span class='kw'>let</span> <span class='ident'>idx</span> <span class='op'>=</span> {
-                <span class='kw'>let</span> <span class='ident'>slice</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>s</span>[];
+                <span class='kw'>let</span> <span class='ident'>slice</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>s</span>[..];
                 <span class='kw'>if</span> <span class='ident'>slice</span>.<span class='ident'>char_at</span>(<span class='number'>1</span>) <span class='op'>==</span> <span class='string'>&#39;[&#39;</span> {
                     <span class='kw'>match</span> <span class='ident'>slice</span>.<span class='ident'>rfind</span>(<span class='string'>&#39;]&#39;</span>) {
                         <span class='prelude-val'>Some</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {

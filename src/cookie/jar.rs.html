@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/cookie-0.1.11/src/jar.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/cookie-0.1.12/src/jar.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>jar.rs.html -- source</title>
@@ -581,7 +581,7 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! A cookie jar can also be borrowed to a child cookie jar with new</span>
 <span class='doccomment'>//! functionality such as automatically signing cookies, storing permanent</span>
-<span class='doccomment'>//! cookies, etc. This functionality can also be chaned together.</span>
+<span class='doccomment'>//! cookies, etc. This functionality can also be chained together.</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::{<span class='ident'>HashMap</span>, <span class='ident'>HashSet</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::<span class='ident'>RefCell</span>;
@@ -603,7 +603,7 @@
 <span class='doccomment'>/// c.add(Cookie::new(&quot;key&quot;.to_string(), &quot;value&quot;.to_string()));</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// // Remove the added cookie</span>
-<span class='doccomment'>/// c.remove(&quot;test&quot;);</span>
+<span class='doccomment'>/// c.remove(&quot;key&quot;);</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// // Add a signed cookie to the jar</span>
 <span class='doccomment'>/// c.signed().add(Cookie::new(&quot;key&quot;.to_string(), &quot;value&quot;.to_string()));</span>

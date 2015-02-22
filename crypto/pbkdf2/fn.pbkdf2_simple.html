@@ -42,9 +42,8 @@
 
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>pbkdf2</a>::<wbr><a class='fn' href=''>pbkdf2_simple</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-74230' href='../../src/crypto/pbkdf2.rs.html#131-155'>[src]</a></span></h1>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-75088' href='../../src/crypto/pbkdf2.rs.html#131-155'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn pbkdf2_simple(password: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, c: <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/std/old_io/type.IoResult.html' title='std::old_io::IoResult'>IoResult</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</pre><div class='docblock'><p>pbkdf2_simple is a helper function that should be sufficient for the majority of cases where
 an application needs to use PBKDF2 to hash a password for storage. The result is a String that
 contains the parameters used as part of its encoding. The pbkdf2_check function may be used on

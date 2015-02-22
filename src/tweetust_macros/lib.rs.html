@@ -413,7 +413,7 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustc</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>syntax</span>;
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Writer</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Write</span>;
 <span class='kw'>use</span> <span class='ident'>rustc</span>::<span class='ident'>plugin</span>::<span class='ident'>Registry</span>;
 <span class='kw'>use</span> <span class='ident'>syntax</span>::<span class='ident'>ast</span>::{<span class='self'>self</span>, <span class='ident'>TokenTree</span>};
 <span class='kw'>use</span> <span class='ident'>syntax</span>::<span class='ident'>ext</span>::<span class='ident'>base</span>::{<span class='self'>self</span>, <span class='ident'>ExtCtxt</span>, <span class='ident'>IdentMacroExpanderFn</span>, <span class='ident'>MacItems</span>, <span class='ident'>MacResult</span>};
@@ -491,7 +491,7 @@
             <span class='kw'>let</span> <span class='ident'>http_method</span> <span class='op'>=</span> <span class='ident'>p</span>.<span class='ident'>parse_expr</span>().<span class='ident'>to_source</span>();
 
             <span class='ident'>p</span>.<span class='ident'>expect</span>(<span class='kw-2'>&amp;</span><span class='ident'>token</span>::<span class='ident'>Comma</span>);
-            <span class='kw'>let</span> <span class='ident'>url</span> <span class='op'>=</span> <span class='ident'>p</span>.<span class='ident'>parse_str</span>().<span class='number'>0</span>.<span class='ident'>get</span>().<span class='ident'>to_source</span>();
+            <span class='kw'>let</span> <span class='ident'>url</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>p</span>.<span class='ident'>parse_str</span>().<span class='number'>0</span>).<span class='ident'>to_source</span>();
 
             <span class='ident'>p</span>.<span class='ident'>expect</span>(<span class='kw-2'>&amp;</span><span class='ident'>token</span>::<span class='ident'>Comma</span>);
             <span class='ident'>p</span>.<span class='ident'>expect</span>(<span class='kw-2'>&amp;</span><span class='ident'>token</span>::<span class='ident'>OpenDelim</span>(<span class='ident'>token</span>::<span class='ident'>Bracket</span>));
@@ -552,7 +552,7 @@ pub struct {}&lt;T: ::conn::Authenticator&gt;(pub ::std::rc::Rc&lt;T&gt;);&quot;
             <span class='kw'>if</span> <span class='ident'>p</span>.<span class='ident'>ty</span>.<span class='ident'>to_source</span>() <span class='op'>==</span> <span class='string'>&quot;String&quot;</span> {
                 <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>client_impl</span>, <span class='string'>&quot;{}: &amp;str, &quot;</span>, <span class='ident'>p</span>.<span class='ident'>pat</span>.<span class='ident'>to_source</span>());
             } <span class='kw'>else</span> {
-                <span class='kw'>let</span> <span class='ident'>ty</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>ty</span>[];
+                <span class='kw'>let</span> <span class='ident'>ty</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>ty</span>[..];
                 <span class='kw'>if</span> <span class='ident'>ty</span>.<span class='ident'>starts_with</span>(<span class='string'>&quot;Vec&lt;&quot;</span>) {
                     <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>client_impl</span>, <span class='string'>&quot;{}: &amp;[{}]&quot;</span>,
                         <span class='ident'>p</span>.<span class='ident'>pat</span>.<span class='ident'>to_source</span>(), <span class='ident'>ty</span>.<span class='ident'>slice</span>(<span class='number'>4</span>, <span class='ident'>ty</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>));
@@ -566,7 +566,7 @@ pub struct {}&lt;T: ::conn::Authenticator&gt;(pub ::std::rc::Rc&lt;T&gt;);&quot;
         <span class='kw'>for</span> <span class='kw-2'>ref</span> <span class='ident'>p</span> <span class='kw'>in</span> <span class='ident'>def</span>.<span class='ident'>required_params</span>.<span class='ident'>iter</span>() {
             <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>client_impl</span>, <span class='string'>&quot;{0}: {0}&quot;</span>, <span class='ident'>p</span>.<span class='ident'>pat</span>.<span class='ident'>to_source</span>());
             <span class='ident'>client_impl</span>.<span class='ident'>push_str</span>(
-                <span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='ident'>p</span>.<span class='ident'>ty</span>.<span class='ident'>to_source</span>()[] {
+                <span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='ident'>p</span>.<span class='ident'>ty</span>.<span class='ident'>to_source</span>()[..] {
                     <span class='string'>&quot;String&quot;</span> <span class='op'>=&gt;</span>  <span class='string'>&quot;.to_string(),\n&quot;</span>,
                     <span class='ident'>x</span> <span class='kw'>if</span> <span class='ident'>x</span>.<span class='ident'>starts_with</span>(<span class='string'>&quot;Vec&lt;&quot;</span>) <span class='op'>=&gt;</span> <span class='string'>&quot;.to_vec(),\n&quot;</span>,
                     _ <span class='op'>=&gt;</span> <span class='string'>&quot;,\n&quot;</span>
@@ -603,7 +603,7 @@ pub struct {}&lt;T: ::conn::Authenticator&gt;(pub ::std::rc::Rc&lt;T&gt;);&quot;
         );
         <span class='kw'>for</span> <span class='kw-2'>ref</span> <span class='ident'>p</span> <span class='kw'>in</span> <span class='ident'>def</span>.<span class='ident'>optional_params</span>.<span class='ident'>iter</span>() {
             <span class='kw'>let</span> <span class='ident'>ty</span> <span class='op'>=</span> <span class='ident'>p</span>.<span class='ident'>ty</span>.<span class='ident'>to_source</span>();
-            <span class='kw'>let</span> <span class='ident'>ty</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>ty</span>[];
+            <span class='kw'>let</span> <span class='ident'>ty</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>ty</span>[..];
             <span class='kw'>let</span> <span class='ident'>is_str</span> <span class='op'>=</span> <span class='ident'>ty</span> <span class='op'>==</span> <span class='string'>&quot;String&quot;</span>;
             <span class='kw'>let</span> <span class='ident'>is_vec</span> <span class='op'>=</span> <span class='ident'>ty</span>.<span class='ident'>starts_with</span>(<span class='string'>&quot;Vec&lt;&quot;</span>);
             <span class='kw'>let</span> <span class='ident'>vec_t</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>is_vec</span> {
@@ -614,7 +614,7 @@ pub struct {}&lt;T: ::conn::Authenticator&gt;(pub ::std::rc::Rc&lt;T&gt;);&quot;
             <span class='macro'>writeln</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>request_impl</span>, <span class='string'>&quot;pub fn {0}(mut self, val: {1}) -&gt; Self {{
 self.{0} = Some(val{2});\nself\n}}&quot;</span>,
                 <span class='ident'>p</span>.<span class='ident'>pat</span>.<span class='ident'>to_source</span>(),
-                <span class='kw'>if</span> <span class='ident'>is_str</span> { <span class='string'>&quot;&amp;str&quot;</span> } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>is_vec</span> { <span class='kw-2'>&amp;</span><span class='ident'>vec_t</span>[] } <span class='kw'>else</span> { <span class='ident'>ty</span> },
+                <span class='kw'>if</span> <span class='ident'>is_str</span> { <span class='string'>&quot;&amp;str&quot;</span> } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>is_vec</span> { <span class='kw-2'>&amp;</span><span class='ident'>vec_t</span>[..] } <span class='kw'>else</span> { <span class='ident'>ty</span> },
                 <span class='kw'>if</span> <span class='ident'>is_str</span> { <span class='string'>&quot;.to_string()&quot;</span> } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>is_vec</span> { <span class='string'>&quot;.to_vec()&quot;</span> } <span class='kw'>else</span> { <span class='string'>&quot;&quot;</span> }
             );
         }
@@ -670,7 +670,7 @@ match ::conn::parse_json(res.raw_response.as_slice()) {{
 }
 
 <span class='kw'>fn</span> <span class='ident'>expand_paramenum</span>(<span class='ident'>cx</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>ExtCtxt</span>, _: <span class='ident'>Span</span>, <span class='ident'>ident</span>: <span class='ident'>ast</span>::<span class='ident'>Ident</span>, <span class='ident'>args</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>TokenTree</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>MacResult</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>p</span> <span class='op'>=</span> <span class='ident'>cx</span>.<span class='ident'>new_parser_from_tts</span>(<span class='kw-2'>&amp;</span><span class='ident'>args</span>[]);
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>p</span> <span class='op'>=</span> <span class='ident'>cx</span>.<span class='ident'>new_parser_from_tts</span>(<span class='kw-2'>&amp;</span><span class='ident'>args</span>[..]);
     <span class='kw'>let</span> <span class='ident'>items</span> <span class='op'>=</span> <span class='ident'>p</span>.<span class='ident'>parse_seq_to_end</span>(
         <span class='kw-2'>&amp;</span><span class='ident'>token</span>::<span class='ident'>Eof</span>,
         <span class='ident'>SeqSep</span> {
@@ -701,7 +701,7 @@ match ::conn::parse_json(res.raw_response.as_slice()) {{
     <span class='ident'>MacItems</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>cx</span>.<span class='ident'>parse_item</span>(<span class='ident'>e</span>), <span class='ident'>cx</span>.<span class='ident'>parse_item</span>(<span class='ident'>i</span>)].<span class='ident'>into_iter</span>())
 }
 
-<span class='kw'>fn</span> <span class='ident'>expand_id_eq</span>(<span class='ident'>cx</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>ExtCtxt</span>, _: <span class='ident'>Span</span>, _: <span class='kw-2'>&amp;</span><span class='ident'>ast</span>::<span class='ident'>MetaItem</span>, <span class='ident'>item</span>: <span class='kw-2'>&amp;</span><span class='ident'>ast</span>::<span class='ident'>Item</span>, <span class='kw-2'>mut</span> <span class='ident'>push</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>FnMut</span>(<span class='ident'>P</span><span class='op'>&lt;</span><span class='ident'>ast</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>)<span class='op'>&gt;</span>) {
+<span class='kw'>fn</span> <span class='ident'>expand_id_eq</span>(<span class='ident'>cx</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>ExtCtxt</span>, _: <span class='ident'>Span</span>, _: <span class='kw-2'>&amp;</span><span class='ident'>ast</span>::<span class='ident'>MetaItem</span>, <span class='ident'>item</span>: <span class='kw-2'>&amp;</span><span class='ident'>ast</span>::<span class='ident'>Item</span>, <span class='ident'>push</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>FnMut</span>(<span class='ident'>P</span><span class='op'>&lt;</span><span class='ident'>ast</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>)) {
     <span class='kw'>let</span> <span class='ident'>name</span> <span class='op'>=</span> <span class='ident'>item</span>.<span class='ident'>ident</span>;
     <span class='ident'>push</span>(<span class='ident'>cx</span>.<span class='ident'>parse_item</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;impl ::std::cmp::Eq for {} {{}}&quot;</span>, <span class='ident'>name</span>)));
     <span class='ident'>push</span>(<span class='ident'>cx</span>.<span class='ident'>parse_item</span>(<span class='macro'>format</span><span class='macro'>!</span>(

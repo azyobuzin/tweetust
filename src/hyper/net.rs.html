@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.1.11/src/net.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/net.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>net.rs.html -- source</title>
@@ -433,6 +433,14 @@
 <span id="391">391</span>
 <span id="392">392</span>
 <span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A collection of traits abstracting over Listeners and Streams.</span>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>any</span>::{<span class='ident'>Any</span>, <span class='ident'>TypeId</span>};
@@ -488,13 +496,13 @@
     <span class='kw'>fn</span> <span class='ident'>close</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IoResult</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span>;
 
     <span class='doccomment'>/// Returns an iterator over incoming connections.</span>
-    <span class='kw'>fn</span> <span class='ident'>incoming</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>NetworkConnections</span><span class='op'>&lt;</span><span class='ident'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>incoming</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>NetworkConnections</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
         <span class='ident'>NetworkConnections</span>(<span class='self'>self</span>)
     }
 }
 
 <span class='doccomment'>/// An iterator wrapper over a NetworkAcceptor.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>NetworkConnections</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>N</span>: <span class='ident'>NetworkAcceptor</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>N</span>);
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>NetworkConnections</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>N</span>: <span class='ident'>NetworkAcceptor</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>N</span>);
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>N</span>: <span class='ident'>NetworkAcceptor</span><span class='op'>&gt;</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>NetworkConnections</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>N</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='ident'>IoResult</span><span class='op'>&lt;</span><span class='ident'>N</span>::<span class='ident'>Stream</span><span class='op'>&gt;</span>;
@@ -673,9 +681,17 @@
             <span class='ident'>HttpAcceptor</span>::<span class='ident'>Http</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>tcp</span>, _) <span class='op'>=&gt;</span> <span class='ident'>HttpStream</span>::<span class='ident'>Http</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>tcp</span>.<span class='ident'>accept</span>())),
             <span class='ident'>HttpAcceptor</span>::<span class='ident'>Https</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>tcp</span>, _, <span class='kw-2'>ref</span> <span class='ident'>ssl_context</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>stream</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>tcp</span>.<span class='ident'>accept</span>());
-                <span class='kw'>let</span> <span class='ident'>ssl_stream</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>SslStream</span>::<span class='op'>&lt;</span><span class='ident'>TcpStream</span><span class='op'>&gt;</span>::<span class='ident'>new_server</span>(<span class='kw-2'>&amp;</span><span class='op'>*</span><span class='op'>*</span><span class='ident'>ssl_context</span>, <span class='ident'>stream</span>).
-                                     <span class='ident'>map_err</span>(<span class='ident'>lift_ssl_error</span>));
-                <span class='ident'>HttpStream</span>::<span class='ident'>Https</span>(<span class='ident'>ssl_stream</span>)
+                <span class='kw'>match</span> <span class='ident'>SslStream</span>::<span class='op'>&lt;</span><span class='ident'>TcpStream</span><span class='op'>&gt;</span>::<span class='ident'>new_server</span>(<span class='kw-2'>&amp;</span><span class='op'>*</span><span class='op'>*</span><span class='ident'>ssl_context</span>, <span class='ident'>stream</span>) {
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>ssl_stream</span>) <span class='op'>=&gt;</span> <span class='ident'>HttpStream</span>::<span class='ident'>Https</span>(<span class='ident'>ssl_stream</span>),
+                    <span class='prelude-val'>Err</span>(<span class='ident'>StreamError</span>(<span class='kw-2'>ref</span> <span class='ident'>e</span>)) <span class='op'>=&gt;</span> {
+                        <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>IoError</span> {
+                            <span class='ident'>kind</span>: <span class='ident'>ConnectionAborted</span>,
+                            <span class='ident'>desc</span>: <span class='string'>&quot;SSL Handshake Interrupted&quot;</span>,
+                            <span class='ident'>detail</span>: <span class='prelude-val'>Some</span>(<span class='ident'>e</span>.<span class='ident'>desc</span>.<span class='ident'>to_string</span>())
+                        });
+                    },
+                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>lift_ssl_error</span>(<span class='ident'>e</span>))
+                }
             }
         })
     }

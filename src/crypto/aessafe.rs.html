@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.15/src/aessafe.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/aessafe.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>aessafe.rs.html -- source</title>
@@ -1710,13 +1710,13 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// This trait defines all of the operations needed for a type to be processed as part of an AES</span>
 <span class='comment'>// encryption or decryption operation.</span>
 <span class='kw'>trait</span> <span class='ident'>AesOps</span> {
-    <span class='kw'>fn</span> <span class='ident'>sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>add_round_key</span>(<span class='self'>self</span>, <span class='ident'>rk</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>add_round_key</span>(<span class='self'>self</span>, <span class='ident'>rk</span>: <span class='kw-2'>&amp;</span><span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 }
 
 <span class='kw'>fn</span> <span class='ident'>encrypt_core</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AesOps</span> <span class='op'>+</span> <span class='ident'>Copy</span><span class='op'>&gt;</span>(<span class='ident'>state</span>: <span class='kw-2'>&amp;</span><span class='ident'>S</span>, <span class='ident'>sk</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>S</span>]) <span class='op'>-&gt;</span> <span class='ident'>S</span> {
@@ -2221,19 +2221,19 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// Operations in GF(2^2) using normal basis (Omega^2,Omega)</span>
 <span class='kw'>trait</span> <span class='ident'>Gf2Ops</span> {
     <span class='comment'>// multiply</span>
-    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='ident'>Self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 
     <span class='comment'>// scale by N = Omega^2</span>
-    <span class='kw'>fn</span> <span class='ident'>scl_n</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>scl_n</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 
     <span class='comment'>// scale by N^2 = Omega</span>
-    <span class='kw'>fn</span> <span class='ident'>scl_n2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>scl_n2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 
     <span class='comment'>// square</span>
-    <span class='kw'>fn</span> <span class='ident'>sq</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sq</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 
     <span class='comment'>// Same as sqaure</span>
-    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 }
 
 <span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Copy</span><span class='op'>&gt;</span> <span class='ident'>Gf2Ops</span> <span class='kw'>for</span> <span class='ident'>Bs2State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
@@ -2272,14 +2272,14 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// Operations in GF(2^4) using normal basis (alpha^8,alpha^2)</span>
 <span class='kw'>trait</span> <span class='ident'>Gf4Ops</span> {
     <span class='comment'>// multiply</span>
-    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='ident'>Self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 
     <span class='comment'>// square &amp; scale by nu</span>
     <span class='comment'>// nu = beta^8 = N^2*alpha^2, N = w^2</span>
-    <span class='kw'>fn</span> <span class='ident'>sq_scl</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sq_scl</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 
     <span class='comment'>// inverse</span>
-    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 }
 
 <span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Copy</span><span class='op'>&gt;</span> <span class='ident'>Gf4Ops</span> <span class='kw'>for</span> <span class='ident'>Bs4State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
@@ -2312,12 +2312,12 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 }
 
 <span class='comment'>// Operations in GF(2^8) using normal basis (d^16,d)</span>
-<span class='kw'>trait</span> <span class='ident'>Gf8Ops</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>trait</span> <span class='ident'>Gf8Ops</span> {
     <span class='comment'>// inverse</span>
-    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 }
 
-<span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>Gf8Ops</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Bs8State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>Gf8Ops</span> <span class='kw'>for</span> <span class='ident'>Bs8State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Bs8State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> (<span class='ident'>b</span>, <span class='ident'>a</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>split</span>();
         <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>a</span>.<span class='ident'>xor</span>(<span class='ident'>b</span>).<span class='ident'>sq_scl</span>();
@@ -2431,12 +2431,12 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     }
 }
 
-<span class='kw'>trait</span> <span class='ident'>AesBitValueOps</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Not</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Default</span> {
-    <span class='kw'>fn</span> <span class='ident'>shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>ror1</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>ror2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>ror3</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>;
+<span class='kw'>trait</span> <span class='ident'>AesBitValueOps</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Not</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Default</span> {
+    <span class='kw'>fn</span> <span class='ident'>shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>ror1</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>ror2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>ror3</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 }
 
 <span class='kw'>impl</span> <span class='ident'>AesBitValueOps</span> <span class='kw'>for</span> <span class='ident'>u16</span> {
