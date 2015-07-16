@@ -2,10 +2,10 @@
 //! Usually, you will not use this module.
 
 use std::fmt::{self, Write};
+use std::io::Read;
 use std::rc::Rc;
 use std::string::ToString;
-use hyper;
-use hyper::{header, mime, HttpError, HttpResult, Get, Delete, Head};
+use hyper::{self, header, mime, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
 use hyper::status::StatusClass;
@@ -21,12 +21,12 @@ pub mod oauth_authenticator;
 
 pub enum Parameter<'a> {
     Value(&'a str, String),
-    File(&'a str, &'a mut (Reader + 'a))
+    File(&'a str, &'a mut (Read + 'a))
 }
 
 pub trait Authenticator: Clone {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter])
-        -> HttpResult<Response>;
+        -> hyper::Result<Response>;
 
     fn request_twitter(&self, method: Method, url: &str, params: &[Parameter])
         -> TwitterResult<()>
@@ -59,7 +59,7 @@ fn create_query<'a, I>(pairs: I) -> String
 }
 
 pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
-    authorization: String) -> HttpResult<Response>
+    authorization: String) -> hyper::Result<Response>
 {
     let has_body = match method {
         Get | Delete | Head => false,
@@ -81,7 +81,7 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
         ));
     }
 
-    let mut client = hyper::Client::new();
+    let client = hyper::Client::new();
     let body;
     let mut req = client.request(method, url);
 
@@ -104,7 +104,8 @@ pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
         }
     }
 
-    req.header(header::Authorization(authorization)).send()
+    let req = req.header(header::Authorization(authorization));
+    req.send()
 }
 
 #[derive(Debug, RustcDecodable)]
@@ -113,19 +114,19 @@ struct InternalErrorResponse {
     error: Option<Vec<Error>>
 }
 
-fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
+fn read_to_twitter_result(source: hyper::Result<Response>) -> TwitterResult<()> {
     match source {
         Ok(mut res) => {
             // Parse headers
             let limit = res.headers.get_raw("X-Rate-Limit-Limit")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(&x[..]).as_slice().parse().ok());
+                .and_then(|x| (&String::from_utf8_lossy(&x[..])[..]).parse().ok());
             let remaining = res.headers.get_raw("X-Rate-Limit-Remaining")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(&x[..]).as_slice().parse().ok());
+                .and_then(|x| (&String::from_utf8_lossy(&x[..])[..]).parse().ok());
             let reset = res.headers.get_raw("X-Rate-Limit-Reset")
                 .and_then(|x| x.first())
-                .and_then(|x| String::from_utf8_lossy(&x[..]).as_slice().parse().ok());
+                .and_then(|x| (&String::from_utf8_lossy(&x[..])[..]).parse().ok());
             let rate_limit = limit.and(remaining).and(reset)
                 .map(|_| RateLimitStatus {
                     limit: limit.unwrap(),
@@ -133,8 +134,9 @@ fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
                     reset: reset.unwrap()
                 });
 
-            match res.read_to_string() {
-                Ok(body) => match res.status.class() {
+            let mut body = String::new();
+            match res.read_to_string(&mut body) {
+                Ok(_) => match res.status.class() {
                     // 2xx
                     StatusClass::Success => Ok(TwitterResponse {
                         object: (), raw_response: Rc::new(body), rate_limit: rate_limit
@@ -151,7 +153,7 @@ fn read_to_twitter_result(source: HttpResult<Response>) -> TwitterResult<()> {
                         }))
                     }
                 },
-                Err(e) => Err(TwitterError::HttpError(HttpError::HttpIoError(e)))
+                Err(e) => Err(TwitterError::HttpError(hyper::Error::Io(e)))
             }
         },
         Err(e) => Err(TwitterError::HttpError(e))
@@ -164,6 +166,7 @@ pub fn request_twitter(method: Method, url: Url, params: &[Parameter],
     read_to_twitter_result(send_request(method, url, params, authorization))
 }
 
+/*
 pub trait ToParameter {
     fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a>;
 }
@@ -178,6 +181,31 @@ impl <T: fmt::Display> ToParameter for Vec<T> {
     fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a> {
         let mut val = String::new();
         for elm in self.into_iter() {
+            if val.len() > 0 {
+                val.push(',');
+            }
+            write!(&mut val, "{}", elm).ok();
+        }
+
+        Parameter::Value(key, val)
+    }
+}
+*/
+
+pub trait ParameterFrom<'a, T> {
+    fn from(&'a str, T) -> Self;
+}
+
+impl<'a, T: ToString> ParameterFrom<'a, T> for Parameter<'a> {
+    fn from(key: &'a str, value: T) -> Parameter<'a> {
+        Parameter::Value(key, value.to_string())
+    }
+}
+
+impl<'a, T: fmt::Display> ParameterFrom<'a, Vec<T>> {
+    fn from(key: &'a str, value: Vec<T>) -> Parameter<'a> {
+        let mut val = String::new();
+        for elm in value.into_iter() {
             if val.len() > 0 {
                 val.push(',');
             }

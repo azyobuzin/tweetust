@@ -8,8 +8,8 @@ pub struct SearchResponse {
 
 #[derive(Clone, Debug, RustcDecodable)]
 pub struct SearchMetadata {
-    pub max_id: u64,
-    pub since_id: u64,
+    pub max_id: i64,
+    pub since_id: i64,
     pub refresh_url: Option<String>,
     pub next_results: Option<String>,
     pub count: i32,

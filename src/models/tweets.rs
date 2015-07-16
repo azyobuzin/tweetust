@@ -1,10 +1,10 @@
+use std::cmp;
 use std::collections::BTreeMap;
 use super::entities::{Entities, ExtendedEntities};
 use super::places::Place;
 use super::users::User;
 
 #[derive(Clone, Debug, RustcDecodable)]
-#[id_eq]
 pub struct Tweet {
     pub contributors: Option<Vec<Contributor>>,
     pub coordinates: Option<Coordinates>,
@@ -15,10 +15,10 @@ pub struct Tweet {
     pub favorite_count: Option<u32>,
     pub favorited: Option<bool>,
     pub filter_level: Option<String>,
-    pub id: u64,
+    pub id: i64,
     pub in_reply_to_screen_name: Option<String>,
-    pub in_reply_to_status_id: Option<u64>,
-    pub in_reply_to_user_id: Option<u64>,
+    pub in_reply_to_status_id: Option<i64>,
+    pub in_reply_to_user_id: Option<i64>,
     pub lang: Option<String>,
     pub place: Option<Place>,
     pub possibly_sensitive: Option<bool>,
@@ -34,11 +34,20 @@ pub struct Tweet {
     pub withheld_scope: Option<String>
 }
 
+impl cmp::Eq for Tweet { }
+impl cmp::PartialEq for Tweet {
+    fn eq(&self, other: &Tweet) -> bool { self.id == other.id }
+}
+
 #[derive(Clone, Debug, RustcDecodable)]
-#[id_eq]
 pub struct Contributor {
-    pub id: u64,
+    pub id: i64,
     pub screen_name: String
+}
+
+impl cmp::Eq for Contributor { }
+impl cmp::PartialEq for Contributor {
+    fn eq(&self, other: &Contributor) -> bool { self.id == other.id }
 }
 
 #[derive(Clone, Debug, RustcDecodable)]
@@ -49,7 +58,7 @@ pub struct Coordinates {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, RustcDecodable)]
 pub struct CurrentUserRetweet {
-    pub id: u64
+    pub id: i64
 }
 
 #[derive(Clone, Debug, RustcDecodable)]

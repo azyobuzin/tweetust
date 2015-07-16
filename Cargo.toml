@@ -13,7 +13,3 @@ hyper = "*"
 oauthcli = "*"
 rustc-serialize = "*"
 url = "*"
-
-[dependencies.tweetust_macros]
-path = "macros"
-version = "0.0.3"

@@ -1,8 +1,8 @@
+use std::cmp;
 use super::entities::UserEntities;
 use super::tweets::Tweet;
 
 #[derive(Clone, Debug, RustcDecodable)]
-#[id_eq]
 pub struct User {
     pub contributors_enabled: bool,
     pub created_at: String,
@@ -15,7 +15,7 @@ pub struct User {
     pub followers_count: u32,
     pub friends_count: u32,
     pub geo_enabled: bool,
-    pub id: u64,
+    pub id: i64,
     pub is_translator: bool,
     pub lang: String,
     pub listed_count: u32,
@@ -45,6 +45,11 @@ pub struct User {
     pub withheld_in_countries: Option<String>,
     pub withheld_scope: Option<String>,
     pub muting: Option<bool>
+}
+
+impl cmp::Eq for User { }
+impl cmp::PartialEq for User {
+    fn eq(&self, other: &User) -> bool { self.id == other.id }
 }
 
 #[derive(Clone, Debug, RustcDecodable)]

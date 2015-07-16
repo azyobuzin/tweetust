@@ -76,7 +76,7 @@ impl RequestTokenRequestBuilder {
         let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
         let oauth_callback_confirmed = v.iter()
             .find(|x| x.0 == "oauth_callback_confirmed")
-            .and_then(|x| x.1.as_slice().parse().ok());
+            .and_then(|x| (&x.1[..]).parse().ok());
         match oauth_token.and(oauth_token_secret) {
             Some(_) => Ok(res.object(RequestTokenResponse {
                 consumer_key: self.consumer_key.clone(),
@@ -107,7 +107,7 @@ pub struct AccessTokenResponse {
     consumer_secret: String,
     pub oauth_token: String,
     pub oauth_token_secret: String,
-    pub user_id: u64,
+    pub user_id: i64,
     pub screen_name: String
 }
 
@@ -155,7 +155,7 @@ impl AccessTokenRequestBuilder {
         let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
         let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
         let user_id = v.iter().find(|x| x.0 == "user_id")
-            .and_then(|x| x.1.as_slice().parse().ok());
+            .and_then(|x| (&x.1[..]).parse().ok());
         let screen_name = v.iter().find(|x| x.0 == "screen_name");
         match oauth_token.and(oauth_token_secret).and(user_id).and(screen_name) {
             Some(_) => Ok(res.object(AccessTokenResponse {

@@ -1,7 +1,7 @@
+use std::cmp;
 use std::collections::BTreeMap;
 
 #[derive(Clone, Debug, RustcDecodable)]
-#[id_eq]
 pub struct Place {
     pub attributes: BTreeMap<String, String>,
     pub bounding_box: BoundingBox,
@@ -12,6 +12,11 @@ pub struct Place {
     pub name: String,
     pub place_type: String,
     pub url: String
+}
+
+impl cmp::Eq for Place { }
+impl cmp::PartialEq for Place {
+    fn eq(&self, other: &Place) -> bool { self.id == other.id }
 }
 
 #[derive(Clone, Debug, RustcDecodable)]

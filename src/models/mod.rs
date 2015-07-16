@@ -28,7 +28,7 @@ impl TwitterResponse<()> {
 pub struct CursorIds {
     pub previous_cursor: i64,
     pub next_cursor: i64,
-    pub ids: Vec<u64>
+    pub ids: Vec<i64>
 }
 
 pub mod error;

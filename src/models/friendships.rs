@@ -2,13 +2,13 @@
 pub struct Connections {
     pub name: String,
     pub screen_name: String,
-    pub id: u64,
+    pub id: i64,
     pub connections: Vec<String>
 }
 
 #[derive(Clone, Debug, RustcDecodable)]
 pub struct Source {
-    pub id: u64,
+    pub id: i64,
     pub screen_name: String,
     pub following: bool,
     pub followed_by: bool,
@@ -26,7 +26,7 @@ pub struct Source {
 
 #[derive(Clone, Debug, RustcDecodable)]
 pub struct Target {
-    pub id: u64,
+    pub id: i64,
     pub screen_name: String,
     pub following: bool,
     pub followed_by: bool,

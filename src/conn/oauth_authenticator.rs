@@ -1,4 +1,4 @@
-use hyper::{HttpError, HttpResult};
+use hyper;
 use hyper::client::Response;
 use hyper::method::Method;
 use oauthcli::{self, SignatureMethod};
@@ -28,7 +28,7 @@ impl OAuthAuthenticator {
 }
 
 impl Authenticator for OAuthAuthenticator {
-    fn send_request(&self, method: Method, url: &str, params: &[Parameter]) -> HttpResult<Response> {
+    fn send_request(&self, method: Method, url: &str, params: &[Parameter]) -> hyper::Result<Response> {
         match Url::parse(url) {
             Ok(ref u) => {
                 let multipart = is_multipart(params);
@@ -57,7 +57,7 @@ impl Authenticator for OAuthAuthenticator {
                 );
                 send_request(method, u.clone(), params, authorization)
             },
-            Err(e) => Err(HttpError::HttpUriError(e))
+            Err(e) => Err(hyper::Error::Uri(e))
         }
     }
 }

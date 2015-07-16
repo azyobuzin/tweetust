@@ -1,0 +1,3 @@
+[submodule "clientgen/CoreTweet"]
+	path = clientgen/CoreTweet
+	url = https://github.com/CoreTweet/CoreTweet.git

@@ -27,16 +27,14 @@
 //! ```
 //! It's easy for people who have leaned about Twitter, isn't it?
 
-#![warn(unused_import_braces, unused_typecasts)]
-#![feature(box_syntax, core, old_io, plugin)]
-#![plugin(tweetust_macros)]
+#![warn(unused_import_braces)]
 
 extern crate hyper;
 extern crate oauthcli;
-extern crate "rustc-serialize" as rustc_serialize;
+extern crate rustc_serialize;
 extern crate url;
 
-use std::error::{Error, FromError};
+use std::error::Error;
 use std::fmt;
 use rustc_serialize::json;
 use models::TwitterResponse;
@@ -55,7 +53,7 @@ pub mod oauth2;
 #[derive(Debug)]
 pub enum TwitterError {
     ErrorResponse(ErrorResponse),
-    HttpError(hyper::HttpError),
+    HttpError(hyper::Error),
     JsonError(json::DecoderError, TwitterResponse<()>),
     ParseError(TwitterResponse<()>)
 }
@@ -86,14 +84,14 @@ impl fmt::Display for TwitterError {
     }
 }
 
-impl FromError<ErrorResponse> for TwitterError {
-    fn from_error(err: ErrorResponse) -> TwitterError {
+impl From<ErrorResponse> for TwitterError {
+    fn from(err: ErrorResponse) -> TwitterError {
         TwitterError::ErrorResponse(err)
     }
 }
 
-impl FromError<hyper::HttpError> for TwitterError {
-    fn from_error(err: hyper::HttpError) -> TwitterError {
+impl From<hyper::Error> for TwitterError {
+    fn from(err: hyper::Error) -> TwitterError {
         TwitterError::HttpError(err)
     }
 }

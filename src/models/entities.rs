@@ -33,12 +33,12 @@ pub struct Symbol {
 pub struct Medium {
     pub display_url: String,
     pub expanded_url: String,
-    pub id: u64,
+    pub id: i64,
     pub indices: Vec<i32>,
     pub media_url: String,
     pub media_url_https: String,
     pub sizes: Sizes,
-    pub source_status_id: Option<u64>,
+    pub source_status_id: Option<i64>,
     pub type_: String,
     pub url: String,
     pub video_info: Option<VideoInfo>
@@ -83,7 +83,7 @@ pub struct Url {
 
 #[derive(Clone, Debug, RustcDecodable)]
 pub struct UserMention {
-    pub id: u64,
+    pub id: i64,
     pub indices: Vec<i32>,
     pub name: String,
     pub screen_name: String
