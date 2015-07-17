@@ -24,6 +24,24 @@ pub enum Parameter<'a> {
     File(&'a str, &'a mut (Read + 'a))
 }
 
+impl<'a> Parameter<'a> {
+    pub fn key_value<T: ToString>(key: &'a str, value: T) -> Parameter<'a> {
+        Parameter::Value(key, value.to_string())
+    }
+
+    pub fn from_vec<T: fmt::Display>(key: &'a str, value: Vec<T>)  -> Parameter<'a> {
+        let mut val = String::new();
+        for elm in value.into_iter() {
+            if val.len() > 0 {
+                val.push(',');
+            }
+            write!(&mut val, "{}", elm).unwrap();
+        }
+
+        Parameter::Value(key, val)
+    }
+}
+
 pub trait Authenticator: Clone {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter])
         -> hyper::Result<Response>;
@@ -164,56 +182,6 @@ pub fn request_twitter(method: Method, url: Url, params: &[Parameter],
     authorization: String) -> TwitterResult<()>
 {
     read_to_twitter_result(send_request(method, url, params, authorization))
-}
-
-/*
-pub trait ToParameter {
-    fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a>;
-}
-
-impl<T: ToString> ToParameter for T {
-    fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a> {
-        Parameter::Value(key, self.to_string())
-    }
-}
-
-impl <T: fmt::Display> ToParameter for Vec<T> {
-    fn to_parameter<'a>(self, key: &'a str) -> Parameter<'a> {
-        let mut val = String::new();
-        for elm in self.into_iter() {
-            if val.len() > 0 {
-                val.push(',');
-            }
-            write!(&mut val, "{}", elm).ok();
-        }
-
-        Parameter::Value(key, val)
-    }
-}
-*/
-
-pub trait ParameterFrom<'a, T> {
-    fn from(&'a str, T) -> Self;
-}
-
-impl<'a, T: ToString> ParameterFrom<'a, T> for Parameter<'a> {
-    fn from(key: &'a str, value: T) -> Parameter<'a> {
-        Parameter::Value(key, value.to_string())
-    }
-}
-
-impl<'a, T: fmt::Display> ParameterFrom<'a, Vec<T>> {
-    fn from(key: &'a str, value: Vec<T>) -> Parameter<'a> {
-        let mut val = String::new();
-        for elm in value.into_iter() {
-            if val.len() > 0 {
-                val.push(',');
-            }
-            write!(&mut val, "{}", elm).ok();
-        }
-
-        Parameter::Value(key, val)
-    }
 }
 
 /// Parse the JSON string to T with rustc-serialize.

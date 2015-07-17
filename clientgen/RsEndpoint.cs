@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using RestApisGen;
 using System.Text.RegularExpressions;
+using RestApisGen;
 
 namespace Tweetust.ClientGen
 {
@@ -10,28 +10,39 @@ namespace Tweetust.ClientGen
     {
         public RsEndpoint(ApiEndpoint source)
         {
+            this.Source = source;
             this.Name = source.Name;
             this.Method = source.Request;
-            this.ReturnType = source.ReturnType; //TODO
+            this.ReturnType = ConvertReturnType(source.Type, source.ReturnType);
             this.Uri = source.Uri;
             this.ReservedParameter = source.ReservedName;
-            this.RequiredParameters = ToRsParameterArray(source.Params.Where(x => x.Kind == "required"));
-            var either = source.Params.Where(x => x.Kind == "any one is required").Distinct(comparer).ToArray();
-            if (this.RequiredParameters.Count == 0 && either.Count() == 1)
+
+            var areAllOptional = source.AnyOneGroups.Any(x => !x.Any());
+            var isEitherRequired = false;
+            if (!areAllOptional && source.AnyOneGroups.Count > 0)
             {
-                this.RequiredParameters = ToRsParameterArray(either);
-                this.OptionalParameters = ToRsParameterArray(
-                    source.Params.Where(x => x.Kind != "required" && x.Kind != "any one is required"));
+                var eithered = Extensions.Combinate(source.AnyOneGroups).ToArray();
+                var prmNames = eithered[0].SelectMany(x => x.Select(y => y.RealName)).ToArray();
+                isEitherRequired = eithered.All(x => x.SelectMany(y => y.Select(z => z.RealName)).SequenceEqual(prmNames));
             }
-            else
+
+            var requiredParameters = new List<RsParameter>();
+            var optionalParameters = new List<RsParameter>();
+
+            foreach (var param in source.Params.Distinct(comparer))
             {
-                this.OptionalParameters = ToRsParameterArray(source.Params.Where(x => x.Kind != "required"));
+                (param.Kind == "required" || (param.Kind == "any one is required" && isEitherRequired)
+                    ? requiredParameters : optionalParameters).Add(new RsParameter(param));
             }
+
+            this.RequiredParameters = requiredParameters;
+            this.OptionalParameters = optionalParameters;
         }
 
+        public ApiEndpoint Source; //TODO: remove
         public string Name;
         public string Method;
-        public string ReturnType;
+        public RsType ReturnType;
         public string Uri;
         public string ReservedParameter;
         public IReadOnlyList<RsParameter> RequiredParameters;
@@ -52,9 +63,53 @@ namespace Tweetust.ClientGen
             }
         }
         private static PrmComparer comparer = new PrmComparer();
-        private static RsParameter[] ToRsParameterArray(IEnumerable<Parameter> source)
+
+        private static RsType ConvertReturnType(ApiType apiType, string t)
         {
-            return source.Distinct(comparer).Select(x => new RsParameter(x)).ToArray();
+            if (t.EndsWith("Response"))
+                t = t.Substring(0, t.Length - 8);
+
+            switch (t)
+            {
+                case "Status":
+                    t = "Tweet";
+                    break;
+                case "Embed":
+                    t = "OEmbed";
+                    break;
+                case "SearchResult":
+                    t = "SearchResponse";
+                    break;
+                //TODO: support
+                case "Setting":
+                case "GeoResult":
+                case "Configurations":
+                case "Language":
+                case "List":
+                case "SearchQuery":
+                case "TrendLocation":
+                case "TrendsResult":
+                case "ProfileBannerSizes":
+                case "Category":
+                    return null;
+            }
+
+            switch (apiType)
+            {
+                case ApiType.Void:
+                    return new UnitType();
+                case ApiType.Normal:
+                    return RsType.FromString(t);
+                case ApiType.Listed:
+                    return new VecType(RsType.FromString(t));
+                case ApiType.Cursored:
+                    if (t == "long") t = "Id";
+                    return new RawType(string.Concat("Cursor", t, "s"));
+                case ApiType.Dictionary:
+                    return null;
+                default:
+                    throw new ArgumentException("apiType");
+            }
         }
     }
 
@@ -67,13 +122,21 @@ namespace Tweetust.ClientGen
             var m = Regex.Match(t, "^IEnumerable<(.+)>$");
             if (m.Success)
             {
-                this.Type = new VecType(ConvertType(m.Groups[1].Value).ToString());
+                this.Type = new VecType(RsType.FromString(m.Groups[1].Value));
                 return;
             }
-            this.Type = ConvertType(t);
+            this.Type = RsType.FromString(t);
         }
 
-        private static IRsType ConvertType(string t)
+        public string Name;
+        public RsType Type;
+    }
+
+    abstract class RsType
+    {
+        public abstract T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType, Func<UnitType, T> unitType);
+
+        public static RsType FromString(string t)
         {
             switch (t)
             {
@@ -89,17 +152,9 @@ namespace Tweetust.ClientGen
                     return new RawType(t);
             }
         }
-
-        public string Name;
-        public IRsType Type;
     }
 
-    interface IRsType
-    {
-        T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType);
-    }
-
-    class RawType : IRsType
+    class RawType : RsType
     {
         public RawType(string type)
         {
@@ -108,7 +163,7 @@ namespace Tweetust.ClientGen
 
         public readonly string Type;
 
-        public T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType)
+        public override T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType, Func<UnitType, T> unitType)
         {
             return rawType(this);
         }
@@ -119,9 +174,9 @@ namespace Tweetust.ClientGen
         }
     }
 
-    class StringType : IRsType
+    class StringType : RsType
     {
-        public T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType)
+        public override T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType, Func<UnitType, T> unitType)
         {
             return stringType(this);
         }
@@ -132,23 +187,36 @@ namespace Tweetust.ClientGen
         }
     }
 
-    class VecType : IRsType
+    class VecType : RsType
     {
-        public VecType(string type)
+        public VecType(RsType type)
         {
             this.Type = type;
         }
 
-        public readonly string Type;
+        public readonly RsType Type;
 
-        public T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType)
+        public override T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType, Func<UnitType, T> unitType)
         {
             return vecType(this);
         }
 
         public override string ToString()
         {
-            return string.Concat("Vec<", this.Type, ">");
+            return string.Concat("Vec<", this.Type.ToString(), ">");
+        }
+    }
+
+    class UnitType : RsType
+    {
+        public override T Match<T>(Func<RawType, T> rawType, Func<StringType, T> stringType, Func<VecType, T> vecType, Func<UnitType, T> unitType)
+        {
+            return unitType(this);
+        }
+
+        public override string ToString()
+        {
+            return "()";
         }
     }
 }

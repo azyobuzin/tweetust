@@ -1,6 +1,6 @@
 [package]
 name = "tweetust"
-version = "0.0.3"
+version = "0.1.0"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "Experimental Twitter Library"
 documentation = "http://azyobuzin.github.io/tweetust/tweetust/"

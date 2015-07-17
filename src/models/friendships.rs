@@ -44,3 +44,11 @@ pub struct Relationship {
 pub struct FriendshipResponse {
     pub relationship: Relationship
 }
+
+#[derive(Clone, Debug, RustcDecodable)]
+pub struct Friendship {
+    pub id: i64,
+    pub screen_name: String,
+    pub name: String,
+    pub connections: Vec<String>
+}

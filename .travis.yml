@@ -7,6 +7,12 @@ env:
   global:
     - secure: UFWq/+DBSnfopXVzfTSI9VFQAvalPH2akY8zNVY9Lz8ChM25OaHYj3GR7B3l4bSOWFUkY4N7KugLvEh+fJDOKKcSQWKAkpmd8duS9N55jvQiM/qNXUsGahqFqnsLhGAJW07EfP2P9usCnF0MbKw4tE5LGq91UdBdtfCpMkfLv9M=
 
+install:
+  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+  - echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
+  - sudo apt-get update
+  - sudo apt-get install mono-devel
+
 before_script:
   - git clone -b gh-pages "https://$GH_TOKEN@github.com/azyobuzin/tweetust.git" target/doc
   - pushd target/doc
@@ -14,9 +20,8 @@ before_script:
   - popd
 
 script:
-  - pushd macros
-  - cargo test
-  - popd
+  - xbuild clientgen/clientgen.csproj /p:Configuration=Debug
+  - mono clientgen/bin/Debug/clientgen.exe
   - cargo build
   - cargo test
   - cargo doc

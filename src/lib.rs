@@ -20,7 +20,7 @@
 //! ```ignore
 //! // extern crate tweetust; or use tweetust;
 //! let your_tweet =
-//!   tweetust::TwitterClient::new(&auth)
+//!   tweetust::TwitterClient::new(auth)
 //!     .statuses()
 //!     .update("My First Tweet!")
 //!     .execute();
