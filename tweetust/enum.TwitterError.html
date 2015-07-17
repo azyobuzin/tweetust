@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='index.html'>tweetust</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='clients/index.html' title=''>clients</a><a class='mod ' href='conn/index.html' title='The low-level functions for connecting to Twitter with any authorization. Usually, you will not use this module.'>conn</a><a class='mod ' href='models/index.html' title=''>models</a><a class='mod ' href='oauth/index.html' title='The functions to get your access token for [3-legged OAuth](https://dev.twitter.com/oauth/3-legged) or [PIN-based OAuth](https://dev.twitter.com/oauth/pin-based).'>oauth</a><a class='mod ' href='oauth2/index.html' title='The functions to get and invalidate your access token for [Application-only authentication](https://dev.twitter.com/oauth/application-only).'>oauth2</a></div><div class='block enum'><h2>Enums</h2><a class='enum current' href='enum.TwitterError.html' title=''>TwitterError</a></div>
+        <p class='location'><a href='index.html'>tweetust</a></p><script>window.sidebarCurrent = {name: 'TwitterError', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,28 +34,30 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content enum">
-<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>tweetust</a>::<wbr><a class='enum' href=''>TwitterError</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span></span></h1>
+<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>tweetust</a>::<wbr><a class='enum' href=''>TwitterError</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-29146' class='srclink' href='../src/tweetust/lib.rs.html#54-59' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum TwitterError {
     ErrorResponse(<a class='struct' href='../tweetust/models/error/struct.ErrorResponse.html' title='tweetust::models::error::ErrorResponse'>ErrorResponse</a>),
-    HttpError(<a class='enum' href='../hyper/enum.HttpError.html' title='hyper::HttpError'>HttpError</a>),
-    JsonError(<a class='enum' href='../rustc-serialize/json/enum.DecoderError.html' title='rustc-serialize::json::DecoderError'>DecoderError</a>, <a class='struct' href='../tweetust/models/struct.TwitterResponse.html' title='tweetust::models::TwitterResponse'>TwitterResponse</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;),
+    HttpError(<a class='enum' href='../hyper/error/enum.Error.html' title='hyper::error::Error'>Error</a>),
+    JsonError(<a class='enum' href='../rustc_serialize/json/enum.DecoderError.html' title='rustc_serialize::json::DecoderError'>DecoderError</a>, <a class='struct' href='../tweetust/models/struct.TwitterResponse.html' title='tweetust::models::TwitterResponse'>TwitterResponse</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;),
     ParseError(<a class='struct' href='../tweetust/models/struct.TwitterResponse.html' title='tweetust::models::TwitterResponse'>TwitterResponse</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;),
 }</pre><h2 class='variants'>Variants</h2>
-<table><tr><td id='variant.ErrorResponse'><a class='stability Unmarked' title='No stability level'></a><code>ErrorResponse</code></td><td></td></tr><tr><td id='variant.HttpError'><a class='stability Unmarked' title='No stability level'></a><code>HttpError</code></td><td></td></tr><tr><td id='variant.JsonError'><a class='stability Unmarked' title='No stability level'></a><code>JsonError</code></td><td></td></tr><tr><td id='variant.ParseError'><a class='stability Unmarked' title='No stability level'></a><code>ParseError</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unstable' title='Unstable: the exact API of this trait may change'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/error/trait.Error.html' title='core::error::Error'>Error</a> for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.description' class='method'><a class='stability Unstable' title='Unstable: the exact API of this trait may change'></a><code>fn <a href='#method.description' class='fnname'>description</a>(&amp;self) -&gt; &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
-<h4 id='method.cause' class='method'><a class='stability Unstable' title='Unstable: the exact API of this trait may change'></a><code>fn <a href='#method.cause' class='fnname'>cause</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='trait' href='http://doc.rust-lang.org/nightly/core/error/trait.Error.html' title='core::error::Error'>Error</a>&gt;</code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/error/trait.FromError.html' title='core::error::FromError'>FromError</a>&lt;<a class='struct' href='../tweetust/models/error/struct.ErrorResponse.html' title='tweetust::models::error::ErrorResponse'>ErrorResponse</a>&gt; for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.from_error' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.from_error' class='fnname'>from_error</a>(err: <a class='struct' href='../tweetust/models/error/struct.ErrorResponse.html' title='tweetust::models::error::ErrorResponse'>ErrorResponse</a>) -&gt; <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/error/trait.FromError.html' title='core::error::FromError'>FromError</a>&lt;<a class='enum' href='../hyper/enum.HttpError.html' title='hyper::HttpError'>HttpError</a>&gt; for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.from_error' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.from_error' class='fnname'>from_error</a>(err: <a class='enum' href='../hyper/enum.HttpError.html' title='hyper::HttpError'>HttpError</a>) -&gt; <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h4>
-</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+<table><tr><td id='variant.ErrorResponse'><code>ErrorResponse</code></td><td></td></tr><tr><td id='variant.HttpError'><code>HttpError</code></td><td></td></tr><tr><td id='variant.JsonError'><code>JsonError</code></td><td></td></tr><tr><td id='variant.ParseError'><code>ParseError</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a> for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.description' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.description' class='fnname'>description</a>(&amp;self) -&gt; &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<h4 id='method.cause' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/std/error/trait.Error.html#method.cause' class='fnname'>cause</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='trait' href='http://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a>&gt;</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Display.html#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='../tweetust/models/error/struct.ErrorResponse.html' title='tweetust::models::error::ErrorResponse'>ErrorResponse</a>&gt; for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.from' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(err: <a class='struct' href='../tweetust/models/error/struct.ErrorResponse.html' title='tweetust::models::error::ErrorResponse'>ErrorResponse</a>) -&gt; <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='enum' href='../hyper/error/enum.Error.html' title='hyper::error::Error'>Error</a>&gt; for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.from' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/convert/trait.From.html#method.from' class='fnname'>from</a>(err: <a class='enum' href='../hyper/error/enum.Error.html' title='hyper::error::Error'>Error</a>) -&gt; <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../tweetust/enum.TwitterError.html' title='tweetust::TwitterError'>TwitterError</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -63,7 +65,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -78,7 +80,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -88,6 +90,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

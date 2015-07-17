@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>pbkdf2</a></p><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.pbkdf2.html' title='Execute the PBKDF2 Key Derivation Function. The Scrypt Key Derivation Function generally provides better security, so, applications that do not have a requirement to use PBKDF2 specifically should consider using that function instead.'>pbkdf2</a><a class='fn current' href='fn.pbkdf2_check.html' title='pbkdf2_check compares a password against the result of a previous call to pbkdf2_simple and returns true if the passed in password hashes to the same value.'>pbkdf2_check</a><a class='fn ' href='fn.pbkdf2_simple.html' title='pbkdf2_simple is a helper function that should be sufficient for the majority of cases where an application needs to use PBKDF2 to hash a password for storage. The result is a String that contains the parameters used as part of its encoding. The pbkdf2_check function may be used on a password to check if it is equal to a hashed value.'>pbkdf2_simple</a></div>
+        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>pbkdf2</a></p><script>window.sidebarCurrent = {name: 'pbkdf2_check', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,16 +34,18 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>pbkdf2</a>::<wbr><a class='fn' href=''>pbkdf2_check</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-75224' href='../../src/crypto/pbkdf2.rs.html#167-247'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>pbkdf2</a>::<wbr><a class='fn' href=''>pbkdf2_check</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-74884' class='srclink' href='../../src/crypto/pbkdf2.rs.html#168-248' title='goto source code'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn pbkdf2_check(password: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, hashed_value: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>, &amp;'static <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</pre><div class='docblock'><p>pbkdf2_check compares a password against the result of a previous call to pbkdf2_simple and
 returns true if the passed in password hashes to the same value.</p>
 
@@ -60,7 +62,7 @@ returns true if the passed in password hashes to the same value.</p>
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -75,7 +77,7 @@ returns true if the passed in password hashes to the same value.</p>
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -85,6 +87,10 @@ returns true if the passed in password hashes to the same value.</p>
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

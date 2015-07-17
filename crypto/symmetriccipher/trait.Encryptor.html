@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>symmetriccipher</a></p><div class='block enum'><h2>Enums</h2><a class='enum ' href='enum.SymmetricCipherError.html' title=''>SymmetricCipherError</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.BlockDecryptor.html' title=''>BlockDecryptor</a><a class='trait ' href='trait.BlockDecryptorX8.html' title=''>BlockDecryptorX8</a><a class='trait ' href='trait.BlockEncryptor.html' title=''>BlockEncryptor</a><a class='trait ' href='trait.BlockEncryptorX8.html' title=''>BlockEncryptorX8</a><a class='trait ' href='trait.Decryptor.html' title=''>Decryptor</a><a class='trait current' href='trait.Encryptor.html' title=''>Encryptor</a><a class='trait ' href='trait.SynchronousStreamCipher.html' title=''>SynchronousStreamCipher</a></div>
+        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>symmetriccipher</a></p><script>window.sidebarCurrent = {name: 'Encryptor', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,32 +34,36 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>symmetriccipher</a>::<wbr><a class='trait' href=''>Encryptor</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-99529' href='../../src/crypto/symmetriccipher.rs.html#36-39'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>symmetriccipher</a>::<wbr><a class='trait' href=''>Encryptor</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-113903' class='srclink' href='../../src/crypto/symmetriccipher.rs.html#36-39' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Encryptor {
     fn <a href='#tymethod.encrypt' class='fnname'>encrypt</a>(&amp;mut self, input: &amp;mut <a class='struct' href='../../crypto/buffer/struct.RefReadBuffer.html' title='crypto::buffer::RefReadBuffer'>RefReadBuffer</a>, output: &amp;mut <a class='struct' href='../../crypto/buffer/struct.RefWriteBuffer.html' title='crypto::buffer::RefWriteBuffer'>RefWriteBuffer</a>, eof: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../../crypto/buffer/enum.BufferResult.html' title='crypto::buffer::BufferResult'>BufferResult</a>, <a class='enum' href='../../crypto/symmetriccipher/enum.SymmetricCipherError.html' title='crypto::symmetriccipher::SymmetricCipherError'>SymmetricCipherError</a>&gt;;
 }</pre>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.encrypt' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.encrypt' class='fnname'>encrypt</a>(&amp;mut self, input: &amp;mut <a class='struct' href='../../crypto/buffer/struct.RefReadBuffer.html' title='crypto::buffer::RefReadBuffer'>RefReadBuffer</a>, output: &amp;mut <a class='struct' href='../../crypto/buffer/struct.RefWriteBuffer.html' title='crypto::buffer::RefWriteBuffer'>RefWriteBuffer</a>, eof: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../../crypto/buffer/enum.BufferResult.html' title='crypto::buffer::BufferResult'>BufferResult</a>, <a class='enum' href='../../crypto/symmetriccipher/enum.SymmetricCipherError.html' title='crypto::symmetriccipher::SymmetricCipherError'>SymmetricCipherError</a>&gt;</code></h3></div>
+        <h3 id='tymethod.encrypt' class='method stab '><code>fn <a href='#tymethod.encrypt' class='fnname'>encrypt</a>(&amp;mut self, input: &amp;mut <a class='struct' href='../../crypto/buffer/struct.RefReadBuffer.html' title='crypto::buffer::RefReadBuffer'>RefReadBuffer</a>, output: &amp;mut <a class='struct' href='../../crypto/buffer/struct.RefWriteBuffer.html' title='crypto::buffer::RefWriteBuffer'>RefWriteBuffer</a>, eof: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../../crypto/buffer/enum.BufferResult.html' title='crypto::buffer::BufferResult'>BufferResult</a>, <a class='enum' href='../../crypto/symmetriccipher/enum.SymmetricCipherError.html' title='crypto::symmetriccipher::SymmetricCipherError'>SymmetricCipherError</a>&gt;</code></h3></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;T: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptor.html' title='crypto::symmetriccipher::BlockEncryptor'>BlockEncryptor</a>, X: <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.EcbEncryptor.html' title='crypto::blockmodes::EcbEncryptor'>EcbEncryptor</a>&lt;T, X&gt;</code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;T: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptor.html' title='crypto::symmetriccipher::BlockEncryptor'>BlockEncryptor</a>, X: <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.CbcEncryptor.html' title='crypto::blockmodes::CbcEncryptor'>CbcEncryptor</a>&lt;T, X&gt;</code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;A: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptor.html' title='crypto::symmetriccipher::BlockEncryptor'>BlockEncryptor</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.CtrMode.html' title='crypto::blockmodes::CtrMode'>CtrMode</a>&lt;A&gt;</code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;A: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptorX8.html' title='crypto::symmetriccipher::BlockEncryptorX8'>BlockEncryptorX8</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.CtrModeX8.html' title='crypto::blockmodes::CtrModeX8'>CtrModeX8</a>&lt;A&gt;</code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/chacha20/struct.ChaCha20.html' title='crypto::chacha20::ChaCha20'>ChaCha20</a></code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/rc4/struct.Rc4.html' title='crypto::rc4::Rc4'>Rc4</a></code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/salsa20/struct.Salsa20.html' title='crypto::salsa20::Salsa20'>Salsa20</a></code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='http://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='../../crypto/symmetriccipher/trait.SynchronousStreamCipher.html' title='crypto::symmetriccipher::SynchronousStreamCipher'>SynchronousStreamCipher</a> + 'static&gt;</code></li>
+    <li><code>impl&lt;T: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptor.html' title='crypto::symmetriccipher::BlockEncryptor'>BlockEncryptor</a>, X: <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.EcbEncryptor.html' title='crypto::blockmodes::EcbEncryptor'>EcbEncryptor</a>&lt;T, X&gt;</code></li>
+<li><code>impl&lt;T: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptor.html' title='crypto::symmetriccipher::BlockEncryptor'>BlockEncryptor</a>, X: <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.CbcEncryptor.html' title='crypto::blockmodes::CbcEncryptor'>CbcEncryptor</a>&lt;T, X&gt;</code></li>
+<li><code>impl&lt;A: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptor.html' title='crypto::symmetriccipher::BlockEncryptor'>BlockEncryptor</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.CtrMode.html' title='crypto::blockmodes::CtrMode'>CtrMode</a>&lt;A&gt;</code></li>
+<li><code>impl&lt;A: <a class='trait' href='../../crypto/symmetriccipher/trait.BlockEncryptorX8.html' title='crypto::symmetriccipher::BlockEncryptorX8'>BlockEncryptorX8</a>&gt; <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/blockmodes/struct.CtrModeX8.html' title='crypto::blockmodes::CtrModeX8'>CtrModeX8</a>&lt;A&gt;</code></li>
+<li><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/chacha20/struct.ChaCha20.html' title='crypto::chacha20::ChaCha20'>ChaCha20</a></code></li>
+<li><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/hc128/struct.Hc128.html' title='crypto::hc128::Hc128'>Hc128</a></code></li>
+<li><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/rc4/struct.Rc4.html' title='crypto::rc4::Rc4'>Rc4</a></code></li>
+<li><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/salsa20/struct.Salsa20.html' title='crypto::salsa20::Salsa20'>Salsa20</a></code></li>
+<li><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='../../crypto/sosemanuk/struct.Sosemanuk.html' title='crypto::sosemanuk::Sosemanuk'>Sosemanuk</a></code></li>
+<li><code>impl <a class='trait' href='../../crypto/symmetriccipher/trait.Encryptor.html' title='crypto::symmetriccipher::Encryptor'>Encryptor</a> for <a class='struct' href='http://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='../../crypto/symmetriccipher/trait.SynchronousStreamCipher.html' title='crypto::symmetriccipher::SynchronousStreamCipher'>SynchronousStreamCipher</a> + 'static&gt;</code></li>
 </ul><script type="text/javascript" async
                               src="../../implementors/crypto/symmetriccipher/trait.Encryptor.js">
                       </script></section>
@@ -69,7 +73,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -84,7 +88,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -94,6 +98,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

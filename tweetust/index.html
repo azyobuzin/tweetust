@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'></p>
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'tweetust', ty: 'mod', relpath: '../'};</script>
     </section>
 
     <nav class="sub">
@@ -34,16 +34,18 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>tweetust</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span></span></h1>
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>tweetust</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/tweetust/lib.rs.html#1-99' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Tweetust is the simple wrapper for Twitter API.</p>
 
 <h1 id="getting-started" class='section-header'><a
@@ -66,10 +68,10 @@ to make <a href="conn/oauth_authenticator/struct.OAuthAuthenticator.html">OAuthA
 <h1 id="the-first-tweeting" class='section-header'><a
                            href="#the-first-tweeting">The first tweeting</a></h1>
 <p>When you created OAuthAuthenticator and set to <code>auth</code> variable, you can tweet in a minute.</p>
-<pre id='rust-example-rendered' class='rust '>
+<pre class='rust rust-example-rendered'>
 <span class='comment'>// extern crate tweetust; or use tweetust;</span>
 <span class='kw'>let</span> <span class='ident'>your_tweet</span> <span class='op'>=</span>
-  <span class='ident'>tweetust</span>::<span class='ident'>TwitterClient</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>auth</span>)
+  <span class='ident'>tweetust</span>::<span class='ident'>TwitterClient</span>::<span class='ident'>new</span>(<span class='ident'>auth</span>)
     .<span class='ident'>statuses</span>()
     .<span class='ident'>update</span>(<span class='string'>&quot;My First Tweet!&quot;</span>)
     .<span class='ident'>execute</span>();
@@ -79,55 +81,69 @@ to make <a href="conn/oauth_authenticator/struct.OAuthAuthenticator.html">OAuthA
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
 <table><tr><td><code>pub use clients::<a class='struct' href='../tweetust/clients/struct.TwitterClient.html' title='tweetust::clients::TwitterClient'>TwitterClient</a>;</code></td></tr><tr><td><code>pub use conn::application_only_authenticator::<a class='struct' href='../tweetust/conn/application_only_authenticator/struct.ApplicationOnlyAuthenticator.html' title='tweetust::conn::application_only_authenticator::ApplicationOnlyAuthenticator'>ApplicationOnlyAuthenticator</a>;</code></td></tr><tr><td><code>pub use conn::oauth_authenticator::<a class='struct' href='../tweetust/conn/oauth_authenticator/struct.OAuthAuthenticator.html' title='tweetust::conn::oauth_authenticator::OAuthAuthenticator'>OAuthAuthenticator</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='clients/index.html'
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='clients/index.html'
                                title='tweetust::clients'>clients</a></td>
-                        <td class='docblock short'></td>
+                        <td class='docblock short'>
+                             
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='conn/index.html'
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='conn/index.html'
                                title='tweetust::conn'>conn</a></td>
-                        <td class='docblock short'><p>The low-level functions for connecting to Twitter with any authorization.
+                        <td class='docblock short'>
+                             <p>The low-level functions for connecting to Twitter with any authorization.
 Usually, you will not use this module.</p>
-</td>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='models/index.html'
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='models/index.html'
                                title='tweetust::models'>models</a></td>
-                        <td class='docblock short'></td>
+                        <td class='docblock short'>
+                             
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='oauth/index.html'
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='oauth/index.html'
                                title='tweetust::oauth'>oauth</a></td>
-                        <td class='docblock short'><p>The functions to get your access token for
+                        <td class='docblock short'>
+                             <p>The functions to get your access token for
 <a href="https://dev.twitter.com/oauth/3-legged">3-legged OAuth</a> or
 <a href="https://dev.twitter.com/oauth/pin-based">PIN-based OAuth</a>.</p>
-</td>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='oauth2/index.html'
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='oauth2/index.html'
                                title='tweetust::oauth2'>oauth2</a></td>
-                        <td class='docblock short'><p>The functions to get and invalidate your access token for
+                        <td class='docblock short'>
+                             <p>The functions to get and invalidate your access token for
 <a href="https://dev.twitter.com/oauth/application-only">Application-only authentication</a>.</p>
-</td>
+
+                        </td>
                     </tr>
                 </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.TwitterError.html'
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.TwitterError.html'
                                title='tweetust::TwitterError'>TwitterError</a></td>
-                        <td class='docblock short'></td>
+                        <td class='docblock short'>
+                             
+                        </td>
                     </tr>
                 </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.TwitterResult.html'
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.TwitterResult.html'
                                title='tweetust::TwitterResult'>TwitterResult</a></td>
-                        <td class='docblock short'></td>
+                        <td class='docblock short'>
+                             
+                        </td>
                     </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
@@ -136,7 +152,7 @@ Usually, you will not use this module.</p>
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -151,7 +167,7 @@ Usually, you will not use this module.</p>
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -161,6 +177,10 @@ Usually, you will not use this module.</p>
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>sha2</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.Sha224.html' title='The SHA-256 hash algorithm with the SHA-224 initial hash value. The result is truncated to 224 bits.'>Sha224</a><a class='struct ' href='struct.Sha256.html' title='The SHA-256 hash algorithm with the SHA-256 initial hash value.'>Sha256</a><a class='struct ' href='struct.Sha384.html' title='The SHA-512 hash algorithm with the SHA-384 initial hash value. The result is truncated to 384 bits.'>Sha384</a><a class='struct ' href='struct.Sha512.html' title='The SHA-512 hash algorithm with the SHA-512 initial hash value.'>Sha512</a><a class='struct ' href='struct.Sha512Trunc224.html' title='The SHA-512 hash algorithm with the SHA-512/224 initial hash value. The result is truncated to 224 bits.'>Sha512Trunc224</a><a class='struct ' href='struct.Sha512Trunc256.html' title='The SHA-512 hash algorithm with the SHA-512/256 initial hash value. The result is truncated to 256 bits.'>Sha512Trunc256</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.sha256_digest_block.html' title='Process a block with the SHA-256 algorithm. (See more...)'>sha256_digest_block</a><a class='fn ' href='fn.sha256_digest_block_u32.html' title='Process a block with the SHA-256 algorithm.'>sha256_digest_block_u32</a><a class='fn current' href='fn.sha256_digest_round_x2.html' title='Emulates `llvm.x86.sha256rnds2` intrinsic.'>sha256_digest_round_x2</a><a class='fn ' href='fn.sha256_schedule_x4.html' title='Performs 4 rounds of the SHA-256 message schedule update.'>sha256_schedule_x4</a><a class='fn ' href='fn.sha512_digest_block.html' title='Process a block with the SHA-512 algorithm. (See more...)'>sha512_digest_block</a><a class='fn ' href='fn.sha512_digest_block_u64.html' title='Process a block with the SHA-512 algorithm.'>sha512_digest_block_u64</a><a class='fn ' href='fn.sha512_digest_round.html' title='Performs one round of the SHA-512 message block digest.'>sha512_digest_round</a><a class='fn ' href='fn.sha512_schedule_x2.html' title='Performs 2 rounds of the SHA-512 message schedule update.'>sha512_schedule_x2</a></div>
+        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>sha2</a></p><script>window.sidebarCurrent = {name: 'sha256_digest_round_x2', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,17 +34,19 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>sha2</a>::<wbr><a class='fn' href=''>sha256_digest_round_x2</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-93370' href='../../src/crypto/sha2.rs.html#137-171'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn sha256_digest_round_x2(cdgh: <a class='struct' href='http://doc.rust-lang.org/nightly/core/simd/struct.u32x4.html' title='core::simd::u32x4'>u32x4</a>, abef: <a class='struct' href='http://doc.rust-lang.org/nightly/core/simd/struct.u32x4.html' title='core::simd::u32x4'>u32x4</a>, wk: <a class='struct' href='http://doc.rust-lang.org/nightly/core/simd/struct.u32x4.html' title='core::simd::u32x4'>u32x4</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/core/simd/struct.u32x4.html' title='core::simd::u32x4'>u32x4</a></pre><div class='docblock'><p>Emulates <code>llvm.x86.sha256rnds2</code> intrinsic.</p>
+<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>sha2</a>::<wbr><a class='fn' href=''>sha256_digest_round_x2</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-93541' class='srclink' href='../../src/crypto/sha2.rs.html#137-171' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn sha256_digest_round_x2(cdgh: u32x4, abef: u32x4, wk: u32x4) -&gt; u32x4</pre><div class='docblock'><p>Emulates <code>llvm.x86.sha256rnds2</code> intrinsic.</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -52,7 +54,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -67,7 +69,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -77,6 +79,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

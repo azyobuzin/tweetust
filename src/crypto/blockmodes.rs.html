@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/blockmodes.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rust-crypto-0.2.31/src/blockmodes.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>blockmodes.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -1467,6 +1467,20 @@
 <span id="1425">1425</span>
 <span id="1426">1426</span>
 <span id="1427">1427</span>
+<span id="1428">1428</span>
+<span id="1429">1429</span>
+<span id="1430">1430</span>
+<span id="1431">1431</span>
+<span id="1432">1432</span>
+<span id="1433">1433</span>
+<span id="1434">1434</span>
+<span id="1435">1435</span>
+<span id="1436">1436</span>
+<span id="1437">1437</span>
+<span id="1438">1438</span>
+<span id="1439">1439</span>
+<span id="1440">1440</span>
+<span id="1441">1441</span>
 </pre><pre class='rust '>
 <span class='comment'>// Licensed under the Apache License, Version 2.0 &lt;LICENSE-APACHE or</span>
 <span class='comment'>// http://www.apache.org/licenses/LICENSE-2.0&gt; or the MIT license</span>
@@ -1480,12 +1494,11 @@
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>;
 
 <span class='kw'>use</span> <span class='ident'>buffer</span>::{<span class='ident'>ReadBuffer</span>, <span class='ident'>WriteBuffer</span>, <span class='ident'>OwnedReadBuffer</span>, <span class='ident'>OwnedWriteBuffer</span>, <span class='ident'>BufferResult</span>,
     <span class='ident'>RefReadBuffer</span>, <span class='ident'>RefWriteBuffer</span>};
 <span class='kw'>use</span> <span class='ident'>buffer</span>::<span class='ident'>BufferResult</span>::{<span class='ident'>BufferUnderflow</span>, <span class='ident'>BufferOverflow</span>};
-<span class='kw'>use</span> <span class='ident'>cryptoutil</span>::<span class='ident'>symm_enc_or_dec</span>;
+<span class='kw'>use</span> <span class='ident'>cryptoutil</span>::{<span class='self'>self</span>, <span class='ident'>symm_enc_or_dec</span>};
 <span class='kw'>use</span> <span class='ident'>symmetriccipher</span>::{<span class='ident'>BlockEncryptor</span>, <span class='ident'>BlockEncryptorX8</span>, <span class='ident'>Encryptor</span>, <span class='ident'>BlockDecryptor</span>, <span class='ident'>Decryptor</span>,
     <span class='ident'>SynchronousStreamCipher</span>, <span class='ident'>SymmetricCipherError</span>};
 <span class='kw'>use</span> <span class='ident'>symmetriccipher</span>::<span class='ident'>SymmetricCipherError</span>::{<span class='ident'>InvalidPadding</span>, <span class='ident'>InvalidLength</span>};
@@ -1513,7 +1526,7 @@
 
 <span class='doccomment'>/// The BlockEngine is implemented as a state machine with the following states. See comments in the</span>
 <span class='doccomment'>/// BlockEngine code for more information on the states.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>enum</span> <span class='ident'>BlockEngineState</span> {
     <span class='ident'>FastMode</span>,
     <span class='ident'>NeedInput</span>,
@@ -1563,15 +1576,15 @@
 <span class='kw'>fn</span> <span class='ident'>update_history</span>(<span class='ident'>in_hist</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>], <span class='ident'>out_hist</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>], <span class='ident'>last_in</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>last_out</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
     <span class='kw'>let</span> <span class='ident'>in_hist_len</span> <span class='op'>=</span> <span class='ident'>in_hist</span>.<span class='ident'>len</span>();
     <span class='kw'>if</span> <span class='ident'>in_hist_len</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
-        <span class='ident'>slice</span>::<span class='ident'>bytes</span>::<span class='ident'>copy_memory</span>(
-            <span class='ident'>in_hist</span>,
-            <span class='kw-2'>&amp;</span><span class='ident'>last_in</span>[<span class='ident'>last_in</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>in_hist_len</span>..]);
+        <span class='ident'>cryptoutil</span>::<span class='ident'>copy_memory</span>(
+            <span class='kw-2'>&amp;</span><span class='ident'>last_in</span>[<span class='ident'>last_in</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>in_hist_len</span>..],
+            <span class='ident'>in_hist</span>);
     }
     <span class='kw'>let</span> <span class='ident'>out_hist_len</span> <span class='op'>=</span> <span class='ident'>out_hist</span>.<span class='ident'>len</span>();
     <span class='kw'>if</span> <span class='ident'>out_hist_len</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
-        <span class='ident'>slice</span>::<span class='ident'>bytes</span>::<span class='ident'>copy_memory</span>(
-            <span class='ident'>out_hist</span>,
-            <span class='kw-2'>&amp;</span><span class='ident'>last_out</span>[<span class='ident'>last_out</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>out_hist_len</span>..]);
+        <span class='ident'>cryptoutil</span>::<span class='ident'>copy_memory</span>(
+            <span class='kw-2'>&amp;</span><span class='ident'>last_out</span>[<span class='ident'>last_out</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>out_hist_len</span>..],
+            <span class='ident'>out_hist</span>);
     }
 }
 
@@ -1670,8 +1683,8 @@
             <span class='ident'>output</span>.<span class='ident'>rewind</span>(<span class='self'>self</span>.<span class='ident'>out_hist</span>.<span class='ident'>len</span>());
             <span class='kw'>let</span> <span class='ident'>last_out</span> <span class='op'>=</span> <span class='ident'>output</span>.<span class='ident'>take_next</span>(<span class='self'>self</span>.<span class='ident'>out_hist</span>.<span class='ident'>len</span>());
             <span class='ident'>update_history</span>(
-                <span class='self'>self</span>.<span class='ident'>in_hist</span>.<span class='ident'>as_mut_slice</span>(),
-                <span class='self'>self</span>.<span class='ident'>out_hist</span>.<span class='ident'>as_mut_slice</span>(),
+                <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>in_hist</span>,
+                <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out_hist</span>,
                 <span class='ident'>last_in</span>,
                 <span class='ident'>last_out</span>);
         }
@@ -1703,8 +1716,8 @@
                     <span class='ident'>next_in</span>,
                     <span class='ident'>next_out</span>);
                 <span class='ident'>update_history</span>(
-                    <span class='ident'>me</span>.<span class='ident'>in_hist</span>.<span class='ident'>as_mut_slice</span>(),
-                    <span class='ident'>me</span>.<span class='ident'>out_hist</span>.<span class='ident'>as_mut_slice</span>(),
+                    <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>me</span>.<span class='ident'>in_hist</span>,
+                    <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>me</span>.<span class='ident'>out_hist</span>,
                     <span class='ident'>next_in</span>,
                     <span class='ident'>next_out</span>);
             }
@@ -1882,13 +1895,13 @@
     }
     <span class='kw'>fn</span> <span class='ident'>reset_with_history</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>in_hist</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>out_hist</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
         <span class='self'>self</span>.<span class='ident'>reset</span>();
-        <span class='ident'>slice</span>::<span class='ident'>bytes</span>::<span class='ident'>copy_memory</span>(<span class='self'>self</span>.<span class='ident'>in_hist</span>.<span class='ident'>as_mut_slice</span>(), <span class='ident'>in_hist</span>);
-        <span class='ident'>slice</span>::<span class='ident'>bytes</span>::<span class='ident'>copy_memory</span>(<span class='self'>self</span>.<span class='ident'>out_hist</span>.<span class='ident'>as_mut_slice</span>(), <span class='ident'>out_hist</span>);
+        <span class='ident'>cryptoutil</span>::<span class='ident'>copy_memory</span>(<span class='ident'>in_hist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>in_hist</span>);
+        <span class='ident'>cryptoutil</span>::<span class='ident'>copy_memory</span>(<span class='ident'>out_hist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out_hist</span>);
     }
 }
 
 <span class='doccomment'>/// No padding mode for ECB and CBC encryption</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>NoPadding</span>;
 
 <span class='kw'>impl</span> <span class='ident'>PaddingProcessor</span> <span class='kw'>for</span> <span class='ident'>NoPadding</span> {
@@ -1897,7 +1910,7 @@
 }
 
 <span class='doccomment'>/// PKCS padding mode for ECB and CBC encryption</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PkcsPadding</span>;
 
 <span class='comment'>// This class implements both encryption padding, where padding is added, and decryption padding,</span>
@@ -2045,7 +2058,7 @@
         <span class='kw'>for</span> ((<span class='kw-2'>&amp;</span><span class='ident'>x</span>, <span class='kw-2'>&amp;</span><span class='ident'>y</span>), <span class='ident'>o</span>) <span class='kw'>in</span> <span class='ident'>input</span>.<span class='ident'>iter</span>().<span class='ident'>zip</span>(<span class='ident'>out_hist</span>.<span class='ident'>iter</span>()).<span class='ident'>zip</span>(<span class='self'>self</span>.<span class='ident'>temp</span>.<span class='ident'>iter_mut</span>()) {
             <span class='op'>*</span><span class='ident'>o</span> <span class='op'>=</span> <span class='ident'>x</span> <span class='op'>^</span> <span class='ident'>y</span>;
         }
-        <span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>temp</span>[..], <span class='ident'>output</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>temp</span>[..], <span class='ident'>output</span>);
     }
 }
 
@@ -2090,7 +2103,7 @@
 
 <span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BlockDecryptor</span><span class='op'>&gt;</span> <span class='ident'>BlockProcessor</span> <span class='kw'>for</span> <span class='ident'>CbcDecryptorProcessor</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>process_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>in_hist</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], _: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>output</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
-        <span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>decrypt_block</span>(<span class='ident'>input</span>, <span class='self'>self</span>.<span class='ident'>temp</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>decrypt_block</span>(<span class='ident'>input</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>temp</span>);
         <span class='kw'>for</span> ((<span class='kw-2'>&amp;</span><span class='ident'>x</span>, <span class='kw-2'>&amp;</span><span class='ident'>y</span>), <span class='ident'>o</span>) <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>temp</span>.<span class='ident'>iter</span>().<span class='ident'>zip</span>(<span class='ident'>in_hist</span>.<span class='ident'>iter</span>()).<span class='ident'>zip</span>(<span class='ident'>output</span>.<span class='ident'>iter_mut</span>()) {
             <span class='op'>*</span><span class='ident'>o</span> <span class='op'>=</span> <span class='ident'>x</span> <span class='op'>^</span> <span class='ident'>y</span>;
         }
@@ -2134,7 +2147,7 @@
 <span class='kw'>fn</span> <span class='ident'>add_ctr</span>(<span class='ident'>ctr</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>], <span class='kw-2'>mut</span> <span class='ident'>ammount</span>: <span class='ident'>u8</span>) {
     <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>ctr</span>.<span class='ident'>iter_mut</span>().<span class='ident'>rev</span>() {
         <span class='kw'>let</span> <span class='ident'>prev</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>i</span>;
-        <span class='op'>*</span><span class='ident'>i</span> <span class='op'>+=</span> <span class='ident'>ammount</span>;
+        <span class='op'>*</span><span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>i</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>ammount</span>);
         <span class='kw'>if</span> <span class='op'>*</span><span class='ident'>i</span> <span class='op'>&gt;=</span> <span class='ident'>prev</span> {
             <span class='kw'>break</span>;
         }
@@ -2160,7 +2173,7 @@
         }
     }
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>ctr</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
-        <span class='ident'>slice</span>::<span class='ident'>bytes</span>::<span class='ident'>copy_memory</span>(<span class='self'>self</span>.<span class='ident'>ctr</span>.<span class='ident'>as_mut_slice</span>(), <span class='ident'>ctr</span>);
+        <span class='ident'>cryptoutil</span>::<span class='ident'>copy_memory</span>(<span class='ident'>ctr</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>ctr</span>);
         <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>reset</span>();
     }
     <span class='kw'>fn</span> <span class='ident'>process</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>output</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
@@ -2171,7 +2184,7 @@
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>is_empty</span>() {
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>wb</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>borrow_write_buffer</span>();
                 <span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>ctr</span>[..], <span class='ident'>wb</span>.<span class='ident'>take_remaining</span>());
-                <span class='ident'>add_ctr</span>(<span class='self'>self</span>.<span class='ident'>ctr</span>.<span class='ident'>as_mut_slice</span>(), <span class='number'>1</span>);
+                <span class='ident'>add_ctr</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>ctr</span>, <span class='number'>1</span>);
             }
             <span class='kw'>let</span> <span class='ident'>count</span> <span class='op'>=</span> <span class='ident'>cmp</span>::<span class='ident'>min</span>(<span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>remaining</span>(), <span class='ident'>len</span> <span class='op'>-</span> <span class='ident'>i</span>);
             <span class='kw'>let</span> <span class='ident'>bytes_it</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>take_next</span>(<span class='ident'>count</span>).<span class='ident'>iter</span>();
@@ -2214,7 +2227,7 @@
 
 <span class='kw'>fn</span> <span class='ident'>construct_ctr_x8</span>(<span class='ident'>in_ctr</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>out_ctr_x8</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
     <span class='kw'>for</span> (<span class='ident'>i</span>, <span class='ident'>ctr_i</span>) <span class='kw'>in</span> <span class='ident'>out_ctr_x8</span>.<span class='ident'>chunks_mut</span>(<span class='ident'>in_ctr</span>.<span class='ident'>len</span>()).<span class='ident'>enumerate</span>() {
-        <span class='ident'>slice</span>::<span class='ident'>bytes</span>::<span class='ident'>copy_memory</span>(<span class='ident'>ctr_i</span>, <span class='ident'>in_ctr</span>);
+        <span class='ident'>cryptoutil</span>::<span class='ident'>copy_memory</span>(<span class='ident'>in_ctr</span>, <span class='ident'>ctr_i</span>);
         <span class='ident'>add_ctr</span>(<span class='ident'>ctr_i</span>, <span class='ident'>i</span> <span class='kw'>as</span> <span class='ident'>u8</span>);
     }
 }
@@ -2224,7 +2237,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>algo</span>: <span class='ident'>A</span>, <span class='ident'>ctr</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>CtrModeX8</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>block_size</span> <span class='op'>=</span> <span class='ident'>algo</span>.<span class='ident'>block_size</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ctr_x8</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>block_size</span> <span class='op'>*</span> <span class='number'>8</span>).<span class='ident'>collect</span>();
-        <span class='ident'>construct_ctr_x8</span>(<span class='ident'>ctr</span>, <span class='ident'>ctr_x8</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>construct_ctr_x8</span>(<span class='ident'>ctr</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>ctr_x8</span>);
         <span class='ident'>CtrModeX8</span> {
             <span class='ident'>algo</span>: <span class='ident'>algo</span>,
             <span class='ident'>ctr_x8</span>: <span class='ident'>ctr_x8</span>,
@@ -2232,7 +2245,7 @@
         }
     }
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>ctr</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
-        <span class='ident'>construct_ctr_x8</span>(<span class='ident'>ctr</span>, <span class='self'>self</span>.<span class='ident'>ctr_x8</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>construct_ctr_x8</span>(<span class='ident'>ctr</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>ctr_x8</span>);
         <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>reset</span>();
     }
     <span class='kw'>fn</span> <span class='ident'>process</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>output</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
@@ -2244,7 +2257,7 @@
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>is_empty</span>() {
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>wb</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>borrow_write_buffer</span>();
                 <span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>encrypt_block_x8</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>ctr_x8</span>[..], <span class='ident'>wb</span>.<span class='ident'>take_remaining</span>());
-                <span class='kw'>for</span> <span class='ident'>ctr_i</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>ctr_x8</span>.<span class='ident'>as_mut_slice</span>().<span class='ident'>chunks_mut</span>(<span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>block_size</span>()) {
+                <span class='kw'>for</span> <span class='ident'>ctr_i</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>ctr_x8</span>.<span class='ident'>chunks_mut</span>(<span class='self'>self</span>.<span class='ident'>algo</span>.<span class='ident'>block_size</span>()) {
                     <span class='ident'>add_ctr</span>(<span class='ident'>ctr_i</span>, <span class='number'>8</span>);
                 }
             }
@@ -2293,7 +2306,6 @@
     <span class='kw'>use</span> <span class='ident'>symmetriccipher</span>::<span class='ident'>SymmetricCipherError</span>::{<span class='self'>self</span>, <span class='ident'>InvalidLength</span>, <span class='ident'>InvalidPadding</span>};
 
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>;
-    <span class='kw'>use</span> <span class='ident'>test</span>::<span class='ident'>Bencher</span>;
 
     <span class='kw'>trait</span> <span class='ident'>CipherTest</span> {
         <span class='kw'>fn</span> <span class='ident'>get_plain</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u8</span>];
@@ -2456,7 +2468,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>cipher_out</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>test</span>.<span class='ident'>get_cipher</span>().<span class='ident'>len</span>()).<span class='ident'>collect</span>();
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buff_in</span> <span class='op'>=</span> <span class='ident'>RefReadBuffer</span>::<span class='ident'>new</span>(<span class='ident'>test</span>.<span class='ident'>get_plain</span>());
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buff_out</span> <span class='op'>=</span> <span class='ident'>RefWriteBuffer</span>::<span class='ident'>new</span>(<span class='ident'>cipher_out</span>.<span class='ident'>as_mut_slice</span>());
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buff_out</span> <span class='op'>=</span> <span class='ident'>RefWriteBuffer</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>cipher_out</span>);
             <span class='kw'>match</span> <span class='ident'>enc</span>.<span class='ident'>encrypt</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buff_in</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buff_out</span>, <span class='boolval'>true</span>) {
                 <span class='prelude-val'>Ok</span>(<span class='ident'>BufferUnderflow</span>) <span class='op'>=&gt;</span> {}
                 <span class='prelude-val'>Ok</span>(<span class='ident'>BufferOverflow</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Encryption not completed&quot;</span>),
@@ -2468,7 +2480,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>plain_out</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>test</span>.<span class='ident'>get_plain</span>().<span class='ident'>len</span>()).<span class='ident'>collect</span>();
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buff_in</span> <span class='op'>=</span> <span class='ident'>RefReadBuffer</span>::<span class='ident'>new</span>(<span class='ident'>test</span>.<span class='ident'>get_cipher</span>());
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buff_out</span> <span class='op'>=</span> <span class='ident'>RefWriteBuffer</span>::<span class='ident'>new</span>(<span class='ident'>plain_out</span>.<span class='ident'>as_mut_slice</span>());
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buff_out</span> <span class='op'>=</span> <span class='ident'>RefWriteBuffer</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>plain_out</span>);
             <span class='kw'>match</span> <span class='ident'>dec</span>.<span class='ident'>decrypt</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buff_in</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buff_out</span>, <span class='boolval'>true</span>) {
                 <span class='prelude-val'>Ok</span>(<span class='ident'>BufferUnderflow</span>) <span class='op'>=&gt;</span> {}
                 <span class='prelude-val'>Ok</span>(<span class='ident'>BufferOverflow</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Decryption not completed&quot;</span>),
@@ -2597,7 +2609,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>cipher_out</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>test</span>.<span class='ident'>get_cipher</span>().<span class='ident'>len</span>()).<span class='ident'>collect</span>();
         <span class='ident'>run_inc</span>(
             <span class='ident'>test</span>.<span class='ident'>get_plain</span>(),
-            <span class='ident'>cipher_out</span>.<span class='ident'>as_mut_slice</span>(),
+            <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>cipher_out</span>,
             <span class='op'>|</span><span class='ident'>in_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefReadBuffer</span>, <span class='ident'>out_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefWriteBuffer</span>, <span class='ident'>eof</span>: <span class='ident'>bool</span><span class='op'>|</span> {
                 <span class='ident'>enc</span>.<span class='ident'>encrypt</span>(<span class='ident'>in_buff</span>, <span class='ident'>out_buff</span>, <span class='ident'>eof</span>)
             },
@@ -2609,7 +2621,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>plain_out</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>test</span>.<span class='ident'>get_plain</span>().<span class='ident'>len</span>()).<span class='ident'>collect</span>();
         <span class='ident'>run_inc</span>(
             <span class='ident'>test</span>.<span class='ident'>get_cipher</span>(),
-            <span class='ident'>plain_out</span>.<span class='ident'>as_mut_slice</span>(),
+            <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>plain_out</span>,
             <span class='op'>|</span><span class='ident'>in_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefReadBuffer</span>, <span class='ident'>out_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefWriteBuffer</span>, <span class='ident'>eof</span>: <span class='ident'>bool</span><span class='op'>|</span> {
                 <span class='ident'>dec</span>.<span class='ident'>decrypt</span>(<span class='ident'>in_buff</span>, <span class='ident'>out_buff</span>, <span class='ident'>eof</span>)
             },
@@ -2645,14 +2657,14 @@
             <span class='ident'>rng2</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='ident'>max_size</span>)
         };
 
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='number'>1000</span>) {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> (<span class='number'>0</span>..<span class='number'>1000</span>) {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>enc</span> <span class='op'>=</span> <span class='ident'>new_enc</span>();
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dec</span> <span class='op'>=</span> <span class='ident'>new_dec</span>();
 
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>cipher_out</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>test</span>.<span class='ident'>get_cipher</span>().<span class='ident'>len</span>()).<span class='ident'>collect</span>();
             <span class='ident'>run_inc</span>(
                 <span class='ident'>test</span>.<span class='ident'>get_plain</span>(),
-                <span class='ident'>cipher_out</span>.<span class='ident'>as_mut_slice</span>(),
+                <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>cipher_out</span>,
                 <span class='op'>|</span><span class='ident'>in_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefReadBuffer</span>, <span class='ident'>out_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefWriteBuffer</span>, <span class='ident'>eof</span>: <span class='ident'>bool</span><span class='op'>|</span> {
                     <span class='ident'>enc</span>.<span class='ident'>encrypt</span>(<span class='ident'>in_buff</span>, <span class='ident'>out_buff</span>, <span class='ident'>eof</span>)
                 },
@@ -2664,7 +2676,7 @@
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>plain_out</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0</span>).<span class='ident'>take</span>(<span class='ident'>test</span>.<span class='ident'>get_plain</span>().<span class='ident'>len</span>()).<span class='ident'>collect</span>();
             <span class='ident'>run_inc</span>(
                 <span class='ident'>test</span>.<span class='ident'>get_cipher</span>(),
-                <span class='ident'>plain_out</span>.<span class='ident'>as_mut_slice</span>(),
+                <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>plain_out</span>,
                 <span class='op'>|</span><span class='ident'>in_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefReadBuffer</span>, <span class='ident'>out_buff</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>RefWriteBuffer</span>, <span class='ident'>eof</span>: <span class='ident'>bool</span><span class='op'>|</span> {
                     <span class='ident'>dec</span>.<span class='ident'>decrypt</span>(<span class='ident'>in_buff</span>, <span class='ident'>out_buff</span>, <span class='ident'>eof</span>)
                 },
@@ -2791,6 +2803,22 @@
                 });
         }
     }
+}
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>test</span>, <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;with-bench&quot;</span>))]</span>
+<span class='kw'>mod</span> <span class='ident'>bench</span> {
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
+
+    <span class='kw'>use</span> <span class='ident'>aessafe</span>;
+    <span class='kw'>use</span> <span class='ident'>blockmodes</span>::{<span class='ident'>EcbEncryptor</span>, <span class='ident'>EcbDecryptor</span>, <span class='ident'>CbcEncryptor</span>, <span class='ident'>CbcDecryptor</span>, <span class='ident'>CtrMode</span>, <span class='ident'>CtrModeX8</span>,
+        <span class='ident'>NoPadding</span>, <span class='ident'>PkcsPadding</span>};
+    <span class='kw'>use</span> <span class='ident'>buffer</span>::{<span class='ident'>ReadBuffer</span>, <span class='ident'>WriteBuffer</span>, <span class='ident'>RefReadBuffer</span>, <span class='ident'>RefWriteBuffer</span>, <span class='ident'>BufferResult</span>};
+    <span class='kw'>use</span> <span class='ident'>buffer</span>::<span class='ident'>BufferResult</span>::{<span class='ident'>BufferUnderflow</span>, <span class='ident'>BufferOverflow</span>};
+    <span class='kw'>use</span> <span class='ident'>symmetriccipher</span>::{<span class='ident'>Encryptor</span>, <span class='ident'>Decryptor</span>};
+    <span class='kw'>use</span> <span class='ident'>symmetriccipher</span>::<span class='ident'>SymmetricCipherError</span>::{<span class='self'>self</span>, <span class='ident'>InvalidLength</span>, <span class='ident'>InvalidPadding</span>};
+
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>;
+    <span class='kw'>use</span> <span class='ident'>test</span>::<span class='ident'>Bencher</span>;
 
     <span class='attribute'>#[<span class='ident'>bench</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>aes_ecb_no_padding_bench</span>(<span class='ident'>bh</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Bencher</span>) {
@@ -2903,7 +2931,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -2918,7 +2946,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -2928,6 +2956,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

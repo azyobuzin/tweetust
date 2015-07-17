@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/header/common/if_none_match.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/hyper-0.6.4/src/header/common/if_none_match.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>if_none_match.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -123,59 +123,63 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
-<span id="84">84</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>header</span>::{<span class='ident'>Header</span>, <span class='ident'>HeaderFormat</span>, <span class='ident'>EntityTag</span>};
-<span class='kw'>use</span> <span class='ident'>header</span>::<span class='ident'>parsing</span>::{<span class='ident'>from_comma_delimited</span>, <span class='ident'>fmt_comma_delimited</span>, <span class='ident'>from_one_raw_str</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>};
+<span class='kw'>use</span> <span class='ident'>header</span>::<span class='ident'>EntityTag</span>;
 
-<span class='doccomment'>/// The `If-None-Match` header defined by HTTP/1.1.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// The &quot;If-None-Match&quot; header field makes the request method conditional</span>
-<span class='doccomment'>/// on a recipient cache or origin server either not having any current</span>
-<span class='doccomment'>/// representation of the target resource, when the field-value is &quot;*&quot;,</span>
-<span class='doccomment'>/// or having a selected representation with an entity-tag that does not</span>
-<span class='doccomment'>/// match any of those listed in the field-value.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// A recipient MUST use the weak comparison function when comparing</span>
-<span class='doccomment'>/// entity-tags for If-None-Match (Section 2.3.2), since weak entity-tags</span>
-<span class='doccomment'>/// can be used for cache validation even if there have been changes to</span>
-<span class='doccomment'>/// the representation data.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Spec: https://tools.ietf.org/html/rfc7232#section-3.2</span>
+<span class='macro'>header</span><span class='macro'>!</span> {
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;`If-None-Match` header, defined in&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;[RFC7232](https://tools.ietf.org/html/rfc7232#section-3.2)&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;The `If-None-Match` header field makes the request method conditional&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;on a recipient cache or origin server either not having any current&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;representation of the target resource, when the field-value is \&quot;*\&quot;,&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;or having a selected representation with an entity-tag that does not&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;match any of those listed in the field-value.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;A recipient MUST use the weak comparison function when comparing&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;entity-tags for If-None-Match (Section 2.3.2), since weak entity-tags&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;can be used for cache validation even if there have been changes to&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;the representation data.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# ABNF&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```plain&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;If-None-Match = \&quot;*\&quot; / 1#entity-tag&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# Example values&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;* `\&quot;xyzzy\&quot;`&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;* `W/\&quot;xyzzy\&quot;`&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;* `\&quot;xyzzy\&quot;, \&quot;r2d2xxxx\&quot;, \&quot;c3piozzzz\&quot;`&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;* `W/\&quot;xyzzy\&quot;, W/\&quot;r2d2xxxx\&quot;, W/\&quot;c3piozzzz\&quot;`&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;* `*`&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# Examples&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;use hyper::header::{Headers, IfNoneMatch};&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;let mut headers = Headers::new();&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;headers.set(IfNoneMatch::Any);&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;use hyper::header::{Headers, IfNoneMatch, EntityTag};&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;let mut headers = Headers::new();&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;headers.set(&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;    IfNoneMatch::Items(vec![&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;        EntityTag::new(false, \&quot;xyzzy\&quot;.to_owned()),&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;        EntityTag::new(false, \&quot;foobar\&quot;.to_owned()),&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;        EntityTag::new(false, \&quot;bazquux\&quot;.to_owned()),&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;    ])&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;);&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    (<span class='ident'>IfNoneMatch</span>, <span class='string'>&quot;If-None-Match&quot;</span>) <span class='op'>=&gt;</span> {<span class='ident'>Any</span> <span class='op'>/</span> (<span class='ident'>EntityTag</span>)<span class='op'>+</span>}
 
-<span class='doccomment'>/// The `If-None-Match` header field.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>IfNoneMatch</span> {
-    <span class='doccomment'>/// This corresponds to &#39;*&#39;.</span>
-    <span class='ident'>Any</span>,
-    <span class='doccomment'>/// The header field names which will influence the response representation.</span>
-    <span class='ident'>EntityTags</span>(<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>EntityTag</span><span class='op'>&gt;</span>)
-}
-
-<span class='kw'>impl</span> <span class='ident'>Header</span> <span class='kw'>for</span> <span class='ident'>IfNoneMatch</span> {
-    <span class='kw'>fn</span> <span class='ident'>header_name</span>() <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> {
-        <span class='string'>&quot;If-None-Match&quot;</span>
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>parse_header</span>(<span class='ident'>raw</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>IfNoneMatch</span><span class='op'>&gt;</span> {
-        <span class='ident'>from_one_raw_str</span>(<span class='ident'>raw</span>).<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>s</span>: <span class='ident'>String</span><span class='op'>|</span> {
-            <span class='kw'>let</span> <span class='ident'>slice</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>s</span>[..];
-            <span class='kw'>match</span> <span class='ident'>slice</span> {
-                <span class='string'>&quot;&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-                <span class='string'>&quot;*&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>IfNoneMatch</span>::<span class='ident'>Any</span>),
-                _ <span class='op'>=&gt;</span> <span class='ident'>from_comma_delimited</span>(<span class='ident'>raw</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>vec</span><span class='op'>|</span> <span class='ident'>IfNoneMatch</span>::<span class='ident'>EntityTags</span>(<span class='ident'>vec</span>)),
-            }
-        })
-    }
-}
-
-<span class='kw'>impl</span> <span class='ident'>HeaderFormat</span> <span class='kw'>for</span> <span class='ident'>IfNoneMatch</span> {
-    <span class='kw'>fn</span> <span class='ident'>fmt_header</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>fmt</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>IfNoneMatch</span>::<span class='ident'>Any</span> <span class='op'>=&gt;</span> { <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>fmt</span>, <span class='string'>&quot;*&quot;</span>) }
-            <span class='ident'>IfNoneMatch</span>::<span class='ident'>EntityTags</span>(<span class='kw-2'>ref</span> <span class='ident'>fields</span>) <span class='op'>=&gt;</span> { <span class='ident'>fmt_comma_delimited</span>(<span class='ident'>fmt</span>, <span class='kw-2'>&amp;</span><span class='ident'>fields</span>[..]) }
-        }
+    <span class='ident'>test_if_none_match</span> {
+        <span class='macro'>test_header</span><span class='macro'>!</span>(<span class='ident'>test1</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;\&quot;xyzzy\&quot;&quot;</span>]);
+        <span class='macro'>test_header</span><span class='macro'>!</span>(<span class='ident'>test2</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;W/\&quot;xyzzy\&quot;&quot;</span>]);
+        <span class='macro'>test_header</span><span class='macro'>!</span>(<span class='ident'>test3</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;\&quot;xyzzy\&quot;, \&quot;r2d2xxxx\&quot;, \&quot;c3piozzzz\&quot;&quot;</span>]);
+        <span class='macro'>test_header</span><span class='macro'>!</span>(<span class='ident'>test4</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;W/\&quot;xyzzy\&quot;, W/\&quot;r2d2xxxx\&quot;, W/\&quot;c3piozzzz\&quot;&quot;</span>]);
+        <span class='macro'>test_header</span><span class='macro'>!</span>(<span class='ident'>test5</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;*&quot;</span>]);
     }
 }
 
@@ -187,24 +191,18 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_if_none_match</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>if_none_match</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>IfNoneMatch</span><span class='op'>&gt;</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>if_none_match</span>: ::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>IfNoneMatch</span><span class='op'>&gt;</span>;
 
-        <span class='ident'>if_none_match</span> <span class='op'>=</span> <span class='ident'>Header</span>::<span class='ident'>parse_header</span>([<span class='string'>b&quot;*&quot;</span>.<span class='ident'>to_vec</span>()].<span class='ident'>as_slice</span>());
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>if_none_match</span>, <span class='prelude-val'>Some</span>(<span class='ident'>IfNoneMatch</span>::<span class='ident'>Any</span>));
+        <span class='ident'>if_none_match</span> <span class='op'>=</span> <span class='ident'>Header</span>::<span class='ident'>parse_header</span>([<span class='string'>b&quot;*&quot;</span>.<span class='ident'>to_vec</span>()].<span class='ident'>as_ref</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>if_none_match</span>.<span class='ident'>ok</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>IfNoneMatch</span>::<span class='ident'>Any</span>));
 
-        <span class='ident'>if_none_match</span> <span class='op'>=</span> <span class='ident'>Header</span>::<span class='ident'>parse_header</span>([<span class='string'>b&quot;\&quot;foobar\&quot;, W/\&quot;weak-etag\&quot;&quot;</span>.<span class='ident'>to_vec</span>()].<span class='ident'>as_slice</span>());
+        <span class='ident'>if_none_match</span> <span class='op'>=</span> <span class='ident'>Header</span>::<span class='ident'>parse_header</span>([<span class='string'>b&quot;\&quot;foobar\&quot;, W/\&quot;weak-etag\&quot;&quot;</span>.<span class='ident'>to_vec</span>()].<span class='ident'>as_ref</span>());
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>entities</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>EntityTag</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='ident'>foobar_etag</span> <span class='op'>=</span> <span class='ident'>EntityTag</span> {
-            <span class='ident'>weak</span>: <span class='boolval'>false</span>,
-            <span class='ident'>tag</span>: <span class='string'>&quot;foobar&quot;</span>.<span class='ident'>to_string</span>()
-        };
-        <span class='kw'>let</span> <span class='ident'>weak_etag</span> <span class='op'>=</span> <span class='ident'>EntityTag</span> {
-            <span class='ident'>weak</span>: <span class='boolval'>true</span>,
-            <span class='ident'>tag</span>: <span class='string'>&quot;weak-etag&quot;</span>.<span class='ident'>to_string</span>()
-        };
+        <span class='kw'>let</span> <span class='ident'>foobar_etag</span> <span class='op'>=</span> <span class='ident'>EntityTag</span>::<span class='ident'>new</span>(<span class='boolval'>false</span>, <span class='string'>&quot;foobar&quot;</span>.<span class='ident'>to_owned</span>());
+        <span class='kw'>let</span> <span class='ident'>weak_etag</span> <span class='op'>=</span> <span class='ident'>EntityTag</span>::<span class='ident'>new</span>(<span class='boolval'>true</span>, <span class='string'>&quot;weak-etag&quot;</span>.<span class='ident'>to_owned</span>());
         <span class='ident'>entities</span>.<span class='ident'>push</span>(<span class='ident'>foobar_etag</span>);
         <span class='ident'>entities</span>.<span class='ident'>push</span>(<span class='ident'>weak_etag</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>if_none_match</span>, <span class='prelude-val'>Some</span>(<span class='ident'>IfNoneMatch</span>::<span class='ident'>EntityTags</span>(<span class='ident'>entities</span>)));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>if_none_match</span>.<span class='ident'>ok</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>IfNoneMatch</span>::<span class='ident'>Items</span>(<span class='ident'>entities</span>)));
     }
 }
 
@@ -217,7 +215,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -232,7 +230,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -242,6 +240,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

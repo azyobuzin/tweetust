@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/client/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/hyper-0.6.4/src/client/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -445,6 +445,61 @@
 <span id="403">403</span>
 <span id="404">404</span>
 <span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! HTTP Client</span>
 <span class='doccomment'>//!</span>
@@ -453,21 +508,58 @@
 <span class='doccomment'>//! The `Client` API is designed for most people to make HTTP requests.</span>
 <span class='doccomment'>//! It utilizes the lower level `Request` API.</span>
 <span class='doccomment'>//!</span>
+<span class='doccomment'>//! ## GET</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```no_run</span>
-<span class='doccomment'>//! use hyper::Client;</span>
+<span class='doccomment'>//! # use hyper::Client;</span>
+<span class='doccomment'>//! let client = Client::new();</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! let mut client = Client::new();</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! let mut res = client.get(&quot;http://example.domain&quot;).send().unwrap();</span>
+<span class='doccomment'>//! let res = client.get(&quot;http://example.domain&quot;).send().unwrap();</span>
 <span class='doccomment'>//! assert_eq!(res.status, hyper::Ok);</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! The returned value from is a `Response`, which provides easy access</span>
-<span class='doccomment'>//! to the `status`, the `headers`, and the response body via the `Writer`</span>
+<span class='doccomment'>//! The returned value is a `Response`, which provides easy access to</span>
+<span class='doccomment'>//! the `status`, the `headers`, and the response body via the `Read`</span>
 <span class='doccomment'>//! trait.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ## POST</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```no_run</span>
+<span class='doccomment'>//! # use hyper::Client;</span>
+<span class='doccomment'>//! let client = Client::new();</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! let res = client.post(&quot;http://example.domain&quot;)</span>
+<span class='doccomment'>//!     .body(&quot;foo=bar&quot;)</span>
+<span class='doccomment'>//!     .send()</span>
+<span class='doccomment'>//!     .unwrap();</span>
+<span class='doccomment'>//! assert_eq!(res.status, hyper::Ok);</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! # Sync</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! The `Client` implements `Sync`, so you can share it among multiple threads</span>
+<span class='doccomment'>//! and make multiple requests simultaneously.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```no_run</span>
+<span class='doccomment'>//! # use hyper::Client;</span>
+<span class='doccomment'>//! use std::sync::Arc;</span>
+<span class='doccomment'>//! use std::thread;</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! // Note: an Arc is used here because `thread::spawn` creates threads that</span>
+<span class='doccomment'>//! // can outlive the main thread, so we must use reference counting to keep</span>
+<span class='doccomment'>//! // the Client alive long enough. Scoped threads could skip the Arc.</span>
+<span class='doccomment'>//! let client = Arc::new(Client::new());</span>
+<span class='doccomment'>//! let clone1 = client.clone();</span>
+<span class='doccomment'>//! let clone2 = client.clone();</span>
+<span class='doccomment'>//! thread::spawn(move || {</span>
+<span class='doccomment'>//!     clone1.get(&quot;http://example.domain&quot;).send().unwrap();</span>
+<span class='doccomment'>//! });</span>
+<span class='doccomment'>//! thread::spawn(move || {</span>
+<span class='doccomment'>//!     clone2.post(&quot;http://example.domain/post&quot;).body(&quot;foo=bar&quot;).send().unwrap();</span>
+<span class='doccomment'>//! });</span>
+<span class='doccomment'>//! ```</span>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>default</span>::<span class='ident'>Default</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>IoResult</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>util</span>::<span class='ident'>copy</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>copy</span>, <span class='ident'>Read</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Extend</span>;
 
 <span class='kw'>use</span> <span class='ident'>url</span>::<span class='ident'>UrlParser</span>;
@@ -476,45 +568,53 @@
 <span class='kw'>use</span> <span class='ident'>header</span>::{<span class='ident'>Headers</span>, <span class='ident'>Header</span>, <span class='ident'>HeaderFormat</span>};
 <span class='kw'>use</span> <span class='ident'>header</span>::{<span class='ident'>ContentLength</span>, <span class='ident'>Location</span>};
 <span class='kw'>use</span> <span class='ident'>method</span>::<span class='ident'>Method</span>;
-<span class='kw'>use</span> <span class='ident'>net</span>::{<span class='ident'>NetworkConnector</span>, <span class='ident'>HttpConnector</span>, <span class='ident'>ContextVerifier</span>};
-<span class='kw'>use</span> <span class='ident'>status</span>::<span class='ident'>StatusClass</span>::<span class='ident'>Redirection</span>;
-<span class='kw'>use</span> {<span class='ident'>Url</span>, <span class='ident'>Port</span>, <span class='ident'>HttpResult</span>};
-<span class='kw'>use</span> <span class='ident'>HttpError</span>::<span class='ident'>HttpUriError</span>;
+<span class='kw'>use</span> <span class='ident'>net</span>::{<span class='ident'>NetworkConnector</span>, <span class='ident'>NetworkStream</span>};
+<span class='kw'>use</span> {<span class='ident'>Url</span>};
+<span class='kw'>use</span> <span class='ident'>Error</span>;
 
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>pool</span>::<span class='ident'>Pool</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>request</span>::<span class='ident'>Request</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>response</span>::<span class='ident'>Response</span>;
 
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>pool</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>request</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>response</span>;
 
+<span class='kw'>use</span> <span class='ident'>http</span>::<span class='ident'>Protocol</span>;
+<span class='kw'>use</span> <span class='ident'>http</span>::<span class='ident'>h1</span>::<span class='ident'>Http11Protocol</span>;
+
 <span class='doccomment'>/// A Client to use additional features with Requests.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Clients can handle things such as: redirect policy.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Client</span><span class='op'>&lt;</span><span class='ident'>C</span><span class='op'>&gt;</span> {
-    <span class='ident'>connector</span>: <span class='ident'>C</span>,
+<span class='doccomment'>/// Clients can handle things such as: redirect policy, connection pooling.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Client</span> {
+    <span class='ident'>protocol</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Protocol</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span><span class='op'>&gt;</span>,
     <span class='ident'>redirect_policy</span>: <span class='ident'>RedirectPolicy</span>,
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;timeouts&quot;</span>)]</span>
+    <span class='ident'>read_timeout</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Duration</span><span class='op'>&gt;</span>
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;v</span><span class='op'>&gt;</span> <span class='ident'>Client</span><span class='op'>&lt;</span><span class='ident'>HttpConnector</span><span class='op'>&lt;</span><span class='lifetime'>&#39;v</span><span class='op'>&gt;&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>Client</span> {
 
     <span class='doccomment'>/// Create a new Client.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Client</span><span class='op'>&lt;</span><span class='ident'>HttpConnector</span><span class='op'>&lt;</span><span class='lifetime'>&#39;v</span><span class='op'>&gt;&gt;</span> {
-        <span class='ident'>Client</span>::<span class='ident'>with_connector</span>(<span class='ident'>HttpConnector</span>(<span class='prelude-val'>None</span>))
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Client</span> {
+        <span class='ident'>Client</span>::<span class='ident'>with_pool_config</span>(<span class='ident'>Default</span>::<span class='ident'>default</span>())
     }
 
-    <span class='doccomment'>/// Set the SSL verifier callback for use with OpenSSL.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_ssl_verifier</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>verifier</span>: <span class='ident'>ContextVerifier</span><span class='op'>&lt;</span><span class='lifetime'>&#39;v</span><span class='op'>&gt;</span>) {
-        <span class='self'>self</span>.<span class='ident'>connector</span> <span class='op'>=</span> <span class='ident'>HttpConnector</span>(<span class='prelude-val'>Some</span>(<span class='ident'>verifier</span>));
+    <span class='doccomment'>/// Create a new Client with a configured Pool Config.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_pool_config</span>(<span class='ident'>config</span>: <span class='ident'>pool</span>::<span class='ident'>Config</span>) <span class='op'>-&gt;</span> <span class='ident'>Client</span> {
+        <span class='ident'>Client</span>::<span class='ident'>with_connector</span>(<span class='ident'>Pool</span>::<span class='ident'>new</span>(<span class='ident'>config</span>))
     }
-
-}
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>C</span>: <span class='ident'>NetworkConnector</span><span class='op'>&gt;</span> <span class='ident'>Client</span><span class='op'>&lt;</span><span class='ident'>C</span><span class='op'>&gt;</span> {
 
     <span class='doccomment'>/// Create a new client with a specific connector.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_connector</span>(<span class='ident'>connector</span>: <span class='ident'>C</span>) <span class='op'>-&gt;</span> <span class='ident'>Client</span><span class='op'>&lt;</span><span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_connector</span><span class='op'>&lt;</span><span class='ident'>C</span>, <span class='ident'>S</span><span class='op'>&gt;</span>(<span class='ident'>connector</span>: <span class='ident'>C</span>) <span class='op'>-&gt;</span> <span class='ident'>Client</span>
+    <span class='kw'>where</span> <span class='ident'>C</span>: <span class='ident'>NetworkConnector</span><span class='op'>&lt;</span><span class='ident'>Stream</span><span class='op'>=</span><span class='ident'>S</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span>, <span class='ident'>S</span>: <span class='ident'>NetworkStream</span> <span class='op'>+</span> <span class='ident'>Send</span> {
+        <span class='ident'>Client</span>::<span class='ident'>with_protocol</span>(<span class='ident'>Http11Protocol</span>::<span class='ident'>with_connector</span>(<span class='ident'>connector</span>))
+    }
+
+    <span class='doccomment'>/// Create a new client with a specific `Protocol`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_protocol</span><span class='op'>&lt;</span><span class='ident'>P</span>: <span class='ident'>Protocol</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='ident'>protocol</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='ident'>Client</span> {
         <span class='ident'>Client</span> {
-            <span class='ident'>connector</span>: <span class='ident'>connector</span>,
+            <span class='ident'>protocol</span>: <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>protocol</span>),
             <span class='ident'>redirect_policy</span>: <span class='ident'>Default</span>::<span class='ident'>default</span>()
         }
     }
@@ -524,34 +624,40 @@
         <span class='self'>self</span>.<span class='ident'>redirect_policy</span> <span class='op'>=</span> <span class='ident'>policy</span>;
     }
 
-    <span class='doccomment'>/// Execute a Get request.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Set the read timeout value for all requests.</span>
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;timeouts&quot;</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set_read_timeout</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>dur</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Duration</span><span class='op'>&gt;</span>) {
+        <span class='self'>self</span>.<span class='ident'>read_timeout</span> <span class='op'>=</span> <span class='ident'>dur</span>;
+    }
+
+    <span class='doccomment'>/// Build a Get request.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>request</span>(<span class='ident'>Method</span>::<span class='ident'>Get</span>, <span class='ident'>url</span>)
     }
 
-    <span class='doccomment'>/// Execute a Head request.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>head</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Build a Head request.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>head</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>request</span>(<span class='ident'>Method</span>::<span class='ident'>Head</span>, <span class='ident'>url</span>)
     }
 
-    <span class='doccomment'>/// Execute a Post request.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>post</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Build a Post request.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>post</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>request</span>(<span class='ident'>Method</span>::<span class='ident'>Post</span>, <span class='ident'>url</span>)
     }
 
-    <span class='doccomment'>/// Execute a Put request.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>put</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Build a Put request.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>put</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>request</span>(<span class='ident'>Method</span>::<span class='ident'>Put</span>, <span class='ident'>url</span>)
     }
 
-    <span class='doccomment'>/// Execute a Delete request.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Build a Delete request.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>request</span>(<span class='ident'>Method</span>::<span class='ident'>Delete</span>, <span class='ident'>url</span>)
     }
 
 
     <span class='doccomment'>/// Build a new request using this Client.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>request</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>method</span>: <span class='ident'>Method</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>request</span><span class='op'>&lt;</span><span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>method</span>: <span class='ident'>Method</span>, <span class='ident'>url</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='ident'>RequestBuilder</span> {
             <span class='ident'>client</span>: <span class='self'>self</span>,
             <span class='ident'>method</span>: <span class='ident'>method</span>,
@@ -562,34 +668,38 @@
     }
 }
 
+<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>Client</span> {
+    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>Client</span> { <span class='ident'>Client</span>::<span class='ident'>new</span>() }
+}
+
 <span class='doccomment'>/// Options for an individual Request.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// One of these will be built for you if you use one of the convenience</span>
 <span class='doccomment'>/// methods, such as `get()`, `post()`, etc.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>: <span class='ident'>IntoUrl</span>, <span class='ident'>C</span>: <span class='ident'>NetworkConnector</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='ident'>client</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>Client</span><span class='op'>&lt;</span><span class='ident'>C</span><span class='op'>&gt;</span>,
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span> {
+    <span class='ident'>client</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Client</span>,
     <span class='ident'>url</span>: <span class='ident'>U</span>,
     <span class='ident'>headers</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Headers</span><span class='op'>&gt;</span>,
     <span class='ident'>method</span>: <span class='ident'>Method</span>,
     <span class='ident'>body</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span>,
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>: <span class='ident'>IntoUrl</span>, <span class='ident'>C</span>: <span class='ident'>NetworkConnector</span><span class='op'>&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>: <span class='ident'>IntoUrl</span><span class='op'>&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span><span class='op'>&gt;</span> {
 
     <span class='doccomment'>/// Set a request body to be sent.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>body</span><span class='op'>&lt;</span><span class='ident'>B</span>: <span class='ident'>IntoBody</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>body</span>: <span class='ident'>B</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>body</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>body</span>.<span class='ident'>into_body</span>());
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>body</span><span class='op'>&lt;</span><span class='ident'>B</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>body</span>: <span class='ident'>B</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>body</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>body</span>.<span class='ident'>into</span>());
         <span class='self'>self</span>
     }
 
     <span class='doccomment'>/// Add additional headers to the request.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>headers</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>headers</span>: <span class='ident'>Headers</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>headers</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>headers</span>: <span class='ident'>Headers</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>headers</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>headers</span>);
         <span class='self'>self</span>
     }
 
     <span class='doccomment'>/// Add an individual new header to the request.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>header</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Header</span> <span class='op'>+</span> <span class='ident'>HeaderFormat</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>header</span>: <span class='ident'>H</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span>, <span class='ident'>C</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>header</span><span class='op'>&lt;</span><span class='ident'>H</span>: <span class='ident'>Header</span> <span class='op'>+</span> <span class='ident'>HeaderFormat</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>header</span>: <span class='ident'>H</span>) <span class='op'>-&gt;</span> <span class='ident'>RequestBuilder</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>U</span><span class='op'>&gt;</span> {
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>headers</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>headers</span> {
                 <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>h</span>) <span class='op'>=&gt;</span> <span class='ident'>h</span>,
@@ -605,10 +715,10 @@
     }
 
     <span class='doccomment'>/// Execute this request and receive a Response back.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>send</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>HttpResult</span><span class='op'>&lt;</span><span class='ident'>Response</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>send</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> ::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Response</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>RequestBuilder</span> { <span class='ident'>client</span>, <span class='ident'>method</span>, <span class='ident'>url</span>, <span class='ident'>headers</span>, <span class='ident'>body</span> } <span class='op'>=</span> <span class='self'>self</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>url</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>url</span>.<span class='ident'>into_url</span>());
-        <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;client.request {:?} {:?}&quot;</span>, <span class='ident'>method</span>, <span class='ident'>url</span>);
+        <span class='macro'>trace</span><span class='macro'>!</span>(<span class='string'>&quot;send {:?} {:?}&quot;</span>, <span class='ident'>method</span>, <span class='ident'>url</span>);
 
         <span class='kw'>let</span> <span class='ident'>can_have_body</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='ident'>method</span> {
             <span class='kw-2'>&amp;</span><span class='ident'>Method</span>::<span class='ident'>Get</span> <span class='op'>|</span> <span class='kw-2'>&amp;</span><span class='ident'>Method</span>::<span class='ident'>Head</span> <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
@@ -616,17 +726,21 @@
         };
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>body</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>can_have_body</span> {
-            <span class='ident'>body</span>.<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>b</span><span class='op'>|</span> <span class='ident'>b</span>.<span class='ident'>into_body</span>())
+            <span class='ident'>body</span>
         } <span class='kw'>else</span> {
-             <span class='prelude-val'>None</span>
+            <span class='prelude-val'>None</span>
         };
 
         <span class='kw'>loop</span> {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>req</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Request</span>::<span class='ident'>with_connector</span>(<span class='ident'>method</span>.<span class='ident'>clone</span>(), <span class='ident'>url</span>.<span class='ident'>clone</span>(), <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>client</span>.<span class='ident'>connector</span>));
+            <span class='kw'>let</span> <span class='ident'>message</span> <span class='op'>=</span> {
+                <span class='kw'>let</span> (<span class='ident'>host</span>, <span class='ident'>port</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>get_host_and_port</span>(<span class='kw-2'>&amp;</span><span class='ident'>url</span>));
+                <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>client</span>.<span class='ident'>protocol</span>.<span class='ident'>new_message</span>(<span class='kw-2'>&amp;</span><span class='ident'>host</span>, <span class='ident'>port</span>, <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='ident'>url</span>.<span class='ident'>scheme</span>))
+            };
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>req</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Request</span>::<span class='ident'>with_message</span>(<span class='ident'>method</span>.<span class='ident'>clone</span>(), <span class='ident'>url</span>.<span class='ident'>clone</span>(), <span class='ident'>message</span>));
             <span class='ident'>headers</span>.<span class='ident'>as_ref</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>headers</span><span class='op'>|</span> <span class='ident'>req</span>.<span class='ident'>headers_mut</span>().<span class='ident'>extend</span>(<span class='ident'>headers</span>.<span class='ident'>iter</span>()));
 
             <span class='kw'>match</span> (<span class='ident'>can_have_body</span>, <span class='ident'>body</span>.<span class='ident'>as_ref</span>()) {
-                (<span class='boolval'>true</span>, <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>body</span>)) <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>body</span>.<span class='ident'>size</span>() {
+                (<span class='boolval'>true</span>, <span class='prelude-val'>Some</span>(<span class='ident'>body</span>)) <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>body</span>.<span class='ident'>size</span>() {
                     <span class='prelude-val'>Some</span>(<span class='ident'>size</span>) <span class='op'>=&gt;</span> <span class='ident'>req</span>.<span class='ident'>headers_mut</span>().<span class='ident'>set</span>(<span class='ident'>ContentLength</span>(<span class='ident'>size</span>)),
                     <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> (), <span class='comment'>// chunked, Request will add it automatically</span>
                 },
@@ -636,10 +750,10 @@
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>streaming</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>req</span>.<span class='ident'>start</span>());
             <span class='ident'>body</span>.<span class='ident'>take</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>mut</span> <span class='ident'>rdr</span><span class='op'>|</span> <span class='ident'>copy</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rdr</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>streaming</span>));
             <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>streaming</span>.<span class='ident'>send</span>());
-            <span class='kw'>if</span> <span class='ident'>res</span>.<span class='ident'>status</span>.<span class='ident'>class</span>() <span class='op'>!=</span> <span class='ident'>Redirection</span> {
+            <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>res</span>.<span class='ident'>status</span>.<span class='ident'>is_redirection</span>() {
                 <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>res</span>)
             }
-            <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;redirect code {:?} for {:?}&quot;</span>, <span class='ident'>res</span>.<span class='ident'>status</span>, <span class='ident'>url</span>);
+            <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;redirect code {:?} for {}&quot;</span>, <span class='ident'>res</span>.<span class='ident'>status</span>, <span class='ident'>url</span>);
 
             <span class='kw'>let</span> <span class='ident'>loc</span> <span class='op'>=</span> {
                 <span class='comment'>// punching borrowck here</span>
@@ -659,16 +773,14 @@
                 }
             };
             <span class='ident'>url</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>loc</span> {
-                <span class='prelude-val'>Ok</span>(<span class='ident'>u</span>) <span class='op'>=&gt;</span> {
-                    <span class='macro'>inspect</span><span class='macro'>!</span>(<span class='string'>&quot;Location&quot;</span>, <span class='ident'>u</span>)
-                },
+                <span class='prelude-val'>Ok</span>(<span class='ident'>u</span>) <span class='op'>=&gt;</span> <span class='ident'>u</span>,
                 <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> {
                     <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;Location header had invalid URI: {:?}&quot;</span>, <span class='ident'>e</span>);
                     <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>res</span>);
                 }
             };
             <span class='kw'>match</span> <span class='ident'>client</span>.<span class='ident'>redirect_policy</span> {
-                <span class='comment'>// separate branches because they cant be one</span>
+                <span class='comment'>// separate branches because they can&#39;t be one</span>
                 <span class='ident'>RedirectPolicy</span>::<span class='ident'>FollowAll</span> <span class='op'>=&gt;</span> (), <span class='comment'>//continue</span>
                 <span class='ident'>RedirectPolicy</span>::<span class='ident'>FollowIf</span>(<span class='ident'>cond</span>) <span class='kw'>if</span> <span class='ident'>cond</span>(<span class='kw-2'>&amp;</span><span class='ident'>url</span>) <span class='op'>=&gt;</span> (), <span class='comment'>//continue</span>
                 _ <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>res</span>),
@@ -677,18 +789,12 @@
     }
 }
 
-<span class='doccomment'>/// A helper trait to allow overloading of the body parameter.</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>IntoBody</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Consumes self into an instance of `Body`.</span>
-    <span class='kw'>fn</span> <span class='ident'>into_body</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>;
-}
-
-<span class='doccomment'>/// The target enum for the IntoBody trait.</span>
+<span class='doccomment'>/// An enum of possible body types for a Request.</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// A Reader does not necessarily know it&#39;s size, so it is chunked.</span>
-    <span class='ident'>ChunkedBody</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> (<span class='ident'>Reader</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span>)),
+    <span class='ident'>ChunkedBody</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> (<span class='ident'>Read</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span>)),
     <span class='doccomment'>/// For Readers that can know their size, like a `File`.</span>
-    <span class='ident'>SizedBody</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> (<span class='ident'>Reader</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span>), <span class='ident'>u64</span>),
+    <span class='ident'>SizedBody</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> (<span class='ident'>Read</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span>), <span class='ident'>u64</span>),
     <span class='doccomment'>/// A String has a size, and uses Content-Length.</span>
     <span class='ident'>BufBody</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u8</span>] , <span class='ident'>usize</span>),
 }
@@ -703,43 +809,42 @@
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Reader</span> <span class='kw'>for</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Read</span> <span class='kw'>for</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>read</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buf</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>IoResult</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>read</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buf</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Body</span>::<span class='ident'>ChunkedBody</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>) <span class='op'>=&gt;</span> <span class='ident'>r</span>.<span class='ident'>read</span>(<span class='ident'>buf</span>),
             <span class='ident'>Body</span>::<span class='ident'>SizedBody</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>, _) <span class='op'>=&gt;</span> <span class='ident'>r</span>.<span class='ident'>read</span>(<span class='ident'>buf</span>),
-            <span class='ident'>Body</span>::<span class='ident'>BufBody</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>, _) <span class='op'>=&gt;</span> <span class='ident'>r</span>.<span class='ident'>read</span>(<span class='ident'>buf</span>),
+            <span class='ident'>Body</span>::<span class='ident'>BufBody</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>, _) <span class='op'>=&gt;</span> <span class='ident'>Read</span>::<span class='ident'>read</span>(<span class='ident'>r</span>, <span class='ident'>buf</span>),
         }
     }
 }
 
-<span class='comment'>// To allow someone to pass a `Body::SizedBody()` themselves.</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>IntoBody</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u8</span>] {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>into_body</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>
-    }
-}
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>IntoBody</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u8</span>] {
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>into_body</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>into</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
         <span class='ident'>Body</span>::<span class='ident'>BufBody</span>(<span class='self'>self</span>, <span class='self'>self</span>.<span class='ident'>len</span>())
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>IntoBody</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>str</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>str</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>into_body</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>as_bytes</span>().<span class='ident'>into_body</span>()
+    <span class='kw'>fn</span> <span class='ident'>into</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>as_bytes</span>().<span class='ident'>into</span>()
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>R</span>: <span class='ident'>Reader</span><span class='op'>&gt;</span> <span class='ident'>IntoBody</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span> {
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>String</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>into_body</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='ident'>Body</span>::<span class='ident'>ChunkedBody</span>(<span class='self'>self</span>)
+    <span class='kw'>fn</span> <span class='ident'>into</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>as_bytes</span>().<span class='ident'>into</span>()
+    }
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>R</span>: <span class='ident'>Read</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>Body</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
+        <span class='ident'>Body</span>::<span class='ident'>ChunkedBody</span>(<span class='ident'>r</span>)
     }
 }
 
@@ -761,6 +866,12 @@
     }
 }
 
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>IntoUrl</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>String</span> {
+    <span class='kw'>fn</span> <span class='ident'>into_url</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Url</span>, <span class='ident'>UrlError</span><span class='op'>&gt;</span> {
+        <span class='ident'>Url</span>::<span class='ident'>parse</span>(<span class='self'>self</span>)
+    }
+}
+
 <span class='doccomment'>/// Behavior regarding how to handle redirects within a Client.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>RedirectPolicy</span> {
@@ -772,10 +883,10 @@
     <span class='ident'>FollowIf</span>(<span class='kw'>fn</span>(<span class='kw-2'>&amp;</span><span class='ident'>Url</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>),
 }
 
-<span class='comment'>// This is a hack because of upstream typesystem issues. </span>
+<span class='comment'>// This is a hack because of upstream typesystem issues.</span>
 <span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>RedirectPolicy</span> {
     <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>RedirectPolicy</span> {
-        <span class='op'>*</span><span class='self'>self</span> 
+        <span class='op'>*</span><span class='self'>self</span>
     }
 }
 
@@ -785,17 +896,17 @@
     }
 }
 
-<span class='kw'>fn</span> <span class='ident'>get_host_and_port</span>(<span class='ident'>url</span>: <span class='kw-2'>&amp;</span><span class='ident'>Url</span>) <span class='op'>-&gt;</span> <span class='ident'>HttpResult</span><span class='op'>&lt;</span>(<span class='ident'>String</span>, <span class='ident'>Port</span>)<span class='op'>&gt;</span> {
+<span class='kw'>fn</span> <span class='ident'>get_host_and_port</span>(<span class='ident'>url</span>: <span class='kw-2'>&amp;</span><span class='ident'>Url</span>) <span class='op'>-&gt;</span> ::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(<span class='ident'>String</span>, <span class='ident'>u16</span>)<span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>host</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>url</span>.<span class='ident'>serialize_host</span>() {
         <span class='prelude-val'>Some</span>(<span class='ident'>host</span>) <span class='op'>=&gt;</span> <span class='ident'>host</span>,
-        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>HttpUriError</span>(<span class='ident'>UrlError</span>::<span class='ident'>EmptyHost</span>))
+        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Uri</span>(<span class='ident'>UrlError</span>::<span class='ident'>EmptyHost</span>))
     };
-    <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;host={:?}&quot;</span>, <span class='ident'>host</span>);
+    <span class='macro'>trace</span><span class='macro'>!</span>(<span class='string'>&quot;host={:?}&quot;</span>, <span class='ident'>host</span>);
     <span class='kw'>let</span> <span class='ident'>port</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>url</span>.<span class='ident'>port_or_default</span>() {
         <span class='prelude-val'>Some</span>(<span class='ident'>port</span>) <span class='op'>=&gt;</span> <span class='ident'>port</span>,
-        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>HttpUriError</span>(<span class='ident'>UrlError</span>::<span class='ident'>InvalidPort</span>))
+        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Uri</span>(<span class='ident'>UrlError</span>::<span class='ident'>InvalidPort</span>))
     };
-    <span class='macro'>debug</span><span class='macro'>!</span>(<span class='string'>&quot;port={:?}&quot;</span>, <span class='ident'>port</span>);
+    <span class='macro'>trace</span><span class='macro'>!</span>(<span class='string'>&quot;port={:?}&quot;</span>, <span class='ident'>port</span>);
     <span class='prelude-val'>Ok</span>((<span class='ident'>host</span>, <span class='ident'>port</span>))
 }
 
@@ -828,7 +939,7 @@
         <span class='ident'>client</span>.<span class='ident'>set_redirect_policy</span>(<span class='ident'>RedirectPolicy</span>::<span class='ident'>FollowAll</span>);
 
         <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>client</span>.<span class='ident'>get</span>(<span class='string'>&quot;http://127.0.0.1&quot;</span>).<span class='ident'>send</span>().<span class='ident'>unwrap</span>();
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>Server</span>(<span class='string'>&quot;mock3&quot;</span>.<span class='ident'>to_string</span>())));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>Server</span>(<span class='string'>&quot;mock3&quot;</span>.<span class='ident'>to_owned</span>())));
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -836,7 +947,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>client</span> <span class='op'>=</span> <span class='ident'>Client</span>::<span class='ident'>with_connector</span>(<span class='ident'>MockRedirectPolicy</span>);
         <span class='ident'>client</span>.<span class='ident'>set_redirect_policy</span>(<span class='ident'>RedirectPolicy</span>::<span class='ident'>FollowNone</span>);
         <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>client</span>.<span class='ident'>get</span>(<span class='string'>&quot;http://127.0.0.1&quot;</span>).<span class='ident'>send</span>().<span class='ident'>unwrap</span>();
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>Server</span>(<span class='string'>&quot;mock1&quot;</span>.<span class='ident'>to_string</span>())));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>Server</span>(<span class='string'>&quot;mock1&quot;</span>.<span class='ident'>to_owned</span>())));
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -847,9 +958,8 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>client</span> <span class='op'>=</span> <span class='ident'>Client</span>::<span class='ident'>with_connector</span>(<span class='ident'>MockRedirectPolicy</span>);
         <span class='ident'>client</span>.<span class='ident'>set_redirect_policy</span>(<span class='ident'>RedirectPolicy</span>::<span class='ident'>FollowIf</span>(<span class='ident'>follow_if</span>));
         <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>client</span>.<span class='ident'>get</span>(<span class='string'>&quot;http://127.0.0.1&quot;</span>).<span class='ident'>send</span>().<span class='ident'>unwrap</span>();
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>Server</span>(<span class='string'>&quot;mock2&quot;</span>.<span class='ident'>to_string</span>())));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>res</span>.<span class='ident'>headers</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>Server</span>(<span class='string'>&quot;mock2&quot;</span>.<span class='ident'>to_owned</span>())));
     }
-
 }
 </pre>
 </section>
@@ -859,7 +969,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -874,7 +984,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -884,6 +994,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

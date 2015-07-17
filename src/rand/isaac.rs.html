@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/isaac.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rand-0.3.8/src/isaac.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>isaac.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -664,7 +664,6 @@
 <span id="622">622</span>
 <span id="623">623</span>
 <span id="624">624</span>
-<span id="625">625</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -678,13 +677,15 @@
 
 <span class='doccomment'>//! The ISAAC random number generator.</span>
 
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>slice</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>iter</span>::{<span class='ident'>range_step</span>, <span class='ident'>repeat</span>};
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>non_camel_case_types</span>)]</span>
 
-<span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>, <span class='ident'>Rand</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Wrapping</span> <span class='kw'>as</span> <span class='ident'>w</span>;
 
-<span class='kw'>const</span> <span class='ident'>RAND_SIZE_LEN</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='number'>8</span>;
+<span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>, <span class='ident'>Rand</span>, <span class='ident'>w32</span>, <span class='ident'>w64</span>};
+
+<span class='kw'>const</span> <span class='ident'>RAND_SIZE_LEN</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>8</span>;
 <span class='kw'>const</span> <span class='ident'>RAND_SIZE</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='ident'>RAND_SIZE_LEN</span>;
 <span class='kw'>const</span> <span class='ident'>RAND_SIZE_USIZE</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='ident'>RAND_SIZE_LEN</span>;
 
@@ -700,18 +701,18 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>IsaacRng</span> {
     <span class='ident'>cnt</span>: <span class='ident'>u32</span>,
-    <span class='ident'>rsl</span>: [<span class='ident'>u32</span>; <span class='ident'>RAND_SIZE_USIZE</span>],
-    <span class='ident'>mem</span>: [<span class='ident'>u32</span>; <span class='ident'>RAND_SIZE_USIZE</span>],
-    <span class='ident'>a</span>: <span class='ident'>u32</span>,
-    <span class='ident'>b</span>: <span class='ident'>u32</span>,
-    <span class='ident'>c</span>: <span class='ident'>u32</span>
+    <span class='ident'>rsl</span>: [<span class='ident'>w32</span>; <span class='ident'>RAND_SIZE_USIZE</span>],
+    <span class='ident'>mem</span>: [<span class='ident'>w32</span>; <span class='ident'>RAND_SIZE_USIZE</span>],
+    <span class='ident'>a</span>: <span class='ident'>w32</span>,
+    <span class='ident'>b</span>: <span class='ident'>w32</span>,
+    <span class='ident'>c</span>: <span class='ident'>w32</span>,
 }
 
 <span class='kw'>static</span> <span class='ident'>EMPTY</span>: <span class='ident'>IsaacRng</span> <span class='op'>=</span> <span class='ident'>IsaacRng</span> {
     <span class='ident'>cnt</span>: <span class='number'>0</span>,
-    <span class='ident'>rsl</span>: [<span class='number'>0</span>; <span class='ident'>RAND_SIZE_USIZE</span>],
-    <span class='ident'>mem</span>: [<span class='number'>0</span>; <span class='ident'>RAND_SIZE_USIZE</span>],
-    <span class='ident'>a</span>: <span class='number'>0</span>, <span class='ident'>b</span>: <span class='number'>0</span>, <span class='ident'>c</span>: <span class='number'>0</span>
+    <span class='ident'>rsl</span>: [<span class='ident'>w</span>(<span class='number'>0</span>); <span class='ident'>RAND_SIZE_USIZE</span>],
+    <span class='ident'>mem</span>: [<span class='ident'>w</span>(<span class='number'>0</span>); <span class='ident'>RAND_SIZE_USIZE</span>],
+    <span class='ident'>a</span>: <span class='ident'>w</span>(<span class='number'>0</span>), <span class='ident'>b</span>: <span class='ident'>w</span>(<span class='number'>0</span>), <span class='ident'>c</span>: <span class='ident'>w</span>(<span class='number'>0</span>),
 };
 
 <span class='kw'>impl</span> <span class='ident'>IsaacRng</span> {
@@ -728,7 +729,7 @@
     <span class='doccomment'>/// of `rsl` as a seed, otherwise construct one algorithmically (not</span>
     <span class='doccomment'>/// randomly).</span>
     <span class='kw'>fn</span> <span class='ident'>init</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>use_rsl</span>: <span class='ident'>bool</span>) {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='number'>0x9e3779b9</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0x9e3779b9</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>a</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>a</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>d</span> <span class='op'>=</span> <span class='ident'>a</span>;
@@ -739,14 +740,14 @@
 
         <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>mix</span> {
             () <span class='op'>=&gt;</span> {{
-                <span class='ident'>a</span><span class='op'>^=</span><span class='ident'>b</span><span class='op'>&lt;&lt;</span><span class='number'>11</span>; <span class='ident'>d</span><span class='op'>+=</span><span class='ident'>a</span>; <span class='ident'>b</span><span class='op'>+=</span><span class='ident'>c</span>;
-                <span class='ident'>b</span><span class='op'>^=</span><span class='ident'>c</span><span class='op'>&gt;&gt;</span><span class='number'>2</span>;  <span class='ident'>e</span><span class='op'>+=</span><span class='ident'>b</span>; <span class='ident'>c</span><span class='op'>+=</span><span class='ident'>d</span>;
-                <span class='ident'>c</span><span class='op'>^=</span><span class='ident'>d</span><span class='op'>&lt;&lt;</span><span class='number'>8</span>;  <span class='ident'>f</span><span class='op'>+=</span><span class='ident'>c</span>; <span class='ident'>d</span><span class='op'>+=</span><span class='ident'>e</span>;
-                <span class='ident'>d</span><span class='op'>^=</span><span class='ident'>e</span><span class='op'>&gt;&gt;</span><span class='number'>16</span>; <span class='ident'>g</span><span class='op'>+=</span><span class='ident'>d</span>; <span class='ident'>e</span><span class='op'>+=</span><span class='ident'>f</span>;
-                <span class='ident'>e</span><span class='op'>^=</span><span class='ident'>f</span><span class='op'>&lt;&lt;</span><span class='number'>10</span>; <span class='ident'>h</span><span class='op'>+=</span><span class='ident'>e</span>; <span class='ident'>f</span><span class='op'>+=</span><span class='ident'>g</span>;
-                <span class='ident'>f</span><span class='op'>^=</span><span class='ident'>g</span><span class='op'>&gt;&gt;</span><span class='number'>4</span>;  <span class='ident'>a</span><span class='op'>+=</span><span class='ident'>f</span>; <span class='ident'>g</span><span class='op'>+=</span><span class='ident'>h</span>;
-                <span class='ident'>g</span><span class='op'>^=</span><span class='ident'>h</span><span class='op'>&lt;&lt;</span><span class='number'>8</span>;  <span class='ident'>b</span><span class='op'>+=</span><span class='ident'>g</span>; <span class='ident'>h</span><span class='op'>+=</span><span class='ident'>a</span>;
-                <span class='ident'>h</span><span class='op'>^=</span><span class='ident'>a</span><span class='op'>&gt;&gt;</span><span class='number'>9</span>;  <span class='ident'>c</span><span class='op'>+=</span><span class='ident'>h</span>; <span class='ident'>a</span><span class='op'>+=</span><span class='ident'>b</span>;
+                <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>^</span>(<span class='ident'>b</span><span class='op'>&lt;&lt;</span><span class='number'>11</span>); <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>+</span><span class='ident'>a</span>; <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>+</span><span class='ident'>c</span>;
+                <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>^</span>(<span class='ident'>c</span><span class='op'>&gt;&gt;</span><span class='number'>2</span>);  <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>+</span><span class='ident'>b</span>; <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>+</span><span class='ident'>d</span>;
+                <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>^</span>(<span class='ident'>d</span><span class='op'>&lt;&lt;</span><span class='number'>8</span>);  <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>+</span><span class='ident'>c</span>; <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>+</span><span class='ident'>e</span>;
+                <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>^</span>(<span class='ident'>e</span><span class='op'>&gt;&gt;</span><span class='number'>16</span>); <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>+</span><span class='ident'>d</span>; <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>+</span><span class='ident'>f</span>;
+                <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>^</span>(<span class='ident'>f</span><span class='op'>&lt;&lt;</span><span class='number'>10</span>); <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>+</span><span class='ident'>e</span>; <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>+</span><span class='ident'>g</span>;
+                <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>^</span>(<span class='ident'>g</span><span class='op'>&gt;&gt;</span><span class='number'>4</span>);  <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>+</span><span class='ident'>f</span>; <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>+</span><span class='ident'>h</span>;
+                <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>^</span>(<span class='ident'>h</span><span class='op'>&lt;&lt;</span><span class='number'>8</span>);  <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>+</span><span class='ident'>g</span>; <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>+</span><span class='ident'>a</span>;
+                <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>^</span>(<span class='ident'>a</span><span class='op'>&gt;&gt;</span><span class='number'>9</span>);  <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>+</span><span class='ident'>h</span>; <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>+</span><span class='ident'>b</span>;
             }}
         }
 
@@ -757,11 +758,11 @@
         <span class='kw'>if</span> <span class='ident'>use_rsl</span> {
             <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>memloop</span> {
                 (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {{
-                    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range_step</span>(<span class='number'>0</span>, <span class='ident'>RAND_SIZE_USIZE</span>, <span class='number'>8</span>) {
-                        <span class='ident'>a</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span>  ]; <span class='ident'>b</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>];
-                        <span class='ident'>c</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]; <span class='ident'>d</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>];
-                        <span class='ident'>e</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>4</span>]; <span class='ident'>f</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>5</span>];
-                        <span class='ident'>g</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>6</span>]; <span class='ident'>h</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>7</span>];
+                    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>RAND_SIZE_USIZE</span><span class='op'>/</span><span class='number'>8</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>i</span><span class='op'>|</span> <span class='ident'>i</span> <span class='op'>*</span> <span class='number'>8</span>) {
+                        <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span>  ]; <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>];
+                        <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]; <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>];
+                        <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>4</span>]; <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>5</span>];
+                        <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>6</span>]; <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>7</span>];
                         <span class='macro'>mix</span><span class='macro'>!</span>();
                         <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>  ]<span class='op'>=</span><span class='ident'>a</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>]<span class='op'>=</span><span class='ident'>b</span>;
                         <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]<span class='op'>=</span><span class='ident'>c</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>]<span class='op'>=</span><span class='ident'>d</span>;
@@ -774,7 +775,7 @@
             <span class='macro'>memloop</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>rsl</span>);
             <span class='macro'>memloop</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>mem</span>);
         } <span class='kw'>else</span> {
-            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range_step</span>(<span class='number'>0</span>, <span class='ident'>RAND_SIZE_USIZE</span>, <span class='number'>8</span>) {
+            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>RAND_SIZE_USIZE</span><span class='op'>/</span><span class='number'>8</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>i</span><span class='op'>|</span> <span class='ident'>i</span> <span class='op'>*</span> <span class='number'>8</span>) {
                 <span class='macro'>mix</span><span class='macro'>!</span>();
                 <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>  ]<span class='op'>=</span><span class='ident'>a</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>]<span class='op'>=</span><span class='ident'>b</span>;
                 <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]<span class='op'>=</span><span class='ident'>c</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>]<span class='op'>=</span><span class='ident'>d</span>;
@@ -788,17 +789,16 @@
 
     <span class='doccomment'>/// Refills the output buffer (`self.rsl`)</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unsigned_negation</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>isaac</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>+=</span> <span class='number'>1</span>;
+        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>+</span> <span class='ident'>w</span>(<span class='number'>1</span>);
         <span class='comment'>// abbreviations</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>a</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>b</span> <span class='op'>+</span> <span class='self'>self</span>.<span class='ident'>c</span>;
 
-        <span class='kw'>static</span> <span class='ident'>MIDPOINT</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='ident'>RAND_SIZE_USIZE</span> <span class='op'>/</span> <span class='number'>2</span>;
+        <span class='kw'>const</span> <span class='ident'>MIDPOINT</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='ident'>RAND_SIZE_USIZE</span> <span class='op'>/</span> <span class='number'>2</span>;
 
         <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>ind</span> {
-            (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> ( <span class='self'>self</span>.<span class='ident'>mem</span>[(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span> <span class='op'>&gt;&gt;</span> <span class='number'>2</span>) <span class='kw'>as</span> <span class='ident'>usize</span> <span class='kw-2'>&amp;</span> (<span class='ident'>RAND_SIZE_USIZE</span> <span class='op'>-</span> <span class='number'>1</span>)] )
+            (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> ( <span class='self'>self</span>.<span class='ident'>mem</span>[(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span> <span class='op'>&gt;&gt;</span> <span class='number'>2</span>).<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='kw-2'>&amp;</span> (<span class='ident'>RAND_SIZE_USIZE</span> <span class='op'>-</span> <span class='number'>1</span>)] )
         }
 
         <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> [(<span class='number'>0</span>, <span class='ident'>MIDPOINT</span>), (<span class='ident'>MIDPOINT</span>, <span class='number'>0</span>)];
@@ -834,7 +834,7 @@
                 }}
             }
 
-            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range_step</span>(<span class='number'>0</span>, <span class='ident'>MIDPOINT</span>, <span class='number'>4</span>) {
+            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>MIDPOINT</span><span class='op'>/</span><span class='number'>4</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>i</span><span class='op'>|</span> <span class='ident'>i</span> <span class='op'>*</span> <span class='number'>4</span>) {
                 <span class='macro'>rngstepp</span><span class='macro'>!</span>(<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>0</span>, <span class='number'>13</span>);
                 <span class='macro'>rngstepn</span><span class='macro'>!</span>(<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>, <span class='number'>6</span>);
                 <span class='macro'>rngstepp</span><span class='macro'>!</span>(<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>2</span>, <span class='number'>2</span>);
@@ -875,7 +875,7 @@
         <span class='comment'>// (the % is cheaply telling the optimiser that we&#39;re always</span>
         <span class='comment'>// in bounds, without unsafe. NB. this is a power of two, so</span>
         <span class='comment'>// it optimises to a bitwise mask).</span>
-        <span class='self'>self</span>.<span class='ident'>rsl</span>[(<span class='self'>self</span>.<span class='ident'>cnt</span> <span class='op'>%</span> <span class='ident'>RAND_SIZE</span>) <span class='kw'>as</span> <span class='ident'>usize</span>]
+        <span class='self'>self</span>.<span class='ident'>rsl</span>[(<span class='self'>self</span>.<span class='ident'>cnt</span> <span class='op'>%</span> <span class='ident'>RAND_SIZE</span>) <span class='kw'>as</span> <span class='ident'>usize</span>].<span class='number'>0</span>
     }
 }
 
@@ -886,12 +886,12 @@
         <span class='kw'>let</span> <span class='ident'>seed_iter</span> <span class='op'>=</span> <span class='ident'>seed</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>).<span class='ident'>chain</span>(<span class='ident'>repeat</span>(<span class='number'>0u32</span>));
 
         <span class='kw'>for</span> (<span class='ident'>rsl_elem</span>, <span class='ident'>seed_elem</span>) <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>rsl</span>.<span class='ident'>iter_mut</span>().<span class='ident'>zip</span>(<span class='ident'>seed_iter</span>) {
-            <span class='op'>*</span><span class='ident'>rsl_elem</span> <span class='op'>=</span> <span class='ident'>seed_elem</span>;
+            <span class='op'>*</span><span class='ident'>rsl_elem</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='ident'>seed_elem</span>);
         }
         <span class='self'>self</span>.<span class='ident'>cnt</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='self'>self</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='self'>self</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
 
         <span class='self'>self</span>.<span class='ident'>init</span>(<span class='boolval'>true</span>);
     }
@@ -918,9 +918,9 @@
             <span class='ident'>other</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>slice</span>);
         }
         <span class='ident'>ret</span>.<span class='ident'>cnt</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='ident'>ret</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='ident'>ret</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='ident'>ret</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='ident'>ret</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='ident'>ret</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='ident'>ret</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
 
         <span class='ident'>ret</span>.<span class='ident'>init</span>(<span class='boolval'>true</span>);
         <span class='kw'>return</span> <span class='ident'>ret</span>;
@@ -943,18 +943,18 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Isaac64Rng</span> {
     <span class='ident'>cnt</span>: <span class='ident'>usize</span>,
-    <span class='ident'>rsl</span>: [<span class='ident'>u64</span>; <span class='ident'>RAND_SIZE_64</span>],
-    <span class='ident'>mem</span>: [<span class='ident'>u64</span>; <span class='ident'>RAND_SIZE_64</span>],
-    <span class='ident'>a</span>: <span class='ident'>u64</span>,
-    <span class='ident'>b</span>: <span class='ident'>u64</span>,
-    <span class='ident'>c</span>: <span class='ident'>u64</span>,
+    <span class='ident'>rsl</span>: [<span class='ident'>w64</span>; <span class='ident'>RAND_SIZE_64</span>],
+    <span class='ident'>mem</span>: [<span class='ident'>w64</span>; <span class='ident'>RAND_SIZE_64</span>],
+    <span class='ident'>a</span>: <span class='ident'>w64</span>,
+    <span class='ident'>b</span>: <span class='ident'>w64</span>,
+    <span class='ident'>c</span>: <span class='ident'>w64</span>,
 }
 
 <span class='kw'>static</span> <span class='ident'>EMPTY_64</span>: <span class='ident'>Isaac64Rng</span> <span class='op'>=</span> <span class='ident'>Isaac64Rng</span> {
     <span class='ident'>cnt</span>: <span class='number'>0</span>,
-    <span class='ident'>rsl</span>: [<span class='number'>0</span>; <span class='ident'>RAND_SIZE_64</span>],
-    <span class='ident'>mem</span>: [<span class='number'>0</span>; <span class='ident'>RAND_SIZE_64</span>],
-    <span class='ident'>a</span>: <span class='number'>0</span>, <span class='ident'>b</span>: <span class='number'>0</span>, <span class='ident'>c</span>: <span class='number'>0</span>,
+    <span class='ident'>rsl</span>: [<span class='ident'>w</span>(<span class='number'>0</span>); <span class='ident'>RAND_SIZE_64</span>],
+    <span class='ident'>mem</span>: [<span class='ident'>w</span>(<span class='number'>0</span>); <span class='ident'>RAND_SIZE_64</span>],
+    <span class='ident'>a</span>: <span class='ident'>w</span>(<span class='number'>0</span>), <span class='ident'>b</span>: <span class='ident'>w</span>(<span class='number'>0</span>), <span class='ident'>c</span>: <span class='ident'>w</span>(<span class='number'>0</span>),
 };
 
 <span class='kw'>impl</span> <span class='ident'>Isaac64Rng</span> {
@@ -972,7 +972,7 @@
     <span class='kw'>fn</span> <span class='ident'>init</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>use_rsl</span>: <span class='ident'>bool</span>) {
         <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>init</span> {
             (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>var</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> (
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>var</span> <span class='op'>=</span> <span class='number'>0x9e3779b97f4a7c13</span>;
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>var</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0x9e3779b97f4a7c13</span>);
             )
         }
         <span class='macro'>init</span><span class='macro'>!</span>(<span class='ident'>a</span>); <span class='macro'>init</span><span class='macro'>!</span>(<span class='ident'>b</span>); <span class='macro'>init</span><span class='macro'>!</span>(<span class='ident'>c</span>); <span class='macro'>init</span><span class='macro'>!</span>(<span class='ident'>d</span>);
@@ -980,14 +980,14 @@
 
         <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>mix</span> {
             () <span class='op'>=&gt;</span> {{
-                <span class='ident'>a</span><span class='op'>-=</span><span class='ident'>e</span>; <span class='ident'>f</span><span class='op'>^=</span><span class='ident'>h</span><span class='op'>&gt;&gt;</span><span class='number'>9</span>;  <span class='ident'>h</span><span class='op'>+=</span><span class='ident'>a</span>;
-                <span class='ident'>b</span><span class='op'>-=</span><span class='ident'>f</span>; <span class='ident'>g</span><span class='op'>^=</span><span class='ident'>a</span><span class='op'>&lt;&lt;</span><span class='number'>9</span>;  <span class='ident'>a</span><span class='op'>+=</span><span class='ident'>b</span>;
-                <span class='ident'>c</span><span class='op'>-=</span><span class='ident'>g</span>; <span class='ident'>h</span><span class='op'>^=</span><span class='ident'>b</span><span class='op'>&gt;&gt;</span><span class='number'>23</span>; <span class='ident'>b</span><span class='op'>+=</span><span class='ident'>c</span>;
-                <span class='ident'>d</span><span class='op'>-=</span><span class='ident'>h</span>; <span class='ident'>a</span><span class='op'>^=</span><span class='ident'>c</span><span class='op'>&lt;&lt;</span><span class='number'>15</span>; <span class='ident'>c</span><span class='op'>+=</span><span class='ident'>d</span>;
-                <span class='ident'>e</span><span class='op'>-=</span><span class='ident'>a</span>; <span class='ident'>b</span><span class='op'>^=</span><span class='ident'>d</span><span class='op'>&gt;&gt;</span><span class='number'>14</span>; <span class='ident'>d</span><span class='op'>+=</span><span class='ident'>e</span>;
-                <span class='ident'>f</span><span class='op'>-=</span><span class='ident'>b</span>; <span class='ident'>c</span><span class='op'>^=</span><span class='ident'>e</span><span class='op'>&lt;&lt;</span><span class='number'>20</span>; <span class='ident'>e</span><span class='op'>+=</span><span class='ident'>f</span>;
-                <span class='ident'>g</span><span class='op'>-=</span><span class='ident'>c</span>; <span class='ident'>d</span><span class='op'>^=</span><span class='ident'>f</span><span class='op'>&gt;&gt;</span><span class='number'>17</span>; <span class='ident'>f</span><span class='op'>+=</span><span class='ident'>g</span>;
-                <span class='ident'>h</span><span class='op'>-=</span><span class='ident'>d</span>; <span class='ident'>e</span><span class='op'>^=</span><span class='ident'>g</span><span class='op'>&lt;&lt;</span><span class='number'>14</span>; <span class='ident'>g</span><span class='op'>+=</span><span class='ident'>h</span>;
+                <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>-</span><span class='ident'>e</span>; <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>^</span>(<span class='ident'>h</span><span class='op'>&gt;&gt;</span><span class='number'>9</span>);  <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>+</span><span class='ident'>a</span>;
+                <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>-</span><span class='ident'>f</span>; <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>^</span>(<span class='ident'>a</span><span class='op'>&lt;&lt;</span><span class='number'>9</span>);  <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>+</span><span class='ident'>b</span>;
+                <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>-</span><span class='ident'>g</span>; <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>^</span>(<span class='ident'>b</span><span class='op'>&gt;&gt;</span><span class='number'>23</span>); <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>+</span><span class='ident'>c</span>;
+                <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>-</span><span class='ident'>h</span>; <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>^</span>(<span class='ident'>c</span><span class='op'>&lt;&lt;</span><span class='number'>15</span>); <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>+</span><span class='ident'>d</span>;
+                <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>-</span><span class='ident'>a</span>; <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>^</span>(<span class='ident'>d</span><span class='op'>&gt;&gt;</span><span class='number'>14</span>); <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>+</span><span class='ident'>e</span>;
+                <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>-</span><span class='ident'>b</span>; <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>^</span>(<span class='ident'>e</span><span class='op'>&lt;&lt;</span><span class='number'>20</span>); <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>+</span><span class='ident'>f</span>;
+                <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>-</span><span class='ident'>c</span>; <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>^</span>(<span class='ident'>f</span><span class='op'>&gt;&gt;</span><span class='number'>17</span>); <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>+</span><span class='ident'>g</span>;
+                <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>-</span><span class='ident'>d</span>; <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>^</span>(<span class='ident'>g</span><span class='op'>&lt;&lt;</span><span class='number'>14</span>); <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>+</span><span class='ident'>h</span>;
             }}
         }
 
@@ -999,10 +999,10 @@
             <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>memloop</span> {
                 (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {{
                     <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>RAND_SIZE_64</span> <span class='op'>/</span> <span class='number'>8</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>i</span><span class='op'>|</span> <span class='ident'>i</span> <span class='op'>*</span> <span class='number'>8</span>) {
-                        <span class='ident'>a</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span>  ]; <span class='ident'>b</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>];
-                        <span class='ident'>c</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]; <span class='ident'>d</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>];
-                        <span class='ident'>e</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>4</span>]; <span class='ident'>f</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>5</span>];
-                        <span class='ident'>g</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>6</span>]; <span class='ident'>h</span><span class='op'>+=</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>7</span>];
+                        <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span>  ]; <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>];
+                        <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]; <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>];
+                        <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>4</span>]; <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>5</span>];
+                        <span class='ident'>g</span><span class='op'>=</span><span class='ident'>g</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>6</span>]; <span class='ident'>h</span><span class='op'>=</span><span class='ident'>h</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>7</span>];
                         <span class='macro'>mix</span><span class='macro'>!</span>();
                         <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>  ]<span class='op'>=</span><span class='ident'>a</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>]<span class='op'>=</span><span class='ident'>b</span>;
                         <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]<span class='op'>=</span><span class='ident'>c</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>]<span class='op'>=</span><span class='ident'>d</span>;
@@ -1029,7 +1029,7 @@
 
     <span class='doccomment'>/// Refills the output buffer (`self.rsl`)</span>
     <span class='kw'>fn</span> <span class='ident'>isaac64</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>+=</span> <span class='number'>1</span>;
+        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>+</span> <span class='ident'>w</span>(<span class='number'>1</span>);
         <span class='comment'>// abbreviations</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>a</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>b</span> <span class='op'>+</span> <span class='self'>self</span>.<span class='ident'>c</span>;
@@ -1037,7 +1037,7 @@
         <span class='kw'>const</span> <span class='ident'>MP_VEC</span>: [(<span class='ident'>usize</span>, <span class='ident'>usize</span>); <span class='number'>2</span>] <span class='op'>=</span> [(<span class='number'>0</span>,<span class='ident'>MIDPOINT</span>), (<span class='ident'>MIDPOINT</span>, <span class='number'>0</span>)];
         <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>ind</span> {
             (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
-                <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>mem</span>.<span class='ident'>get_unchecked</span>((<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>&gt;&gt;</span> <span class='number'>3</span>) <span class='kw-2'>&amp;</span> (<span class='ident'>RAND_SIZE_64</span> <span class='op'>-</span> <span class='number'>1</span>))
+                <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>mem</span>.<span class='ident'>get_unchecked</span>(((<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span> <span class='op'>&gt;&gt;</span> <span class='number'>3</span>).<span class='number'>0</span> <span class='kw'>as</span> <span class='ident'>usize</span>) <span class='kw-2'>&amp;</span> (<span class='ident'>RAND_SIZE_64</span> <span class='op'>-</span> <span class='number'>1</span>))
             }
         }
 
@@ -1118,7 +1118,7 @@
         <span class='comment'>// See corresponding location in IsaacRng.next_u32 for</span>
         <span class='comment'>// explanation.</span>
         <span class='macro'>debug_assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>cnt</span> <span class='op'>&lt;</span> <span class='ident'>RAND_SIZE_64</span>);
-        <span class='self'>self</span>.<span class='ident'>rsl</span>[(<span class='self'>self</span>.<span class='ident'>cnt</span> <span class='op'>%</span> <span class='ident'>RAND_SIZE_64</span>) <span class='kw'>as</span> <span class='ident'>usize</span>]
+        <span class='self'>self</span>.<span class='ident'>rsl</span>[(<span class='self'>self</span>.<span class='ident'>cnt</span> <span class='op'>%</span> <span class='ident'>RAND_SIZE_64</span>) <span class='kw'>as</span> <span class='ident'>usize</span>].<span class='number'>0</span>
     }
 }
 
@@ -1129,12 +1129,12 @@
         <span class='kw'>let</span> <span class='ident'>seed_iter</span> <span class='op'>=</span> <span class='ident'>seed</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>).<span class='ident'>chain</span>(<span class='ident'>repeat</span>(<span class='number'>0u64</span>));
 
         <span class='kw'>for</span> (<span class='ident'>rsl_elem</span>, <span class='ident'>seed_elem</span>) <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>rsl</span>.<span class='ident'>iter_mut</span>().<span class='ident'>zip</span>(<span class='ident'>seed_iter</span>) {
-            <span class='op'>*</span><span class='ident'>rsl_elem</span> <span class='op'>=</span> <span class='ident'>seed_elem</span>;
+            <span class='op'>*</span><span class='ident'>rsl_elem</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='ident'>seed_elem</span>);
         }
         <span class='self'>self</span>.<span class='ident'>cnt</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='self'>self</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='self'>self</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
 
         <span class='self'>self</span>.<span class='ident'>init</span>(<span class='boolval'>true</span>);
     }
@@ -1161,9 +1161,9 @@
             <span class='ident'>other</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>slice</span>);
         }
         <span class='ident'>ret</span>.<span class='ident'>cnt</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='ident'>ret</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='ident'>ret</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='ident'>ret</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='ident'>ret</span>.<span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='ident'>ret</span>.<span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
+        <span class='ident'>ret</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>w</span>(<span class='number'>0</span>);
 
         <span class='ident'>ret</span>.<span class='ident'>init</span>(<span class='boolval'>true</span>);
         <span class='kw'>return</span> <span class='ident'>ret</span>;
@@ -1173,25 +1173,23 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>test</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
-
-    <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>iter</span>::<span class='ident'>order</span>;
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>order</span>;
     <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>};
     <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>IsaacRng</span>, <span class='ident'>Isaac64Rng</span>};
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rng_32_rand_seeded</span>() {
         <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>().<span class='ident'>gen_iter</span>::<span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>().<span class='ident'>take</span>(<span class='number'>256</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;&gt;</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ra</span>: <span class='ident'>IsaacRng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rb</span>: <span class='ident'>IsaacRng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ra</span>: <span class='ident'>IsaacRng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rb</span>: <span class='ident'>IsaacRng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>order</span>::<span class='ident'>equals</span>(<span class='ident'>ra</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>),
                               <span class='ident'>rb</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>)));
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rng_64_rand_seeded</span>() {
         <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>().<span class='ident'>gen_iter</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>().<span class='ident'>take</span>(<span class='number'>256</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;&gt;</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ra</span>: <span class='ident'>Isaac64Rng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rb</span>: <span class='ident'>Isaac64Rng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ra</span>: <span class='ident'>Isaac64Rng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rb</span>: <span class='ident'>Isaac64Rng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>order</span>::<span class='ident'>equals</span>(<span class='ident'>ra</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>),
                               <span class='ident'>rb</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>)));
     }
@@ -1216,10 +1214,10 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rng_32_reseed</span>() {
         <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>().<span class='ident'>gen_iter</span>::<span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>().<span class='ident'>take</span>(<span class='number'>256</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;&gt;</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>: <span class='ident'>IsaacRng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>: <span class='ident'>IsaacRng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
         <span class='kw'>let</span> <span class='ident'>string1</span>: <span class='ident'>String</span> <span class='op'>=</span> <span class='ident'>r</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>).<span class='ident'>collect</span>();
 
-        <span class='ident'>r</span>.<span class='ident'>reseed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
+        <span class='ident'>r</span>.<span class='ident'>reseed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
 
         <span class='kw'>let</span> <span class='ident'>string2</span>: <span class='ident'>String</span> <span class='op'>=</span> <span class='ident'>r</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>).<span class='ident'>collect</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>string1</span>, <span class='ident'>string2</span>);
@@ -1227,10 +1225,10 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rng_64_reseed</span>() {
         <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>().<span class='ident'>gen_iter</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>().<span class='ident'>take</span>(<span class='number'>256</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;&gt;</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>: <span class='ident'>Isaac64Rng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>: <span class='ident'>Isaac64Rng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
         <span class='kw'>let</span> <span class='ident'>string1</span>: <span class='ident'>String</span> <span class='op'>=</span> <span class='ident'>r</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>).<span class='ident'>collect</span>();
 
-        <span class='ident'>r</span>.<span class='ident'>reseed</span>(<span class='ident'>s</span>.<span class='ident'>as_slice</span>());
+        <span class='ident'>r</span>.<span class='ident'>reseed</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[..]);
 
         <span class='kw'>let</span> <span class='ident'>string2</span>: <span class='ident'>String</span> <span class='op'>=</span> <span class='ident'>r</span>.<span class='ident'>gen_ascii_chars</span>().<span class='ident'>take</span>(<span class='number'>100</span>).<span class='ident'>collect</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>string1</span>, <span class='ident'>string2</span>);
@@ -1299,7 +1297,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -1314,7 +1312,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -1324,6 +1322,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

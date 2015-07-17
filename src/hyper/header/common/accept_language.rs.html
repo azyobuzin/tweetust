@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.2.0/src/header/common/accept_language.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/hyper-0.6.4/src/header/common/accept_language.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>accept_language.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -110,109 +110,77 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>header</span>::{<span class='self'>self</span>, <span class='ident'>QualityItem</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
+<span class='kw'>use</span> <span class='ident'>language_tags</span>::<span class='ident'>LanguageTag</span>;
+<span class='kw'>use</span> <span class='ident'>header</span>::<span class='ident'>QualityItem</span>;
 
-<span class='doccomment'>/// A language tag.</span>
-<span class='doccomment'>/// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Language</span>{
-    <span class='ident'>primary</span>: <span class='ident'>String</span>,
-    <span class='ident'>sub</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>
-}
+<span class='macro'>header</span><span class='macro'>!</span> {
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;`Accept-Language` header, defined in&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;[RFC7231](http://tools.ietf.org/html/rfc7231#section-5.3.5)&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;The `Accept-Language` header field can be used by user agents to&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;indicate the set of natural languages that are preferred in the&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;response.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# ABNF&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```plain&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;Accept-Language = 1#( language-range [ weight ] )&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;language-range  = &lt;language-range, see [RFC4647], Section 2.1&gt;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# Example values&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;* `da, en-gb;q=0.8, en;q=0.7`&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;* `en-us;q=1.0, en;q=0.5, fr`&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# Examples&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;use hyper::LanguageTag;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;use hyper::header::{Headers, AcceptLanguage, qitem};&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;let mut headers = Headers::new();&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;let mut langtag: LanguageTag = Default::default();&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;langtag.language = Some(\&quot;en\&quot;.to_owned());&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;langtag.region = Some(\&quot;US\&quot;.to_owned());&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;headers.set(&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;    AcceptLanguage(vec![&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;        qitem(langtag),&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;    ])&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;);&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# extern crate hyper;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# #[macro_use] extern crate language_tags;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# use hyper::header::{Headers, AcceptLanguage, QualityItem, Quality, qitem};&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# &quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# fn main() {&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;let mut headers = Headers::new();&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;headers.set(&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;    AcceptLanguage(vec![&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;        qitem(langtag!(da)),&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;        QualityItem::new(langtag!(en;;;GB), Quality(800)),&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;        QualityItem::new(langtag!(en), Quality(700)),&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;    ])&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;);&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;# }&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;```&quot;</span>]</span>
+    (<span class='ident'>AcceptLanguage</span>, <span class='string'>&quot;Accept-Language&quot;</span>) <span class='op'>=&gt;</span> (<span class='ident'>QualityItem</span><span class='op'>&lt;</span><span class='ident'>LanguageTag</span><span class='op'>&gt;</span>)<span class='op'>+</span>
 
-<span class='kw'>impl</span> <span class='ident'>FromStr</span> <span class='kw'>for</span> <span class='ident'>Language</span> {
-    <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> ();
-    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Language</span>, ()<span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>split_str</span>(<span class='string'>&quot;-&quot;</span>);
-        <span class='kw'>let</span> <span class='ident'>p</span> <span class='op'>=</span> <span class='ident'>i</span>.<span class='ident'>next</span>();
-        <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>i</span>.<span class='ident'>next</span>();
-        <span class='kw'>match</span> (<span class='ident'>p</span>, <span class='ident'>s</span>) {
-            (<span class='prelude-val'>Some</span>(<span class='ident'>p</span>),<span class='prelude-val'>Some</span>(<span class='ident'>s</span>)) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Language</span>{<span class='ident'>primary</span>: <span class='ident'>p</span>.<span class='ident'>to_string</span>(),
-                                             <span class='ident'>sub</span>: <span class='prelude-val'>Some</span>(<span class='ident'>s</span>.<span class='ident'>to_string</span>())}),
-            (<span class='prelude-val'>Some</span>(<span class='ident'>p</span>),_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Language</span>{<span class='ident'>primary</span>: <span class='ident'>p</span>.<span class='ident'>to_string</span>(), <span class='ident'>sub</span>: <span class='prelude-val'>None</span>}),
-            _ <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(())
-        }
+    <span class='ident'>test_accept_language</span> {
+        <span class='comment'>// From the RFC</span>
+        <span class='macro'>test_header</span><span class='macro'>!</span>(<span class='ident'>test1</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;da, en-gb;q=0.8, en;q=0.7&quot;</span>]);
+        <span class='comment'>// Own test</span>
+        <span class='macro'>test_header</span><span class='macro'>!</span>(
+            <span class='ident'>test2</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;en-US, en; q=0.5, fr&quot;</span>],
+            <span class='prelude-val'>Some</span>(<span class='ident'>AcceptLanguage</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
+                <span class='ident'>qitem</span>(<span class='macro'>langtag</span><span class='macro'>!</span>(<span class='ident'>en</span>;;;<span class='ident'>US</span>)),
+                <span class='ident'>QualityItem</span>::<span class='ident'>new</span>(<span class='macro'>langtag</span><span class='macro'>!</span>(<span class='ident'>en</span>), <span class='ident'>Quality</span>(<span class='number'>500</span>)),
+                <span class='ident'>qitem</span>(<span class='macro'>langtag</span><span class='macro'>!</span>(<span class='ident'>fr</span>)),
+        ])));
     }
 }
-
-<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Language</span> {
-    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>primary</span>));
-        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>sub</span> {
-            <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;-{}&quot;</span>, <span class='ident'>s</span>),
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(())
-        }
-    }
-}
-
-<span class='doccomment'>/// The `Accept-Language` header</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// The `Accept-Language` header can be used by clients to indicate what</span>
-<span class='doccomment'>/// response languages they accept.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>AcceptLanguage</span>(<span class='kw'>pub</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QualityItem</span><span class='op'>&lt;</span><span class='ident'>Language</span><span class='op'>&gt;&gt;</span>);
-
-<span class='macro'>impl_list_header</span><span class='macro'>!</span>(<span class='ident'>AcceptLanguage</span>,
-                  <span class='string'>&quot;Accept-Language&quot;</span>,
-                  <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>QualityItem</span><span class='op'>&lt;</span><span class='ident'>Language</span><span class='op'>&gt;&gt;</span>);
 
 <span class='macro'>bench_header</span><span class='macro'>!</span>(<span class='ident'>bench</span>, <span class='ident'>AcceptLanguage</span>,
               { <span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>b&quot;en-us;q=1.0, en;q=0.5, fr&quot;</span>.<span class='ident'>to_vec</span>()] });
-
-<span class='attribute'>#[<span class='ident'>test</span>]</span>
-<span class='kw'>fn</span> <span class='ident'>test_parse_header</span>() {
-    <span class='kw'>let</span> <span class='ident'>a</span>: <span class='ident'>AcceptLanguage</span> <span class='op'>=</span> <span class='ident'>header</span>::<span class='ident'>Header</span>::<span class='ident'>parse_header</span>(
-        [<span class='string'>b&quot;en-us;q=1.0, en;q=0.5, fr&quot;</span>.<span class='ident'>to_vec</span>()].<span class='ident'>as_slice</span>()).<span class='ident'>unwrap</span>();
-    <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>AcceptLanguage</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
-        <span class='ident'>QualityItem</span> { <span class='ident'>item</span>: <span class='ident'>Language</span>{<span class='ident'>primary</span>: <span class='string'>&quot;en&quot;</span>.<span class='ident'>to_string</span>(),
-                                   <span class='ident'>sub</span>: <span class='prelude-val'>Some</span>(<span class='string'>&quot;us&quot;</span>.<span class='ident'>to_string</span>())},
-                      <span class='ident'>quality</span>: <span class='number'>1f32</span> },
-        <span class='ident'>QualityItem</span> { <span class='ident'>item</span>: <span class='ident'>Language</span>{<span class='ident'>primary</span>: <span class='string'>&quot;en&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>sub</span>: <span class='prelude-val'>None</span>},
-                      <span class='ident'>quality</span>: <span class='number'>0.5f32</span> },
-        <span class='ident'>QualityItem</span> { <span class='ident'>item</span>: <span class='ident'>Language</span>{<span class='ident'>primary</span>: <span class='string'>&quot;fr&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>sub</span>: <span class='prelude-val'>None</span>},
-                      <span class='ident'>quality</span>: <span class='number'>1f32</span> },
-    ]);
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>a</span>), <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>b</span>));
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>a</span>, <span class='ident'>b</span>);
-}
-
-<span class='attribute'>#[<span class='ident'>test</span>]</span>
-<span class='kw'>fn</span> <span class='ident'>test_display</span>() {
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;en&quot;</span>.<span class='ident'>to_string</span>(),
-               <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>Language</span>{<span class='ident'>primary</span>: <span class='string'>&quot;en&quot;</span>.<span class='ident'>to_string</span>(),
-                                      <span class='ident'>sub</span>: <span class='prelude-val'>None</span>}));
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='string'>&quot;en-us&quot;</span>.<span class='ident'>to_string</span>(),
-               <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>Language</span>{<span class='ident'>primary</span>: <span class='string'>&quot;en&quot;</span>.<span class='ident'>to_string</span>(),
-                                      <span class='ident'>sub</span>: <span class='prelude-val'>Some</span>(<span class='string'>&quot;us&quot;</span>.<span class='ident'>to_string</span>())}));
-}
-
-<span class='attribute'>#[<span class='ident'>test</span>]</span>
-<span class='kw'>fn</span> <span class='ident'>test_from_str</span>() {
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Language</span> { <span class='ident'>primary</span>: <span class='string'>&quot;en&quot;</span>.<span class='ident'>to_string</span>(), <span class='ident'>sub</span>: <span class='prelude-val'>None</span> },
-               <span class='string'>&quot;en&quot;</span>.<span class='ident'>parse</span>().<span class='ident'>unwrap</span>());
-    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Language</span> { <span class='ident'>primary</span>: <span class='string'>&quot;en&quot;</span>.<span class='ident'>to_string</span>(),
-                          <span class='ident'>sub</span>: <span class='prelude-val'>Some</span>(<span class='string'>&quot;us&quot;</span>.<span class='ident'>to_string</span>()) },
-               <span class='string'>&quot;en-us&quot;</span>.<span class='ident'>parse</span>().<span class='ident'>unwrap</span>());
-}
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -221,7 +189,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -236,7 +204,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -246,6 +214,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

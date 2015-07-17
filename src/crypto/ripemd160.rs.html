@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/ripemd160.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rust-crypto-0.2.31/src/ripemd160.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>ripemd160.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -637,7 +637,7 @@
 <span class='kw'>const</span> <span class='ident'>WORK_BUF_LEN</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>16</span>;
 
 <span class='doccomment'>/// Structure representing the state of a Ripemd160 computation</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Ripemd160</span> {
     <span class='ident'>h</span>: [<span class='ident'>u32</span>; <span class='ident'>DIGEST_BUF_LEN</span>],
     <span class='ident'>length_bits</span>: <span class='ident'>u64</span>,
@@ -652,8 +652,8 @@
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>round</span>(
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>b</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>c</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>d</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>:<span class='ident'>expr</span>,
      <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>bits</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>add</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>round</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> ({
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span> <span class='op'>+=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>round</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span> <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>add</span>;
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span> <span class='op'>=</span> <span class='ident'>circular_shift</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>bits</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>) <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>;
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>.<span class='ident'>wrapping_add</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>round</span>).<span class='ident'>wrapping_add</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>).<span class='ident'>wrapping_add</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>add</span>);
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span> <span class='op'>=</span> <span class='ident'>circular_shift</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>bits</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>).<span class='ident'>wrapping_add</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>);
         <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>c</span> <span class='op'>=</span> <span class='ident'>circular_shift</span>(<span class='number'>10</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>c</span>);
     });
 );
@@ -740,11 +740,11 @@
                   <span class='ident'>bbb</span>[<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pf1</span>] <span class='op'>^</span> <span class='ident'>bbb</span>[<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pf2</span>] <span class='op'>^</span> <span class='ident'>bbb</span>[<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pf3</span>]); )<span class='op'>*</span>
 
         <span class='comment'>// Combine results</span>
-        <span class='ident'>bbb</span>[<span class='number'>3</span>] <span class='op'>+=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>bb</span>[<span class='number'>2</span>];
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>1</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>2</span>] <span class='op'>+</span> <span class='ident'>bb</span>[<span class='number'>3</span>] <span class='op'>+</span> <span class='ident'>bbb</span>[<span class='number'>4</span>];
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>2</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>3</span>] <span class='op'>+</span> <span class='ident'>bb</span>[<span class='number'>4</span>] <span class='op'>+</span> <span class='ident'>bbb</span>[<span class='number'>0</span>];
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>3</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>4</span>] <span class='op'>+</span> <span class='ident'>bb</span>[<span class='number'>0</span>] <span class='op'>+</span> <span class='ident'>bbb</span>[<span class='number'>1</span>];
-        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>4</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>0</span>] <span class='op'>+</span> <span class='ident'>bb</span>[<span class='number'>1</span>] <span class='op'>+</span> <span class='ident'>bbb</span>[<span class='number'>2</span>];
+        <span class='ident'>bbb</span>[<span class='number'>3</span>] <span class='op'>=</span> <span class='ident'>bbb</span>[<span class='number'>3</span>].<span class='ident'>wrapping_add</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>1</span>]).<span class='ident'>wrapping_add</span>(<span class='ident'>bb</span>[<span class='number'>2</span>]);
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>1</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>2</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>bb</span>[<span class='number'>3</span>]).<span class='ident'>wrapping_add</span>(<span class='ident'>bbb</span>[<span class='number'>4</span>]);
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>2</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>3</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>bb</span>[<span class='number'>4</span>]).<span class='ident'>wrapping_add</span>(<span class='ident'>bbb</span>[<span class='number'>0</span>]);
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>3</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>4</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>bb</span>[<span class='number'>0</span>]).<span class='ident'>wrapping_add</span>(<span class='ident'>bbb</span>[<span class='number'>1</span>]);
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>4</span>]   <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>0</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>bb</span>[<span class='number'>1</span>]).<span class='ident'>wrapping_add</span>(<span class='ident'>bbb</span>[<span class='number'>2</span>]);
         <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>h</span>[<span class='number'>0</span>]   <span class='op'>=</span>                 <span class='ident'>bbb</span>[<span class='number'>3</span>];
     });
 );
@@ -971,7 +971,7 @@
      * Adds the input `msg` to the hash. This method can be called repeatedly
      * for use with streaming messages.
      */</span>
-    <span class='kw'>fn</span> <span class='ident'>input</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>msg</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) { 
+    <span class='kw'>fn</span> <span class='ident'>input</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>msg</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='self'>self</span>.<span class='ident'>computed</span>);
         <span class='comment'>// Assumes that msg.len() can be converted to u64 without overflow</span>
         <span class='self'>self</span>.<span class='ident'>length_bits</span> <span class='op'>=</span> <span class='ident'>add_bytes_to_bits</span>(<span class='self'>self</span>.<span class='ident'>length_bits</span>, <span class='ident'>msg</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>u64</span>);
@@ -979,13 +979,13 @@
         <span class='self'>self</span>.<span class='ident'>buffer</span>.<span class='ident'>input</span>(<span class='ident'>msg</span>, <span class='op'>|</span><span class='ident'>d</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]<span class='op'>|</span> {<span class='ident'>process_msg_block</span>(<span class='ident'>d</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>st_h</span>);}
         );
     }
-    
+
     <span class='doccomment'>/**
      * Returns the resulting digest of the entire message.
      * Note: `out` must be at least 20 bytes (160 bits)
      */</span>
-    <span class='kw'>fn</span> <span class='ident'>result</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) { 
-        
+    <span class='kw'>fn</span> <span class='ident'>result</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
+
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>computed</span> {
             <span class='kw'>let</span> <span class='ident'>st_h</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>h</span>;
             <span class='self'>self</span>.<span class='ident'>buffer</span>.<span class='ident'>standard_padding</span>(<span class='number'>8</span>, <span class='op'>|</span><span class='ident'>d</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]<span class='op'>|</span> { <span class='ident'>process_msg_block</span>(<span class='ident'>d</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>st_h</span>) });
@@ -996,7 +996,7 @@
 
             <span class='self'>self</span>.<span class='ident'>computed</span> <span class='op'>=</span> <span class='boolval'>true</span>;
         }
-        
+
         <span class='ident'>write_u32_le</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>[<span class='number'>0</span>..<span class='number'>4</span>], <span class='self'>self</span>.<span class='ident'>h</span>[<span class='number'>0</span>]);
         <span class='ident'>write_u32_le</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>[<span class='number'>4</span>..<span class='number'>8</span>], <span class='self'>self</span>.<span class='ident'>h</span>[<span class='number'>1</span>]);
         <span class='ident'>write_u32_le</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>[<span class='number'>8</span>..<span class='number'>12</span>], <span class='self'>self</span>.<span class='ident'>h</span>[<span class='number'>2</span>]);
@@ -1051,7 +1051,7 @@
                     <span class='number'>0x4au8</span>, <span class='number'>0x9cu8</span>, <span class='number'>0x0cu8</span>, <span class='number'>0x88u8</span>,
                     <span class='number'>0xe4u8</span>, <span class='number'>0x05u8</span>, <span class='number'>0xa0u8</span>, <span class='number'>0x6cu8</span>,
                     <span class='number'>0x27u8</span>, <span class='number'>0xdcu8</span>, <span class='number'>0xf4u8</span>, <span class='number'>0x9au8</span>,
-                    <span class='number'>0xdau8</span>, <span class='number'>0x62u8</span>, <span class='number'>0xebu8</span>, <span class='number'>0x2bu8</span>, 
+                    <span class='number'>0xdau8</span>, <span class='number'>0x62u8</span>, <span class='number'>0xebu8</span>, <span class='number'>0x2bu8</span>,
                 ],
                 <span class='ident'>output_str</span>: <span class='string'>&quot;12a053384a9c0c88e405a06c27dcf49ada62eb2b&quot;</span>
             },
@@ -1074,7 +1074,7 @@
                     <span class='number'>0x69u8</span>, <span class='number'>0x09u8</span>, <span class='number'>0x33u8</span>, <span class='number'>0x83u8</span>,
                     <span class='number'>0x5eu8</span>, <span class='number'>0xb8u8</span>, <span class='number'>0xb6u8</span>, <span class='number'>0xadu8</span>,
                     <span class='number'>0x0bu8</span>, <span class='number'>0x77u8</span>, <span class='number'>0xe7u8</span>, <span class='number'>0xb6u8</span>,
-                    <span class='number'>0xf1u8</span>, <span class='number'>0x4au8</span>, <span class='number'>0xcau8</span>, <span class='number'>0xd7u8</span>, 
+                    <span class='number'>0xf1u8</span>, <span class='number'>0x4au8</span>, <span class='number'>0xcau8</span>, <span class='number'>0xd7u8</span>,
                 ],
                 <span class='ident'>output_str</span>: <span class='string'>&quot;132072df690933835eb8b6ad0b77e7b6f14acad7&quot;</span>,
             },
@@ -1084,7 +1084,7 @@
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>out</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>20</span>];
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Ripemd160</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Ripemd160</span>::<span class='ident'>new</span>());
         <span class='kw'>for</span> <span class='ident'>t</span> <span class='kw'>in</span> <span class='ident'>tests</span>.<span class='ident'>iter</span>() {
             (<span class='op'>*</span><span class='ident'>sh</span>).<span class='ident'>input_str</span>(<span class='ident'>t</span>.<span class='ident'>input</span>);
             <span class='ident'>sh</span>.<span class='ident'>result</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>);
@@ -1128,7 +1128,7 @@
     }
 }
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>test</span>, <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;with-bench&quot;</span>))]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
     <span class='kw'>use</span> <span class='ident'>test</span>::<span class='ident'>Bencher</span>;
     <span class='kw'>use</span> <span class='ident'>digest</span>::<span class='ident'>Digest</span>;
@@ -1173,7 +1173,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -1188,7 +1188,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -1198,6 +1198,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

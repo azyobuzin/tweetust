@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/fortuna.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rust-crypto-0.2.31/src/fortuna.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>fortuna.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -554,6 +554,7 @@
 <span id="512">512</span>
 <span id="513">513</span>
 <span id="514">514</span>
+<span id="515">515</span>
 </pre><pre class='rust '>
 <span class='comment'>// Licensed under the Apache License, Version 2.0 &lt;LICENSE-APACHE or</span>
 <span class='comment'>// http://www.apache.org/licenses/LICENSE-2.0&gt; or the MIT license</span>
@@ -577,7 +578,7 @@
  * is designed to be timing-attack resistant. The speed hit from this
  * is in line with a &quot;safety first&quot; API, but be aware of it.
  *
- * Fortuna was originally described in 
+ * Fortuna was originally described in
  *   Practical Cryptography, Niels Ferguson and Bruce Schneier.
  *   John Wiley &amp; Sons, 2003.
  *
@@ -600,6 +601,8 @@
  * What this means is that if you are writing forking code (using `#![no_std]`
  * say) then you need to EXPLICITLY RESEED THE RNG AFTER FORKING.
  */</span>
+
+<span class='kw'>use</span> <span class='ident'>cryptoutil</span>::<span class='ident'>copy_memory</span>;
 
 <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>};
 <span class='kw'>use</span> <span class='ident'>time</span>::<span class='ident'>precise_time_s</span>;
@@ -642,8 +645,8 @@
 
     <span class='doccomment'>/// Increments the counter in place</span>
     <span class='kw'>fn</span> <span class='ident'>increment_counter</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='self'>self</span>.<span class='ident'>ctr</span>.<span class='ident'>len</span>()) {
-            <span class='self'>self</span>.<span class='ident'>ctr</span>[<span class='ident'>i</span>] <span class='op'>+=</span> <span class='number'>1</span>;
+        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>ctr</span>.<span class='ident'>len</span>()) {
+            <span class='self'>self</span>.<span class='ident'>ctr</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ctr</span>[<span class='ident'>i</span>].<span class='ident'>wrapping_add</span>(<span class='number'>1</span>);
             <span class='comment'>// As soon as we don&#39;t carry, stop</span>
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>ctr</span>[<span class='ident'>i</span>] <span class='op'>!=</span> <span class='number'>0</span> {
                 <span class='kw'>break</span>;
@@ -657,7 +660,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>hasher</span> <span class='op'>=</span> <span class='ident'>Sha256</span>::<span class='ident'>new</span>();
         <span class='ident'>hasher</span>.<span class='ident'>input</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>key</span>[..]);
         <span class='ident'>hasher</span>.<span class='ident'>input</span>(<span class='ident'>s</span>);
-        <span class='ident'>hasher</span>.<span class='ident'>result</span>(<span class='self'>self</span>.<span class='ident'>key</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>hasher</span>.<span class='ident'>result</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>key</span>);
         <span class='ident'>hasher</span> <span class='op'>=</span> <span class='ident'>Sha256</span>::<span class='ident'>new</span>();
         <span class='ident'>hasher</span>.<span class='ident'>input</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>key</span>[..]);
         <span class='ident'>hasher</span>.<span class='ident'>result</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>key</span>[..]);
@@ -673,7 +676,7 @@
         <span class='comment'>// Setup AES encryptor</span>
         <span class='kw'>let</span> <span class='ident'>block_encryptor</span> <span class='op'>=</span> <span class='ident'>AesSafe256Encryptor</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>key</span>[..]);
         <span class='comment'>// Concatenate all the blocks</span>
-        <span class='kw'>for</span> <span class='ident'>j</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='ident'>k</span>) {
+        <span class='kw'>for</span> <span class='ident'>j</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>k</span>) {
             <span class='ident'>block_encryptor</span>.<span class='ident'>encrypt_block</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>ctr</span>[..],
                                           <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>[<span class='ident'>AES_BLOCK_SIZE</span> <span class='op'>*</span> <span class='ident'>j</span>..<span class='ident'>AES_BLOCK_SIZE</span> <span class='op'>*</span> (<span class='ident'>j</span> <span class='op'>+</span> <span class='number'>1</span>)]);
             <span class='self'>self</span>.<span class='ident'>increment_counter</span>();
@@ -689,20 +692,20 @@
         <span class='self'>self</span>.<span class='ident'>generate_blocks</span>(<span class='ident'>n</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>[..(<span class='ident'>n</span> <span class='op'>*</span> <span class='ident'>AES_BLOCK_SIZE</span>)]);
         <span class='kw'>if</span> <span class='ident'>rem</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buf</span> <span class='op'>=</span> [<span class='number'>0</span>; <span class='ident'>AES_BLOCK_SIZE</span>];
-            <span class='self'>self</span>.<span class='ident'>generate_blocks</span>(<span class='number'>1</span>, <span class='ident'>buf</span>.<span class='ident'>as_mut_slice</span>());
-            <span class='ident'>out</span>[(<span class='ident'>n</span> <span class='op'>*</span> <span class='ident'>AES_BLOCK_SIZE</span>)..].<span class='ident'>clone_from_slice</span>(<span class='kw-2'>&amp;</span><span class='ident'>buf</span>[..<span class='ident'>rem</span>]);
+            <span class='self'>self</span>.<span class='ident'>generate_blocks</span>(<span class='number'>1</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buf</span>);
+            <span class='ident'>copy_memory</span>(<span class='kw-2'>&amp;</span><span class='ident'>buf</span>[..<span class='ident'>rem</span>], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>[(<span class='ident'>n</span> <span class='op'>*</span> <span class='ident'>AES_BLOCK_SIZE</span>)..]);
         }
 
         <span class='comment'>// Rekey</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>new_key</span> <span class='op'>=</span> [<span class='number'>0</span>; <span class='ident'>KEY_LEN</span>];
-        <span class='self'>self</span>.<span class='ident'>generate_blocks</span>(<span class='ident'>KEY_LEN</span> <span class='op'>/</span> <span class='ident'>AES_BLOCK_SIZE</span>, <span class='ident'>new_key</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='self'>self</span>.<span class='ident'>generate_blocks</span>(<span class='ident'>KEY_LEN</span> <span class='op'>/</span> <span class='ident'>AES_BLOCK_SIZE</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>new_key</span>);
         <span class='self'>self</span>.<span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>new_key</span>;
     }
 }
 
 
 <span class='doccomment'>/// A single entropy pool (not public)</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>Pool</span> {
     <span class='ident'>state</span>: <span class='ident'>Sha256</span>,
     <span class='ident'>count</span>: <span class='ident'>usize</span>
@@ -749,7 +752,7 @@
         }
     }
 
-    <span class='doccomment'>/// Adds a random event `e` from source `s` to entropy pool `i` (PC 9.5.6) </span>
+    <span class='doccomment'>/// Adds a random event `e` from source `s` to entropy pool `i` (PC 9.5.6)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_random_event</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>s</span>: <span class='ident'>u8</span>, <span class='ident'>i</span>: <span class='ident'>usize</span>, <span class='ident'>e</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>i</span> <span class='op'>&lt;=</span> <span class='ident'>NUM_POOLS</span>);
         <span class='comment'>// These restrictions (and `s` in [0, 255]) are part of the Fortuna spec.</span>
@@ -799,7 +802,7 @@
 
     <span class='kw'>fn</span> <span class='ident'>next_u32</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>u32</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ret</span> <span class='op'>=</span> [<span class='number'>0</span>; <span class='number'>4</span>];
-        <span class='self'>self</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>ret</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='self'>self</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>ret</span>);
         <span class='ident'>read_u32_le</span>(<span class='kw-2'>&amp;</span><span class='ident'>ret</span>[..])
     }
 }
@@ -836,14 +839,14 @@
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_use_unseeded</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>f</span>: <span class='ident'>Fortuna</span> <span class='op'>=</span> <span class='ident'>Fortuna</span>::<span class='ident'>new_unseeded</span>();
         <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>f</span>.<span class='ident'>next_u32</span>();
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_badly_seeded</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>f</span>: <span class='ident'>Fortuna</span> <span class='op'>=</span> <span class='ident'>Fortuna</span>::<span class='ident'>new_unseeded</span>();
         <span class='ident'>f</span>.<span class='ident'>add_random_event</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span>[<span class='number'>10</span>; <span class='number'>32</span>]);
@@ -851,7 +854,7 @@
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_too_big_event</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>f</span>: <span class='ident'>Fortuna</span> <span class='op'>=</span> <span class='ident'>Fortuna</span>::<span class='ident'>new_unseeded</span>();
         <span class='ident'>f</span>.<span class='ident'>add_random_event</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span>[<span class='number'>10</span>; <span class='number'>33</span>]);
@@ -907,16 +910,16 @@
                          <span class='number'>50</span>,  <span class='number'>68</span>, <span class='number'>236</span>, <span class='number'>107</span>, <span class='number'>133</span>,  <span class='number'>18</span>, <span class='number'>217</span>, <span class='number'>219</span>,  <span class='number'>46</span>, <span class='number'>134</span>,
                         <span class='number'>169</span>, <span class='number'>156</span>, <span class='number'>211</span>,  <span class='number'>74</span>, <span class='number'>163</span>,  <span class='number'>17</span>, <span class='number'>100</span>, <span class='number'>173</span>,  <span class='number'>26</span>,  <span class='number'>70</span>,
                         <span class='number'>246</span>, <span class='number'>193</span>,  <span class='number'>57</span>, <span class='number'>164</span>, <span class='number'>167</span>, <span class='number'>175</span>, <span class='number'>233</span>, <span class='number'>220</span>, <span class='number'>160</span>, <span class='number'>114</span>,
-                          <span class='number'>2</span>, <span class='number'>200</span>, <span class='number'>215</span>,  <span class='number'>80</span>, <span class='number'>207</span>, <span class='number'>218</span>,  <span class='number'>85</span>,  <span class='number'>58</span>, <span class='number'>235</span>, <span class='number'>117</span>, 
+                          <span class='number'>2</span>, <span class='number'>200</span>, <span class='number'>215</span>,  <span class='number'>80</span>, <span class='number'>207</span>, <span class='number'>218</span>,  <span class='number'>85</span>,  <span class='number'>58</span>, <span class='number'>235</span>, <span class='number'>117</span>,
                         <span class='number'>177</span>, <span class='number'>223</span>,  <span class='number'>87</span>, <span class='number'>192</span>,  <span class='number'>50</span>, <span class='number'>251</span>,  <span class='number'>61</span>,  <span class='number'>65</span>, <span class='number'>141</span>, <span class='number'>100</span>,
                          <span class='number'>59</span>, <span class='number'>228</span>,  <span class='number'>23</span>, <span class='number'>215</span>,  <span class='number'>58</span>, <span class='number'>107</span>, <span class='number'>248</span>, <span class='number'>248</span>, <span class='number'>103</span>,  <span class='number'>57</span>,
                         <span class='number'>127</span>,  <span class='number'>31</span>, <span class='number'>241</span>,  <span class='number'>91</span>, <span class='number'>230</span>,  <span class='number'>33</span>,   <span class='number'>0</span>, <span class='number'>164</span>,  <span class='number'>77</span>, <span class='number'>46</span>];
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>f</span>: <span class='ident'>Fortuna</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='kw-2'>&amp;</span>[<span class='number'>1</span>, <span class='number'>2</span>, <span class='number'>3</span>, <span class='number'>4</span>][..]);
-        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>output</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='ident'>expected</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>output</span>[..]);
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>scratch</span> <span class='op'>=</span> [<span class='number'>0</span>; (<span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='number'>20</span>)];
-        <span class='ident'>f</span>.<span class='ident'>generator</span>.<span class='ident'>generate_random_data</span>(<span class='ident'>scratch</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>f</span>.<span class='ident'>generator</span>.<span class='ident'>generate_random_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>scratch</span>);
 
         <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> [<span class='number'>122</span>, <span class='number'>164</span>,  <span class='number'>26</span>,  <span class='number'>67</span>, <span class='number'>102</span>,  <span class='number'>65</span>,  <span class='number'>30</span>, <span class='number'>217</span>, <span class='number'>219</span>, <span class='number'>113</span>,
                          <span class='number'>14</span>,  <span class='number'>86</span>, <span class='number'>214</span>, <span class='number'>146</span>, <span class='number'>185</span>,  <span class='number'>17</span>, <span class='number'>107</span>, <span class='number'>135</span>, <span class='number'>183</span>,   <span class='number'>7</span>,
@@ -928,7 +931,7 @@
                         <span class='number'>171</span>, <span class='number'>115</span>, <span class='number'>157</span>, <span class='number'>109</span>, <span class='number'>248</span>, <span class='number'>198</span>, <span class='number'>227</span>,  <span class='number'>18</span>, <span class='number'>204</span>, <span class='number'>211</span>,
                          <span class='number'>42</span>, <span class='number'>184</span>,  <span class='number'>92</span>,  <span class='number'>42</span>, <span class='number'>171</span>, <span class='number'>222</span>, <span class='number'>198</span>, <span class='number'>117</span>, <span class='number'>162</span>, <span class='number'>134</span>,
                         <span class='number'>116</span>, <span class='number'>109</span>,  <span class='number'>77</span>, <span class='number'>195</span>, <span class='number'>187</span>, <span class='number'>139</span>,  <span class='number'>37</span>,  <span class='number'>78</span>, <span class='number'>224</span>,  <span class='number'>63</span>];
-        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>output</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='ident'>expected</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>output</span>[..]);
 
         <span class='ident'>f</span>.<span class='ident'>reseed</span>(<span class='kw-2'>&amp;</span>[<span class='number'>5</span>]);
@@ -944,7 +947,7 @@
                         <span class='number'>101</span>,  <span class='number'>10</span>,  <span class='number'>29</span>,  <span class='number'>33</span>, <span class='number'>133</span>,  <span class='number'>87</span>, <span class='number'>189</span>,  <span class='number'>36</span>, <span class='number'>229</span>,  <span class='number'>56</span>,
                          <span class='number'>17</span>, <span class='number'>100</span>, <span class='number'>138</span>,  <span class='number'>49</span>,  <span class='number'>79</span>, <span class='number'>239</span>, <span class='number'>210</span>, <span class='number'>189</span>, <span class='number'>141</span>,  <span class='number'>46</span>];
 
-        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>output</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='ident'>expected</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>output</span>[..]);
     }
 
@@ -960,13 +963,13 @@
         <span class='ident'>f</span>.<span class='ident'>pool</span> <span class='op'>=</span> [<span class='ident'>Pool</span>::<span class='ident'>new</span>(); <span class='ident'>NUM_POOLS</span>];
         <span class='ident'>f</span>.<span class='ident'>add_random_event</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span>[<span class='number'>0</span>; <span class='number'>32</span>]);
         <span class='ident'>f</span>.<span class='ident'>add_random_event</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span>[<span class='number'>0</span>; <span class='number'>32</span>]);
-        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='number'>32</span>) {
+        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='number'>32</span>) {
             <span class='ident'>f</span>.<span class='ident'>add_random_event</span>(<span class='number'>1</span>, <span class='ident'>i</span>, <span class='kw-2'>&amp;</span>[<span class='number'>1</span>, <span class='number'>2</span>]);
         }
 
         <span class='comment'>// from Crypto.Random.Fortuna import FortunaAccumulator</span>
         <span class='comment'>// x = FortunaAccumulator.FortunaAccumulator()</span>
-        <span class='comment'>// x.add_random_event(0, 0, &quot;\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;)  </span>
+        <span class='comment'>// x.add_random_event(0, 0, &quot;\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;)</span>
         <span class='comment'>// x.add_random_event(0, 0, &quot;\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;)</span>
         <span class='comment'>// x.add_random_event(1, 0, &quot;\1\2&quot;)</span>
         <span class='comment'>// x.add_random_event(1, 1, &quot;\1\2&quot;)</span>
@@ -981,14 +984,14 @@
                         <span class='number'>226</span>, <span class='number'>168</span>, <span class='number'>179</span>, <span class='number'>246</span>,  <span class='number'>82</span>,  <span class='number'>42</span>, <span class='number'>223</span>, <span class='number'>239</span>, <span class='number'>201</span>,  <span class='number'>23</span>,
                          <span class='number'>28</span>,  <span class='number'>30</span>, <span class='number'>195</span>, <span class='number'>195</span>,   <span class='number'>9</span>, <span class='number'>154</span>,  <span class='number'>31</span>, <span class='number'>172</span>, <span class='number'>209</span>, <span class='number'>232</span>,
                         <span class='number'>238</span>, <span class='number'>111</span>,  <span class='number'>75</span>, <span class='number'>251</span>, <span class='number'>196</span>,  <span class='number'>43</span>, <span class='number'>217</span>, <span class='number'>241</span>,  <span class='number'>93</span>, <span class='number'>237</span>];
-        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>output</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='ident'>expected</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>output</span>[..]);
 
         <span class='comment'>// Immediately (less than 100ms)</span>
         <span class='ident'>f</span>.<span class='ident'>add_random_event</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span>[<span class='number'>0</span>; <span class='number'>32</span>]);
         <span class='ident'>f</span>.<span class='ident'>add_random_event</span>(<span class='number'>0</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span>[<span class='number'>0</span>; <span class='number'>32</span>]);
 
-        <span class='comment'>// x.add_random_event(0, 0, &quot;\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;)  </span>
+        <span class='comment'>// x.add_random_event(0, 0, &quot;\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;)</span>
         <span class='comment'>// x.add_random_event(0, 0, &quot;\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&quot;)</span>
         <span class='comment'>// print list(bytearray(x.random_data(100)))</span>
         <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> [<span class='number'>101</span>, <span class='number'>123</span>, <span class='number'>175</span>, <span class='number'>157</span>, <span class='number'>142</span>, <span class='number'>202</span>, <span class='number'>211</span>,  <span class='number'>47</span>, <span class='number'>149</span>, <span class='number'>214</span>,
@@ -1001,7 +1004,7 @@
                          <span class='number'>19</span>, <span class='number'>167</span>,  <span class='number'>56</span>, <span class='number'>192</span>, <span class='number'>140</span>,  <span class='number'>93</span>, <span class='number'>132</span>,  <span class='number'>78</span>,  <span class='number'>22</span>,  <span class='number'>16</span>,
                         <span class='number'>114</span>,  <span class='number'>68</span>, <span class='number'>123</span>, <span class='number'>200</span>,  <span class='number'>37</span>, <span class='number'>183</span>, <span class='number'>163</span>, <span class='number'>224</span>, <span class='number'>201</span>, <span class='number'>155</span>,
                         <span class='number'>233</span>,  <span class='number'>71</span>, <span class='number'>111</span>,  <span class='number'>26</span>,   <span class='number'>8</span>, <span class='number'>114</span>, <span class='number'>232</span>, <span class='number'>181</span>,  <span class='number'>13</span>,  <span class='number'>51</span>];
-        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>output</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='ident'>expected</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>output</span>[..]);
 
         <span class='comment'>// Simulate more than 100 ms passing</span>
@@ -1018,12 +1021,12 @@
                          <span class='number'>67</span>, <span class='number'>148</span>, <span class='number'>192</span>,  <span class='number'>52</span>, <span class='number'>147</span>, <span class='number'>216</span>,  <span class='number'>79</span>, <span class='number'>204</span>, <span class='number'>106</span>, <span class='number'>112</span>,
                         <span class='number'>238</span>,   <span class='number'>0</span>, <span class='number'>239</span>,  <span class='number'>99</span>, <span class='number'>159</span>,  <span class='number'>96</span>, <span class='number'>184</span>,  <span class='number'>90</span>,  <span class='number'>54</span>, <span class='number'>122</span>,
                         <span class='number'>184</span>, <span class='number'>241</span>, <span class='number'>221</span>, <span class='number'>151</span>, <span class='number'>169</span>,  <span class='number'>29</span>, <span class='number'>197</span>,  <span class='number'>45</span>,  <span class='number'>80</span>,   <span class='number'>6</span>];
-        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='ident'>output</span>.<span class='ident'>as_mut_slice</span>());
+        <span class='ident'>f</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>output</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='ident'>expected</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>output</span>[..]);
     }
 }
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>test</span>, <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;with-bench&quot;</span>))]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
     <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>SeedableRng</span>, <span class='ident'>Rng</span>};
     <span class='kw'>use</span> <span class='ident'>test</span>::<span class='ident'>Bencher</span>;
@@ -1068,7 +1071,6 @@
         <span class='ident'>bh</span>.<span class='ident'>bytes</span> <span class='op'>=</span> <span class='ident'>bytes</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>u64</span>;
     }
 }
-
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -1077,7 +1079,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -1092,7 +1094,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -1102,6 +1104,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

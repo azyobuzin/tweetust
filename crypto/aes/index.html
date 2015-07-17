@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='../aead/index.html' title=''>aead</a><a class='mod current' href='../aes/index.html' title=''>aes</a><a class='mod ' href='../aes_gcm/index.html' title=''>aes_gcm</a><a class='mod ' href='../aesni/index.html' title=''>aesni</a><a class='mod ' href='../aessafe/index.html' title='The `aessafe` module implements the AES algorithm completely in software without using any table lookups or other timing dependant mechanisms. This module actually contains two seperate implementations - an implementation that works on a single block at a time and a second implementation that processes 8 blocks in parallel. Some block encryption modes really only work if you are processing a single blocks (CFB, OFB, and CBC encryption for example) while other modes are trivially parallelizable (CTR and CBC decryption). Processing more blocks at once allows for greater efficiency, especially when using wide registers, such as the XMM registers available in x86 processors.'>aessafe</a><a class='mod ' href='../bcrypt/index.html' title=''>bcrypt</a><a class='mod ' href='../bcrypt_pbkdf/index.html' title=''>bcrypt_pbkdf</a><a class='mod ' href='../blake2b/index.html' title=''>blake2b</a><a class='mod ' href='../blockmodes/index.html' title=''>blockmodes</a><a class='mod ' href='../blowfish/index.html' title=''>blowfish</a><a class='mod ' href='../buffer/index.html' title=''>buffer</a><a class='mod ' href='../chacha20/index.html' title=''>chacha20</a><a class='mod ' href='../chacha20poly1305/index.html' title=''>chacha20poly1305</a><a class='mod ' href='../curve25519/index.html' title=''>curve25519</a><a class='mod ' href='../digest/index.html' title=''>digest</a><a class='mod ' href='../ed25519/index.html' title=''>ed25519</a><a class='mod ' href='../fortuna/index.html' title='An implementation of the Fortuna CSPRNG'>fortuna</a><a class='mod ' href='../ghash/index.html' title=''>ghash</a><a class='mod ' href='../hkdf/index.html' title='This module implements the HMAC-based Extract-and-Expand Key Derivation Function as specified by  https://tools.ietf.org/html/rfc5869.'>hkdf</a><a class='mod ' href='../hmac/index.html' title='This module implements the Hmac function - a Message Authentication Code using a Digest.'>hmac</a><a class='mod ' href='../mac/index.html' title='The mac module defines the Message Authentication Code (Mac) trait.'>mac</a><a class='mod ' href='../md5/index.html' title=''>md5</a><a class='mod ' href='../pbkdf2/index.html' title='This module implements the PBKDF2 Key Derivation Function as specified by http://tools.ietf.org/html/rfc2898.'>pbkdf2</a><a class='mod ' href='../poly1305/index.html' title=''>poly1305</a><a class='mod ' href='../rc4/index.html' title='An implementation of the RC4 (also sometimes called ARC4) stream cipher. THIS IMPLEMENTATION IS NOT A FIXED TIME IMPLEMENTATION.'>rc4</a><a class='mod ' href='../ripemd160/index.html' title='An implementation of the RIPEMD-160 cryptographic hash.'>ripemd160</a><a class='mod ' href='../salsa20/index.html' title=''>salsa20</a><a class='mod ' href='../scrypt/index.html' title='This module implements the Scrypt key derivation function as specified in [1].'>scrypt</a><a class='mod ' href='../sha1/index.html' title='An implementation of the SHA-1 cryptographic hash algorithm.'>sha1</a><a class='mod ' href='../sha2/index.html' title='An implementation of the SHA-2 cryptographic hash algorithms.'>sha2</a><a class='mod ' href='../symmetriccipher/index.html' title=''>symmetriccipher</a><a class='mod ' href='../util/index.html' title=''>util</a></div>
+        <p class='location'><a href='../index.html'>crypto</a></p><script>window.sidebarCurrent = {name: 'aes', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,59 +34,73 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>crypto</a>::<wbr><a class='mod' href=''>aes</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-61' href='../../src/crypto/aes.rs.html#7-786'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>crypto</a>::<wbr><a class='mod' href=''>aes</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-55' class='srclink' href='../../src/crypto/aes.rs.html#7-788' title='goto source code'>[src]</a></span></h1>
 <h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.KeySize.html'
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.KeySize.html'
                                title='crypto::aes::KeySize'>KeySize</a></td>
-                        <td class='docblock short'><p>AES key size</p>
-</td>
+                        <td class='docblock short'>
+                             <p>AES key size</p>
+
+                        </td>
                     </tr>
                 </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.cbc_decryptor.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cbc_decryptor.html'
                                title='crypto::aes::cbc_decryptor'>cbc_decryptor</a></td>
-                        <td class='docblock short'><p>Get the best implementation of a CbcDecryptor</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Get the best implementation of a CbcDecryptor</p>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.cbc_encryptor.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cbc_encryptor.html'
                                title='crypto::aes::cbc_encryptor'>cbc_encryptor</a></td>
-                        <td class='docblock short'><p>Get the best implementation of a CbcEncryptor</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Get the best implementation of a CbcEncryptor</p>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.ctr.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.ctr.html'
                                title='crypto::aes::ctr'>ctr</a></td>
-                        <td class='docblock short'><p>Get the best implementation of a Ctr</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Get the best implementation of a Ctr</p>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.ecb_decryptor.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.ecb_decryptor.html'
                                title='crypto::aes::ecb_decryptor'>ecb_decryptor</a></td>
-                        <td class='docblock short'><p>Get the best implementation of an EcbDecryptor</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Get the best implementation of an EcbDecryptor</p>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.ecb_encryptor.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.ecb_encryptor.html'
                                title='crypto::aes::ecb_encryptor'>ecb_encryptor</a></td>
-                        <td class='docblock short'><p>Get the best implementation of an EcbEncryptor</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Get the best implementation of an EcbEncryptor</p>
+
+                        </td>
                     </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
@@ -95,7 +109,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -110,7 +124,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -120,6 +134,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

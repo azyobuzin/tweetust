@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../../index.html'>hyper</a>::<wbr><a href='../index.html'>client</a></p><div class='block mod'><h2>Modules</h2><a class='mod current' href='../request/index.html' title='Client Requests'>request</a><a class='mod ' href='../response/index.html' title='Client Responses'>response</a></div><div class='block struct'><h2>Structs</h2><a class='struct ' href='../struct.Client.html' title='A Client to use additional features with Requests.'>Client</a><a class='struct ' href='../struct.RequestBuilder.html' title='Options for an individual Request.'>RequestBuilder</a></div><div class='block enum'><h2>Enums</h2><a class='enum ' href='../enum.Body.html' title='The target enum for the IntoBody trait.'>Body</a><a class='enum ' href='../enum.RedirectPolicy.html' title='Behavior regarding how to handle redirects within a Client.'>RedirectPolicy</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='../trait.IntoBody.html' title='A helper trait to allow overloading of the body parameter.'>IntoBody</a><a class='trait ' href='../trait.IntoUrl.html' title='A helper trait to convert common objects into a Url.'>IntoUrl</a></div>
+        <p class='location'><a href='../../index.html'>hyper</a>::<wbr><a href='../index.html'>client</a></p><script>window.sidebarCurrent = {name: 'request', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,24 +34,29 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>hyper</a>::<wbr><a href='../index.html'>client</a>::<wbr><a class='mod' href=''>request</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-71' href='../../../src/hyper/client/request.rs.html#1-214'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>hyper</a>::<wbr><a href='../index.html'>client</a>::<wbr><a class='mod' href=''>request</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-2120' class='srclink' href='../../../src/hyper/client/request.rs.html#1-223' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Client Requests</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.Request.html'
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Request.html'
                                title='hyper::client::request::Request'>Request</a></td>
-                        <td class='docblock short'><p>A client request to a remote server.</p>
-</td>
+                        <td class='docblock short'>
+                             <p>A client request to a remote server.
+The W type tracks the state of the request, Fresh vs Streaming.</p>
+
+                        </td>
                     </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
@@ -60,7 +65,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -75,7 +80,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -85,6 +90,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

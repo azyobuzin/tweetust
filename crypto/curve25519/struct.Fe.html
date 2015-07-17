@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>curve25519</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.Fe.html' title=''>Fe</a><a class='struct ' href='struct.GeCached.html' title=''>GeCached</a><a class='struct ' href='struct.GeP1P1.html' title=''>GeP1P1</a><a class='struct ' href='struct.GeP2.html' title=''>GeP2</a><a class='struct ' href='struct.GeP3.html' title=''>GeP3</a><a class='struct ' href='struct.GePrecomp.html' title=''>GePrecomp</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.curve25519.html' title=''>curve25519</a><a class='fn ' href='fn.curve25519_base.html' title=''>curve25519_base</a><a class='fn ' href='fn.ge_scalarmult_base.html' title=''>ge_scalarmult_base</a><a class='fn ' href='fn.sc_muladd.html' title=''>sc_muladd</a><a class='fn ' href='fn.sc_reduce.html' title=''>sc_reduce</a></div>
+        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>curve25519</a></p><script>window.sidebarCurrent = {name: 'Fe', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,37 +34,41 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>curve25519</a>::<wbr><a class='struct' href=''>Fe</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-37828' href='../../src/crypto/curve25519.rs.html#15'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct Fe(_);</pre><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='method.from_bytes' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.from_bytes' class='fnname'>from_bytes</a>(s: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
-<h4 id='method.to_bytes' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.to_bytes' class='fnname'>to_bytes</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>; 32]</a></code></h4>
-<h4 id='method.maybe_swap_with' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.maybe_swap_with' class='fnname'>maybe_swap_with</a>(&amp;mut self, other: &amp;mut <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>, do_swap: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
-<h4 id='method.maybe_set' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.maybe_set' class='fnname'>maybe_set</a>(&amp;mut self, other: &amp;<a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>, do_swap: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
-</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.eq' class='fnname'>eq</a>(&amp;self, other: &amp;<a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.ne' class='tymethod'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='method.assert_receiver_is_total_eq' class='tymethod'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.assert_receiver_is_total_eq' class='fnname'>assert_receiver_is_total_eq</a>(&amp;self)</code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Add</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><a class='stability Unmarked' title='No stability level'></a><code>type Output = <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
-<h4 id='method.add' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.add' class='fnname'>add</a>(self, _rhs: <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Sub.html' title='core::ops::Sub'>Sub</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><a class='stability Unmarked' title='No stability level'></a><code>type Output = <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
-<h4 id='method.sub' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.sub' class='fnname'>sub</a>(self, _rhs: <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><a class='stability Unmarked' title='No stability level'></a><code>type Output = <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
-<h4 id='method.mul' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.mul' class='fnname'>mul</a>(self, _rhs: <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
-</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'></div></section>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>curve25519</a>::<wbr><a class='struct' href=''>Fe</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-37125' class='srclink' href='../../src/crypto/curve25519.rs.html#15' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Fe(pub <a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>; 10]</a>);</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='method.from_bytes' class='method'><code>fn <a href='#method.from_bytes' class='fnname'>from_bytes</a>(s: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+<h4 id='method.to_bytes' class='method'><code>fn <a href='#method.to_bytes' class='fnname'>to_bytes</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>; 32]</a></code></h4>
+<h4 id='method.maybe_swap_with' class='method'><code>fn <a href='#method.maybe_swap_with' class='fnname'>maybe_swap_with</a>(&amp;mut self, other: &amp;mut <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>, do_swap: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
+<h4 id='method.maybe_set' class='method'><code>fn <a href='#method.maybe_set' class='fnname'>maybe_set</a>(&amp;mut self, other: &amp;<a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>, do_swap: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
+<h4 id='method.invert' class='method'><code>fn <a href='#method.invert' class='fnname'>invert</a>(&amp;self) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, other: &amp;<a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Add</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+<h4 id='method.add' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.Add.html#method.add' class='fnname'>add</a>(self, _rhs: <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Sub.html' title='core::ops::Sub'>Sub</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+<h4 id='method.sub' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.Sub.html#method.sub' class='fnname'>sub</a>(self, _rhs: <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='assoc_type.Output' class='type'><code>type Output = <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+<h4 id='method.mul' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.Mul.html#method.mul' class='fnname'>mul</a>(self, _rhs: <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a>) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../crypto/curve25519/struct.Fe.html' title='crypto::curve25519::Fe'>Fe</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -79,7 +83,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -89,6 +93,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

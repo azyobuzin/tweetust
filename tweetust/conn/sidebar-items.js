@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Parameter",""]],"fn":[["parse_json","Parse the JSON string to T with rustc-serialize. As a stopgap measure, this function renames `type` to `type_`."],["request_twitter",""],["send_request",""]],"mod":[["application_only_authenticator",""],["oauth_authenticator",""]],"trait":[["Authenticator",""]]});

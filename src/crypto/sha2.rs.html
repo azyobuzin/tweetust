@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/sha2.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rust-crypto-0.2.31/src/sha2.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>sha2.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -1574,7 +1574,7 @@ hasher.input_str(&quot;hello world&quot;);
 // read hash digest
 let hex = hasher.result_str();
 
-assert_eq!(hex.as_slice(),
+assert_eq!(hex,
            concat!(&quot;b94d27b9934d3e08a52e52d7da7dabfa&quot;,
                    &quot;c484efe37a5380ee9088f7ace2efcde9&quot;));
 ```
@@ -1594,7 +1594,7 @@ hasher.input_str(&quot;hello world&quot;);
 // read hash digest
 let hex = hasher.result_str();
 
-assert_eq!(hex.as_slice(),
+assert_eq!(hex,
            concat!(&quot;309ecc489c12d6eb4cc40f50c902f2b4&quot;,
                    &quot;d0ed77ee511a7c7a9bcd3ca86d4cd86f&quot;,
                    &quot;989dd35bc5ff499670da34255b45b0cf&quot;,
@@ -1603,13 +1603,13 @@ assert_eq!(hex.as_slice(),
 
  */</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>simd</span>::{<span class='ident'>u32x4</span>, <span class='ident'>u64x2</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Int</span>;
 <span class='kw'>use</span> <span class='ident'>digest</span>::<span class='ident'>Digest</span>;
 <span class='kw'>use</span> <span class='ident'>cryptoutil</span>::{<span class='ident'>write_u32_be</span>, <span class='ident'>read_u32v_be</span>,
                  <span class='ident'>write_u64_be</span>, <span class='ident'>read_u64v_be</span>,
                  <span class='ident'>add_bytes_to_bits</span>, <span class='ident'>add_bytes_to_bits_tuple</span>,
                  <span class='ident'>FixedBuffer</span>, <span class='ident'>FixedBuffer128</span>, <span class='ident'>FixedBuffer64</span>, <span class='ident'>StandardPadding</span>};
+
+<span class='kw'>use</span> <span class='ident'>simd</span>::{<span class='ident'>u32x4</span>, <span class='ident'>u64x2</span>};
 
 <span class='kw'>const</span> <span class='ident'>STATE_LEN</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>8</span>;
 <span class='kw'>const</span> <span class='ident'>BLOCK_LEN</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>16</span>;
@@ -1652,10 +1652,10 @@ assert_eq!(hex.as_slice(),
     <span class='kw'>let</span> <span class='ident'>u32x4</span>(<span class='ident'>x3</span>, <span class='ident'>x2</span>, <span class='ident'>x1</span>, <span class='ident'>x0</span>) <span class='op'>=</span> <span class='ident'>v4</span>;
     <span class='kw'>let</span> <span class='ident'>u32x4</span>(<span class='ident'>w15</span>, <span class='ident'>w14</span>, _, _) <span class='op'>=</span> <span class='ident'>v3</span>;
 
-    <span class='kw'>let</span> <span class='ident'>w16</span> <span class='op'>=</span> <span class='ident'>x0</span> <span class='op'>+</span> <span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w14</span>);
-    <span class='kw'>let</span> <span class='ident'>w17</span> <span class='op'>=</span> <span class='ident'>x1</span> <span class='op'>+</span> <span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w15</span>);
-    <span class='kw'>let</span> <span class='ident'>w18</span> <span class='op'>=</span> <span class='ident'>x2</span> <span class='op'>+</span> <span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w16</span>);
-    <span class='kw'>let</span> <span class='ident'>w19</span> <span class='op'>=</span> <span class='ident'>x3</span> <span class='op'>+</span> <span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w17</span>);
+    <span class='kw'>let</span> <span class='ident'>w16</span> <span class='op'>=</span> <span class='ident'>x0</span>.<span class='ident'>wrapping_add</span>(<span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w14</span>));
+    <span class='kw'>let</span> <span class='ident'>w17</span> <span class='op'>=</span> <span class='ident'>x1</span>.<span class='ident'>wrapping_add</span>(<span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w15</span>));
+    <span class='kw'>let</span> <span class='ident'>w18</span> <span class='op'>=</span> <span class='ident'>x2</span>.<span class='ident'>wrapping_add</span>(<span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w16</span>));
+    <span class='kw'>let</span> <span class='ident'>w19</span> <span class='op'>=</span> <span class='ident'>x3</span>.<span class='ident'>wrapping_add</span>(<span class='macro'>sigma1</span><span class='macro'>!</span>(<span class='ident'>w17</span>));
 
     <span class='ident'>u32x4</span>(<span class='ident'>w19</span>, <span class='ident'>w18</span>, <span class='ident'>w17</span>, <span class='ident'>w16</span>)
 }
@@ -1687,18 +1687,18 @@ assert_eq!(hex.as_slice(),
     <span class='kw'>let</span> <span class='ident'>u32x4</span>(<span class='ident'>c0</span>, <span class='ident'>d0</span>, <span class='ident'>g0</span>, <span class='ident'>h0</span>) <span class='op'>=</span> <span class='ident'>cdgh</span>;
 
     <span class='comment'>// a round</span>
-    <span class='kw'>let</span> <span class='ident'>x0</span> <span class='op'>=</span> <span class='macro'>big_sigma1</span><span class='macro'>!</span>(<span class='ident'>e0</span>) <span class='op'>+</span> <span class='macro'>bool3ary_202</span><span class='macro'>!</span>(<span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>) <span class='op'>+</span> <span class='ident'>wk0</span> <span class='op'>+</span> <span class='ident'>h0</span>;
-    <span class='kw'>let</span> <span class='ident'>y0</span> <span class='op'>=</span> <span class='macro'>big_sigma0</span><span class='macro'>!</span>(<span class='ident'>a0</span>) <span class='op'>+</span> <span class='macro'>bool3ary_232</span><span class='macro'>!</span>(<span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>);
+    <span class='kw'>let</span> <span class='ident'>x0</span> <span class='op'>=</span> <span class='macro'>big_sigma1</span><span class='macro'>!</span>(<span class='ident'>e0</span>).<span class='ident'>wrapping_add</span>(<span class='macro'>bool3ary_202</span><span class='macro'>!</span>(<span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>)).<span class='ident'>wrapping_add</span>(<span class='ident'>wk0</span>).<span class='ident'>wrapping_add</span>(<span class='ident'>h0</span>);
+    <span class='kw'>let</span> <span class='ident'>y0</span> <span class='op'>=</span> <span class='macro'>big_sigma0</span><span class='macro'>!</span>(<span class='ident'>a0</span>).<span class='ident'>wrapping_add</span>(<span class='macro'>bool3ary_232</span><span class='macro'>!</span>(<span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>));
     <span class='kw'>let</span> (<span class='ident'>a1</span>, <span class='ident'>b1</span>, <span class='ident'>c1</span>, <span class='ident'>d1</span>, <span class='ident'>e1</span>, <span class='ident'>f1</span>, <span class='ident'>g1</span>, <span class='ident'>h1</span>) <span class='op'>=</span> (
-        <span class='ident'>x0</span> <span class='op'>+</span> <span class='ident'>y0</span>, <span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>,
-        <span class='ident'>x0</span> <span class='op'>+</span> <span class='ident'>d0</span>, <span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>);
+        <span class='ident'>x0</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>y0</span>), <span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>,
+        <span class='ident'>x0</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>d0</span>), <span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>);
 
     <span class='comment'>// a round</span>
-    <span class='kw'>let</span> <span class='ident'>x1</span> <span class='op'>=</span> <span class='macro'>big_sigma1</span><span class='macro'>!</span>(<span class='ident'>e1</span>) <span class='op'>+</span> <span class='macro'>bool3ary_202</span><span class='macro'>!</span>(<span class='ident'>e1</span>, <span class='ident'>f1</span>, <span class='ident'>g1</span>) <span class='op'>+</span> <span class='ident'>wk1</span> <span class='op'>+</span> <span class='ident'>h1</span>;
-    <span class='kw'>let</span> <span class='ident'>y1</span> <span class='op'>=</span> <span class='macro'>big_sigma0</span><span class='macro'>!</span>(<span class='ident'>a1</span>) <span class='op'>+</span> <span class='macro'>bool3ary_232</span><span class='macro'>!</span>(<span class='ident'>a1</span>, <span class='ident'>b1</span>, <span class='ident'>c1</span>);
+    <span class='kw'>let</span> <span class='ident'>x1</span> <span class='op'>=</span> <span class='macro'>big_sigma1</span><span class='macro'>!</span>(<span class='ident'>e1</span>).<span class='ident'>wrapping_add</span>(<span class='macro'>bool3ary_202</span><span class='macro'>!</span>(<span class='ident'>e1</span>, <span class='ident'>f1</span>, <span class='ident'>g1</span>)).<span class='ident'>wrapping_add</span>(<span class='ident'>wk1</span>).<span class='ident'>wrapping_add</span>(<span class='ident'>h1</span>);
+    <span class='kw'>let</span> <span class='ident'>y1</span> <span class='op'>=</span> <span class='macro'>big_sigma0</span><span class='macro'>!</span>(<span class='ident'>a1</span>).<span class='ident'>wrapping_add</span>(<span class='macro'>bool3ary_232</span><span class='macro'>!</span>(<span class='ident'>a1</span>, <span class='ident'>b1</span>, <span class='ident'>c1</span>));
     <span class='kw'>let</span> (<span class='ident'>a2</span>, <span class='ident'>b2</span>, _, _, <span class='ident'>e2</span>, <span class='ident'>f2</span>, _, _) <span class='op'>=</span> (
-        <span class='ident'>x1</span> <span class='op'>+</span> <span class='ident'>y1</span>, <span class='ident'>a1</span>, <span class='ident'>b1</span>, <span class='ident'>c1</span>,
-        <span class='ident'>x1</span> <span class='op'>+</span> <span class='ident'>d1</span>, <span class='ident'>e1</span>, <span class='ident'>f1</span>, <span class='ident'>g1</span>);
+        <span class='ident'>x1</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>y1</span>), <span class='ident'>a1</span>, <span class='ident'>b1</span>, <span class='ident'>c1</span>,
+        <span class='ident'>x1</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>d1</span>), <span class='ident'>e1</span>, <span class='ident'>f1</span>, <span class='ident'>g1</span>);
 
     <span class='ident'>u32x4</span>(<span class='ident'>a2</span>, <span class='ident'>b2</span>, <span class='ident'>e2</span>, <span class='ident'>f2</span>)
 }
@@ -1780,14 +1780,14 @@ assert_eq!(hex.as_slice(),
     <span class='kw'>let</span> <span class='ident'>u32x4</span>(<span class='ident'>a</span>, <span class='ident'>b</span>, <span class='ident'>e</span>, <span class='ident'>f</span>) <span class='op'>=</span> <span class='ident'>abef</span>;
     <span class='kw'>let</span> <span class='ident'>u32x4</span>(<span class='ident'>c</span>, <span class='ident'>d</span>, <span class='ident'>g</span>, <span class='ident'>h</span>) <span class='op'>=</span> <span class='ident'>cdgh</span>;
 
-    <span class='ident'>state</span>[<span class='number'>0</span>] <span class='op'>+=</span> <span class='ident'>a</span>;
-    <span class='ident'>state</span>[<span class='number'>1</span>] <span class='op'>+=</span> <span class='ident'>b</span>;
-    <span class='ident'>state</span>[<span class='number'>2</span>] <span class='op'>+=</span> <span class='ident'>c</span>;
-    <span class='ident'>state</span>[<span class='number'>3</span>] <span class='op'>+=</span> <span class='ident'>d</span>;
-    <span class='ident'>state</span>[<span class='number'>4</span>] <span class='op'>+=</span> <span class='ident'>e</span>;
-    <span class='ident'>state</span>[<span class='number'>5</span>] <span class='op'>+=</span> <span class='ident'>f</span>;
-    <span class='ident'>state</span>[<span class='number'>6</span>] <span class='op'>+=</span> <span class='ident'>g</span>;
-    <span class='ident'>state</span>[<span class='number'>7</span>] <span class='op'>+=</span> <span class='ident'>h</span>;
+    <span class='ident'>state</span>[<span class='number'>0</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>0</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>a</span>);
+    <span class='ident'>state</span>[<span class='number'>1</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>1</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>b</span>);
+    <span class='ident'>state</span>[<span class='number'>2</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>2</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>c</span>);
+    <span class='ident'>state</span>[<span class='number'>3</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>3</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>d</span>);
+    <span class='ident'>state</span>[<span class='number'>4</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>4</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>e</span>);
+    <span class='ident'>state</span>[<span class='number'>5</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>5</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>f</span>);
+    <span class='ident'>state</span>[<span class='number'>6</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>6</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>g</span>);
+    <span class='ident'>state</span>[<span class='number'>7</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>7</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>h</span>);
 }
 
 <span class='doccomment'>/// Process a block with the SHA-256 algorithm. (See more...)</span>
@@ -1912,8 +1912,8 @@ assert_eq!(hex.as_slice(),
     <span class='kw'>let</span> <span class='ident'>u64x2</span>(<span class='ident'>w10</span>, <span class='ident'>w9</span>) 	<span class='op'>=</span> <span class='ident'>v4to5</span>;
     <span class='kw'>let</span> <span class='ident'>u64x2</span>(<span class='ident'>w15</span>, <span class='ident'>w14</span>) <span class='op'>=</span> <span class='ident'>v7</span>;
 
-    <span class='kw'>let</span> <span class='ident'>w16</span> <span class='op'>=</span> <span class='ident'>sigma1</span>(<span class='ident'>w14</span>) <span class='op'>+</span> <span class='ident'>w9</span>  <span class='op'>+</span> <span class='ident'>sigma0</span>(<span class='ident'>w1</span>) <span class='op'>+</span> <span class='ident'>w0</span>;
-    <span class='kw'>let</span> <span class='ident'>w17</span> <span class='op'>=</span> <span class='ident'>sigma1</span>(<span class='ident'>w15</span>) <span class='op'>+</span> <span class='ident'>w10</span> <span class='op'>+</span> <span class='ident'>sigma0</span>(<span class='ident'>w2</span>) <span class='op'>+</span> <span class='ident'>w1</span>;
+    <span class='kw'>let</span> <span class='ident'>w16</span> <span class='op'>=</span> <span class='ident'>sigma1</span>(<span class='ident'>w14</span>).<span class='ident'>wrapping_add</span>(<span class='ident'>w9</span>).<span class='ident'>wrapping_add</span>(<span class='ident'>sigma0</span>(<span class='ident'>w1</span>)).<span class='ident'>wrapping_add</span>(<span class='ident'>w0</span>);
+    <span class='kw'>let</span> <span class='ident'>w17</span> <span class='op'>=</span> <span class='ident'>sigma1</span>(<span class='ident'>w15</span>).<span class='ident'>wrapping_add</span>(<span class='ident'>w10</span>).<span class='ident'>wrapping_add</span>(<span class='ident'>sigma0</span>(<span class='ident'>w2</span>)).<span class='ident'>wrapping_add</span>(<span class='ident'>w1</span>);
 
     <span class='ident'>u64x2</span>(<span class='ident'>w17</span>, <span class='ident'>w16</span>)
 }
@@ -1940,11 +1940,11 @@ assert_eq!(hex.as_slice(),
     <span class='kw'>let</span> <span class='ident'>u64x2</span>(<span class='ident'>d0</span>, <span class='ident'>h0</span>) <span class='op'>=</span> <span class='ident'>dh</span>;
 
     <span class='comment'>// a round</span>
-    <span class='kw'>let</span> <span class='ident'>x0</span> <span class='op'>=</span> <span class='macro'>big_sigma1</span><span class='macro'>!</span>(<span class='ident'>e0</span>) <span class='op'>+</span> <span class='macro'>bool3ary_202</span><span class='macro'>!</span>(<span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>) <span class='op'>+</span> <span class='ident'>wk0</span> <span class='op'>+</span> <span class='ident'>h0</span>;
-    <span class='kw'>let</span> <span class='ident'>y0</span> <span class='op'>=</span> <span class='macro'>big_sigma0</span><span class='macro'>!</span>(<span class='ident'>a0</span>) <span class='op'>+</span> <span class='macro'>bool3ary_232</span><span class='macro'>!</span>(<span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>);
+    <span class='kw'>let</span> <span class='ident'>x0</span> <span class='op'>=</span> <span class='macro'>big_sigma1</span><span class='macro'>!</span>(<span class='ident'>e0</span>).<span class='ident'>wrapping_add</span>(<span class='macro'>bool3ary_202</span><span class='macro'>!</span>(<span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>)).<span class='ident'>wrapping_add</span>(<span class='ident'>wk0</span>).<span class='ident'>wrapping_add</span>(<span class='ident'>h0</span>);
+    <span class='kw'>let</span> <span class='ident'>y0</span> <span class='op'>=</span> <span class='macro'>big_sigma0</span><span class='macro'>!</span>(<span class='ident'>a0</span>).<span class='ident'>wrapping_add</span>(<span class='macro'>bool3ary_232</span><span class='macro'>!</span>(<span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>));
     <span class='kw'>let</span> (<span class='ident'>a1</span>, _, _, _, <span class='ident'>e1</span>, _, _, _) <span class='op'>=</span> (
-        <span class='ident'>x0</span> <span class='op'>+</span> <span class='ident'>y0</span>, <span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>,
-        <span class='ident'>x0</span> <span class='op'>+</span> <span class='ident'>d0</span>, <span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>);
+        <span class='ident'>x0</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>y0</span>), <span class='ident'>a0</span>, <span class='ident'>b0</span>, <span class='ident'>c0</span>,
+        <span class='ident'>x0</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>d0</span>), <span class='ident'>e0</span>, <span class='ident'>f0</span>, <span class='ident'>g0</span>);
 
     <span class='ident'>u64x2</span>(<span class='ident'>a1</span>, <span class='ident'>e1</span>)
 }
@@ -2063,14 +2063,14 @@ assert_eq!(hex.as_slice(),
     <span class='kw'>let</span> <span class='ident'>u64x2</span>(<span class='ident'>c</span>, <span class='ident'>g</span>) <span class='op'>=</span> <span class='ident'>cg</span>;
     <span class='kw'>let</span> <span class='ident'>u64x2</span>(<span class='ident'>d</span>, <span class='ident'>h</span>) <span class='op'>=</span> <span class='ident'>dh</span>;
 
-    <span class='ident'>state</span>[<span class='number'>0</span>] <span class='op'>+=</span> <span class='ident'>a</span>;
-    <span class='ident'>state</span>[<span class='number'>1</span>] <span class='op'>+=</span> <span class='ident'>b</span>;
-    <span class='ident'>state</span>[<span class='number'>2</span>] <span class='op'>+=</span> <span class='ident'>c</span>;
-    <span class='ident'>state</span>[<span class='number'>3</span>] <span class='op'>+=</span> <span class='ident'>d</span>;
-    <span class='ident'>state</span>[<span class='number'>4</span>] <span class='op'>+=</span> <span class='ident'>e</span>;
-    <span class='ident'>state</span>[<span class='number'>5</span>] <span class='op'>+=</span> <span class='ident'>f</span>;
-    <span class='ident'>state</span>[<span class='number'>6</span>] <span class='op'>+=</span> <span class='ident'>g</span>;
-    <span class='ident'>state</span>[<span class='number'>7</span>] <span class='op'>+=</span> <span class='ident'>h</span>;
+    <span class='ident'>state</span>[<span class='number'>0</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>0</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>a</span>);
+    <span class='ident'>state</span>[<span class='number'>1</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>1</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>b</span>);
+    <span class='ident'>state</span>[<span class='number'>2</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>2</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>c</span>);
+    <span class='ident'>state</span>[<span class='number'>3</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>3</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>d</span>);
+    <span class='ident'>state</span>[<span class='number'>4</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>4</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>e</span>);
+    <span class='ident'>state</span>[<span class='number'>5</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>5</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>f</span>);
+    <span class='ident'>state</span>[<span class='number'>6</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>6</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>g</span>);
+    <span class='ident'>state</span>[<span class='number'>7</span>] <span class='op'>=</span> <span class='ident'>state</span>[<span class='number'>7</span>].<span class='ident'>wrapping_add</span>(<span class='ident'>h</span>);
 }
 
 <span class='doccomment'>/// Process a block with the SHA-512 algorithm. (See more...)</span>
@@ -2501,7 +2501,7 @@ assert_eq!(hex.as_slice(),
 
 <span class='comment'>// A structure that represents that state of a digest computation for the SHA-2 512 family of digest</span>
 <span class='comment'>// functions</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>Engine256State</span> {
     <span class='ident'>h</span>: [<span class='ident'>u32</span>; <span class='number'>8</span>],
 }
@@ -2564,7 +2564,7 @@ assert_eq!(hex.as_slice(),
 
 <span class='comment'>// A structure that keeps track of the state of the Sha-256 operation and contains the logic</span>
 <span class='comment'>// necessary to perform the final calculations.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>Engine256</span> {
     <span class='ident'>length_bits</span>: <span class='ident'>u64</span>,
     <span class='ident'>buffer</span>: <span class='ident'>FixedBuffer64</span>,
@@ -2614,7 +2614,7 @@ assert_eq!(hex.as_slice(),
 
 
 <span class='doccomment'>/// The SHA-256 hash algorithm with the SHA-256 initial hash value.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Sha256</span> {
     <span class='ident'>engine</span>: <span class='ident'>Engine256</span>
 }
@@ -2670,7 +2670,7 @@ assert_eq!(hex.as_slice(),
 
 
 <span class='doccomment'>/// The SHA-256 hash algorithm with the SHA-224 initial hash value. The result is truncated to 224 bits.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Sha224</span> {
     <span class='ident'>engine</span>: <span class='ident'>Engine256</span>
 }
@@ -2782,7 +2782,7 @@ assert_eq!(hex.as_slice(),
 
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>wikipedia_tests</span>;
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Sha512</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Sha512</span>::<span class='ident'>new</span>());
 
         <span class='ident'>test_hash</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>sh</span>, <span class='kw-2'>&amp;</span><span class='ident'>tests</span>[..]);
     }
@@ -2807,7 +2807,7 @@ assert_eq!(hex.as_slice(),
 
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>wikipedia_tests</span>;
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Sha384</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Sha384</span>::<span class='ident'>new</span>());
 
         <span class='ident'>test_hash</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>sh</span>, <span class='kw-2'>&amp;</span><span class='ident'>tests</span>[..]);
     }
@@ -2832,7 +2832,7 @@ assert_eq!(hex.as_slice(),
 
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>wikipedia_tests</span>;
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Sha512Trunc256</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Sha512Trunc256</span>::<span class='ident'>new</span>());
 
         <span class='ident'>test_hash</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>sh</span>, <span class='kw-2'>&amp;</span><span class='ident'>tests</span>[..]);
     }
@@ -2857,7 +2857,7 @@ assert_eq!(hex.as_slice(),
 
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>wikipedia_tests</span>;
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Sha512Trunc224</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Sha512Trunc224</span>::<span class='ident'>new</span>());
 
         <span class='ident'>test_hash</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>sh</span>, <span class='kw-2'>&amp;</span><span class='ident'>tests</span>[..]);
     }
@@ -2882,7 +2882,7 @@ assert_eq!(hex.as_slice(),
 
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>wikipedia_tests</span>;
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Sha256</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Sha256</span>::<span class='ident'>new</span>());
 
         <span class='ident'>test_hash</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>sh</span>, <span class='kw-2'>&amp;</span><span class='ident'>tests</span>[..]);
     }
@@ -2907,7 +2907,7 @@ assert_eq!(hex.as_slice(),
 
         <span class='kw'>let</span> <span class='ident'>tests</span> <span class='op'>=</span> <span class='ident'>wikipedia_tests</span>;
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='kw'>box</span> <span class='ident'>Sha224</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sh</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Sha224</span>::<span class='ident'>new</span>());
 
         <span class='ident'>test_hash</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>sh</span>, <span class='kw-2'>&amp;</span><span class='ident'>tests</span>[..]);
     }
@@ -2933,7 +2933,7 @@ assert_eq!(hex.as_slice(),
 
 
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>test</span>, <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;with-bench&quot;</span>))]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
     <span class='kw'>use</span> <span class='ident'>test</span>::<span class='ident'>Bencher</span>;
     <span class='kw'>use</span> <span class='ident'>digest</span>::<span class='ident'>Digest</span>;
@@ -3029,7 +3029,7 @@ assert_eq!(hex.as_slice(),
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -3044,7 +3044,7 @@ assert_eq!(hex.as_slice(),
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -3054,6 +3054,10 @@ assert_eq!(hex.as_slice(),
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>blockmodes</a></p><div class='block struct'><h2>Structs</h2><a class='struct ' href='struct.CbcDecryptor.html' title='CBC decryption mode'>CbcDecryptor</a><a class='struct ' href='struct.CbcEncryptor.html' title='CBC encryption mode'>CbcEncryptor</a><a class='struct ' href='struct.CtrMode.html' title='CTR Mode'>CtrMode</a><a class='struct ' href='struct.CtrModeX8.html' title='CTR Mode that operates on 8 blocks at a time'>CtrModeX8</a><a class='struct ' href='struct.DecPadding.html' title='Wraps a PaddingProcessor so that only strip_output() will actually be called.'>DecPadding</a><a class='struct ' href='struct.EcbDecryptor.html' title='ECB Decryption mode'>EcbDecryptor</a><a class='struct ' href='struct.EcbEncryptor.html' title='ECB Encryption mode'>EcbEncryptor</a><a class='struct current' href='struct.EncPadding.html' title='Wraps a PaddingProcessor so that only pad_input() will actually be called.'>EncPadding</a><a class='struct ' href='struct.NoPadding.html' title='No padding mode for ECB and CBC encryption'>NoPadding</a><a class='struct ' href='struct.PkcsPadding.html' title='PKCS padding mode for ECB and CBC encryption'>PkcsPadding</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.PaddingProcessor.html' title='A PaddingProcessor handles adding or removing padding'>PaddingProcessor</a></div>
+        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>blockmodes</a></p><script>window.sidebarCurrent = {name: 'EncPadding', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,21 +34,23 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>blockmodes</a>::<wbr><a class='struct' href=''>EncPadding</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-27057' href='../../src/crypto/blockmodes.rs.html#465-467'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>blockmodes</a>::<wbr><a class='struct' href=''>EncPadding</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-26655' class='srclink' href='../../src/crypto/blockmodes.rs.html#464-466' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct EncPadding&lt;X&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>Wraps a PaddingProcessor so that only pad_input() will actually be called.</p>
-</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;X: <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a>&gt; <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a> for <a class='struct' href='../../crypto/blockmodes/struct.EncPadding.html' title='crypto::blockmodes::EncPadding'>EncPadding</a>&lt;X&gt;</code></h3><div class='impl-items'><h4 id='method.pad_input' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.pad_input' class='fnname'>pad_input</a>&lt;W: <a class='trait' href='../../crypto/buffer/trait.WriteBuffer.html' title='crypto::buffer::WriteBuffer'>WriteBuffer</a>&gt;(&amp;mut self, a: &amp;mut W)</code></h4>
-<h4 id='method.strip_output' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.strip_output' class='fnname'>strip_output</a>&lt;R: <a class='trait' href='../../crypto/buffer/trait.ReadBuffer.html' title='crypto::buffer::ReadBuffer'>ReadBuffer</a>&gt;(&amp;mut self, _: &amp;mut R) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;X: <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a>&gt; <a class='trait' href='../../crypto/blockmodes/trait.PaddingProcessor.html' title='crypto::blockmodes::PaddingProcessor'>PaddingProcessor</a> for <a class='struct' href='../../crypto/blockmodes/struct.EncPadding.html' title='crypto::blockmodes::EncPadding'>EncPadding</a>&lt;X&gt;</code></h3><div class='impl-items'><h4 id='method.pad_input' class='method'><code>fn <a href='../../crypto/blockmodes/trait.PaddingProcessor.html#method.pad_input' class='fnname'>pad_input</a>&lt;W: <a class='trait' href='../../crypto/buffer/trait.WriteBuffer.html' title='crypto::buffer::WriteBuffer'>WriteBuffer</a>&gt;(&amp;mut self, a: &amp;mut W)</code></h4>
+<h4 id='method.strip_output' class='method'><code>fn <a href='../../crypto/blockmodes/trait.PaddingProcessor.html#method.strip_output' class='fnname'>strip_output</a>&lt;R: <a class='trait' href='../../crypto/buffer/trait.ReadBuffer.html' title='crypto::buffer::ReadBuffer'>ReadBuffer</a>&gt;(&amp;mut self, _: &amp;mut R) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -56,7 +58,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -71,7 +73,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -81,6 +83,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>mac</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.MacResult.html' title='A MacResult wraps a Mac code and provides a safe Eq implementation that runs in fixed time.'>MacResult</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.Mac.html' title='The Mac trait defines methods for a Message Authentication function.'>Mac</a></div>
+        <p class='location'><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>mac</a></p><script>window.sidebarCurrent = {name: 'MacResult', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,37 +34,38 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>mac</a>::<wbr><a class='struct' href=''>MacResult</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-73335' href='../../src/crypto/mac.rs.html#52-54'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>crypto</a>::<wbr><a href='index.html'>mac</a>::<wbr><a class='struct' href=''>MacResult</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-73100' class='srclink' href='../../src/crypto/mac.rs.html#52-54' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct MacResult {
     // some fields omitted
 }</pre><div class='docblock'><p>A MacResult wraps a Mac code and provides a safe Eq implementation that runs in fixed time.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(code: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(code: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h4>
 <div class='docblock'><p>Create a new MacResult.</p>
-</div><h4 id='method.new_from_owned' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new_from_owned' class='fnname'>new_from_owned</a>(code: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;) -&gt; <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h4>
+</div><h4 id='method.new_from_owned' class='method'><code>fn <a href='#method.new_from_owned' class='fnname'>new_from_owned</a>(code: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;) -&gt; <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h4>
 <div class='docblock'><p>Create a new MacResult taking ownership of the specified code value.</p>
-</div><h4 id='method.code' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.code' class='fnname'>code</a>&lt;'s&gt;(&amp;'s self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'s [</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+</div><h4 id='method.code' class='method'><code>fn <a href='#method.code' class='fnname'>code</a>&lt;'s&gt;(&amp;'s self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'s [</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
 <div class='docblock'><p>Get the code value. Be very careful using this method, since incorrect use of the code value
 may permit timing attacks which defeat the security provided by the Mac function.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.eq' class='fnname'>eq</a>(&amp;self, x: &amp;<a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.ne' class='tymethod'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h3><div class='impl-items'><h4 id='method.assert_receiver_is_total_eq' class='tymethod'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.assert_receiver_is_total_eq' class='fnname'>assert_receiver_is_total_eq</a>(&amp;self)</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, x: &amp;<a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='struct' href='../../crypto/mac/struct.MacResult.html' title='crypto::mac::MacResult'>MacResult</a></code></h3><div class='impl-items'></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -79,7 +80,7 @@ may permit timing attacks which defeat the security provided by the Mac function
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -89,6 +90,10 @@ may permit timing attacks which defeat the security provided by the Mac function
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

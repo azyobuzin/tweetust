@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>crypto</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='../aead/index.html' title=''>aead</a><a class='mod ' href='../aes/index.html' title=''>aes</a><a class='mod ' href='../aes_gcm/index.html' title=''>aes_gcm</a><a class='mod ' href='../aesni/index.html' title=''>aesni</a><a class='mod ' href='../aessafe/index.html' title='The `aessafe` module implements the AES algorithm completely in software without using any table lookups or other timing dependant mechanisms. This module actually contains two seperate implementations - an implementation that works on a single block at a time and a second implementation that processes 8 blocks in parallel. Some block encryption modes really only work if you are processing a single blocks (CFB, OFB, and CBC encryption for example) while other modes are trivially parallelizable (CTR and CBC decryption). Processing more blocks at once allows for greater efficiency, especially when using wide registers, such as the XMM registers available in x86 processors.'>aessafe</a><a class='mod ' href='../bcrypt/index.html' title=''>bcrypt</a><a class='mod ' href='../bcrypt_pbkdf/index.html' title=''>bcrypt_pbkdf</a><a class='mod ' href='../blake2b/index.html' title=''>blake2b</a><a class='mod ' href='../blockmodes/index.html' title=''>blockmodes</a><a class='mod ' href='../blowfish/index.html' title=''>blowfish</a><a class='mod ' href='../buffer/index.html' title=''>buffer</a><a class='mod ' href='../chacha20/index.html' title=''>chacha20</a><a class='mod ' href='../chacha20poly1305/index.html' title=''>chacha20poly1305</a><a class='mod ' href='../curve25519/index.html' title=''>curve25519</a><a class='mod ' href='../digest/index.html' title=''>digest</a><a class='mod ' href='../ed25519/index.html' title=''>ed25519</a><a class='mod ' href='../fortuna/index.html' title='An implementation of the Fortuna CSPRNG'>fortuna</a><a class='mod ' href='../ghash/index.html' title=''>ghash</a><a class='mod ' href='../hkdf/index.html' title='This module implements the HMAC-based Extract-and-Expand Key Derivation Function as specified by  https://tools.ietf.org/html/rfc5869.'>hkdf</a><a class='mod ' href='../hmac/index.html' title='This module implements the Hmac function - a Message Authentication Code using a Digest.'>hmac</a><a class='mod ' href='../mac/index.html' title='The mac module defines the Message Authentication Code (Mac) trait.'>mac</a><a class='mod ' href='../md5/index.html' title=''>md5</a><a class='mod current' href='../pbkdf2/index.html' title='This module implements the PBKDF2 Key Derivation Function as specified by http://tools.ietf.org/html/rfc2898.'>pbkdf2</a><a class='mod ' href='../poly1305/index.html' title=''>poly1305</a><a class='mod ' href='../rc4/index.html' title='An implementation of the RC4 (also sometimes called ARC4) stream cipher. THIS IMPLEMENTATION IS NOT A FIXED TIME IMPLEMENTATION.'>rc4</a><a class='mod ' href='../ripemd160/index.html' title='An implementation of the RIPEMD-160 cryptographic hash.'>ripemd160</a><a class='mod ' href='../salsa20/index.html' title=''>salsa20</a><a class='mod ' href='../scrypt/index.html' title='This module implements the Scrypt key derivation function as specified in [1].'>scrypt</a><a class='mod ' href='../sha1/index.html' title='An implementation of the SHA-1 cryptographic hash algorithm.'>sha1</a><a class='mod ' href='../sha2/index.html' title='An implementation of the SHA-2 cryptographic hash algorithms.'>sha2</a><a class='mod ' href='../symmetriccipher/index.html' title=''>symmetriccipher</a><a class='mod ' href='../util/index.html' title=''>util</a></div>
+        <p class='location'><a href='../index.html'>crypto</a></p><script>window.sidebarCurrent = {name: 'pbkdf2', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,45 +34,53 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>crypto</a>::<wbr><a class='mod' href=''>pbkdf2</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-74713' href='../../src/crypto/pbkdf2.rs.html#7-356'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>crypto</a>::<wbr><a class='mod' href=''>pbkdf2</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-74391' class='srclink' href='../../src/crypto/pbkdf2.rs.html#7-357' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This module implements the PBKDF2 Key Derivation Function as specified by
 <a href="http://tools.ietf.org/html/rfc2898">http://tools.ietf.org/html/rfc2898</a>.</p>
 </div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.pbkdf2.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.pbkdf2.html'
                                title='crypto::pbkdf2::pbkdf2'>pbkdf2</a></td>
-                        <td class='docblock short'><p>Execute the PBKDF2 Key Derivation Function. The Scrypt Key Derivation Function generally provides
+                        <td class='docblock short'>
+                             <p>Execute the PBKDF2 Key Derivation Function. The Scrypt Key Derivation Function generally provides
 better security, so, applications that do not have a requirement to use PBKDF2 specifically
 should consider using that function instead.</p>
-</td>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.pbkdf2_check.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.pbkdf2_check.html'
                                title='crypto::pbkdf2::pbkdf2_check'>pbkdf2_check</a></td>
-                        <td class='docblock short'><p>pbkdf2_check compares a password against the result of a previous call to pbkdf2_simple and
+                        <td class='docblock short'>
+                             <p>pbkdf2_check compares a password against the result of a previous call to pbkdf2_simple and
 returns true if the passed in password hashes to the same value.</p>
-</td>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.pbkdf2_simple.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.pbkdf2_simple.html'
                                title='crypto::pbkdf2::pbkdf2_simple'>pbkdf2_simple</a></td>
-                        <td class='docblock short'><p>pbkdf2_simple is a helper function that should be sufficient for the majority of cases where
+                        <td class='docblock short'>
+                             <p>pbkdf2_simple is a helper function that should be sufficient for the majority of cases where
 an application needs to use PBKDF2 to hash a password for storage. The result is a String that
 contains the parameters used as part of its encoding. The pbkdf2_check function may be used on
 a password to check if it is equal to a hashed value.</p>
-</td>
+
+                        </td>
                     </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
@@ -81,7 +89,7 @@ a password to check if it is equal to a hashed value.</p>
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -96,7 +104,7 @@ a password to check if it is equal to a hashed value.</p>
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -106,6 +114,10 @@ a password to check if it is equal to a hashed value.</p>
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

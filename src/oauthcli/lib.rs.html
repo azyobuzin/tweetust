@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/oauthcli-0.0.6/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/oauthcli-0.0.7/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -293,29 +293,16 @@
 <span id="251">251</span>
 <span id="252">252</span>
 <span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Yet Another OAuth 1.0 Client Library for Rust</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>std_misc</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>unstable</span>]</span>
-
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>crypto</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;rustc-serialize&quot;</span> <span class='kw'>as</span> <span class='ident'>serialize</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustc_serialize</span> <span class='kw'>as</span> <span class='ident'>serialize</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>time</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>url</span>;
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::{<span class='ident'>AsciiExt</span>, <span class='ident'>OwnedAsciiExt</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::<span class='ident'>AsciiExt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>Ordering</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Write</span>};
@@ -327,14 +314,11 @@
 <span class='kw'>use</span> <span class='ident'>url</span>::{<span class='ident'>percent_encoding</span>, <span class='ident'>Url</span>};
 
 <span class='doccomment'>/// Available `oauth_signature_method` types.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
-<span class='attribute'>#[<span class='ident'>stable</span>]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>SignatureMethod</span> {
     <span class='doccomment'>/// HMAC-SHA1</span>
-    <span class='attribute'>#[<span class='ident'>stable</span>]</span>
     <span class='ident'>HmacSha1</span>,
     <span class='doccomment'>/// PLAINTEXT</span>
-    <span class='attribute'>#[<span class='ident'>stable</span>]</span>
     <span class='ident'>Plaintext</span>
 }
 
@@ -393,13 +377,13 @@
 }
 
 <span class='kw'>fn</span> <span class='ident'>base_string_url</span>(<span class='ident'>url</span>: <span class='ident'>Url</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
-    <span class='kw'>let</span> <span class='ident'>scheme</span> <span class='op'>=</span> <span class='ident'>url</span>.<span class='ident'>scheme</span>.<span class='ident'>into_ascii_lowercase</span>();
+    <span class='kw'>let</span> <span class='ident'>scheme</span> <span class='op'>=</span> <span class='ident'>url</span>.<span class='ident'>scheme</span>.<span class='ident'>to_ascii_lowercase</span>();
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='ident'>scheme</span>[..]
         { <span class='string'>&quot;http&quot;</span> <span class='op'>=&gt;</span> <span class='boolval'>true</span>, <span class='string'>&quot;https&quot;</span> <span class='op'>=&gt;</span> <span class='boolval'>true</span>, _ <span class='op'>=&gt;</span> <span class='boolval'>false</span> });
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}://&quot;</span>, <span class='ident'>scheme</span>);
     <span class='kw'>match</span> <span class='ident'>url</span>.<span class='ident'>scheme_data</span> {
         <span class='ident'>url</span>::<span class='ident'>SchemeData</span>::<span class='ident'>Relative</span>(<span class='ident'>data</span>) <span class='op'>=&gt;</span> {
-            <span class='ident'>result</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>host</span>.<span class='ident'>to_string</span>().<span class='ident'>into_ascii_lowercase</span>()[..]);
+            <span class='ident'>result</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>host</span>.<span class='ident'>to_string</span>().<span class='ident'>to_ascii_lowercase</span>()[..]);
             <span class='kw'>match</span> <span class='ident'>data</span>.<span class='ident'>port</span> {
                 <span class='prelude-val'>Some</span>(<span class='ident'>p</span>) <span class='op'>=&gt;</span> <span class='kw'>if</span> <span class='ident'>p</span> <span class='op'>!=</span> <span class='ident'>data</span>.<span class='ident'>default_port</span>.<span class='ident'>unwrap</span>() {
                     <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>result</span>, <span class='string'>&quot;:{}&quot;</span>, <span class='ident'>p</span>).<span class='ident'>ok</span>();
@@ -438,14 +422,12 @@
 }
 
 <span class='doccomment'>/// Generate a string for `oauth_timestamp`.</span>
-<span class='attribute'>#[<span class='ident'>stable</span>]</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>timestamp</span>() <span class='op'>-&gt;</span> <span class='ident'>String</span> {
     <span class='ident'>time</span>::<span class='ident'>now_utc</span>().<span class='ident'>to_timespec</span>().<span class='ident'>sec</span>.<span class='ident'>to_string</span>()
 }
 
 <span class='doccomment'>/// Generate a string for `oauth_nonce`.</span>
-<span class='attribute'>#[<span class='ident'>stable</span>]</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>nonce</span>() <span class='op'>-&gt;</span> <span class='ident'>String</span> {
     <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>().<span class='ident'>gen_ascii_chars</span>()
@@ -519,7 +501,6 @@
 
 <span class='doccomment'>/// Generate OAuth parameters set.</span>
 <span class='doccomment'>/// The return value contains elements whose key is `&quot;oauth_foo&quot;`.</span>
-<span class='attribute'>#[<span class='ident'>unstable</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>protocol_parameters</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='ident'>method</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>url</span>: <span class='ident'>Url</span>, <span class='ident'>realm</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>,
     <span class='ident'>consumer_key</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>consumer_secret</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>token</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>,
     <span class='ident'>token_secret</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>, <span class='ident'>signature_method</span>: <span class='ident'>SignatureMethod</span>,
@@ -542,7 +523,6 @@
 
 <span class='doccomment'>/// Generate `Authorization` header for OAuth.</span>
 <span class='doccomment'>/// The return value starts with `&quot;OAuth &quot;`.</span>
-<span class='attribute'>#[<span class='ident'>unstable</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>authorization_header</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='ident'>method</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>url</span>: <span class='ident'>Url</span>, <span class='ident'>realm</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>,
     <span class='ident'>consumer_key</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>consumer_secret</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>token</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>,
     <span class='ident'>token_secret</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>, <span class='ident'>signature_method</span>: <span class='ident'>SignatureMethod</span>,
@@ -575,7 +555,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -590,7 +570,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -600,6 +580,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'></p>
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'oauthcli', ty: 'mod', relpath: '../'};</script>
     </section>
 
     <nav class="sub">
@@ -34,62 +34,76 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>oauthcli</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-0' href='../src/oauthcli/lib.rs.html#1-263'>[src]</a></span></h1>
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>oauthcli</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/oauthcli/lib.rs.html#1-253' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Yet Another OAuth 1.0 Client Library for Rust</p>
 </div><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.SignatureMethod.html'
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.SignatureMethod.html'
                                title='oauthcli::SignatureMethod'>SignatureMethod</a></td>
-                        <td class='docblock short'><p>Available <code>oauth_signature_method</code> types.</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Available <code>oauth_signature_method</code> types.</p>
+
+                        </td>
                     </tr>
                 </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.authorization_header.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.authorization_header.html'
                                title='oauthcli::authorization_header'>authorization_header</a></td>
-                        <td class='docblock short'><p>Generate <code>Authorization</code> header for OAuth.
+                        <td class='docblock short'>
+                             <p>Generate <code>Authorization</code> header for OAuth.
 The return value starts with <code>&quot;OAuth &quot;</code>.</p>
-</td>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.encode_set.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.encode_set.html'
                                title='oauthcli::encode_set'>encode_set</a></td>
-                        <td class='docblock short'><p>Return the EncodeSet of <a href="http://tools.ietf.org/html/rfc5849#section-3.6">RFC 5849 section 3.6</a>.</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Return the EncodeSet of <a href="http://tools.ietf.org/html/rfc5849#section-3.6">RFC 5849 section 3.6</a>.</p>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.nonce.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.nonce.html'
                                title='oauthcli::nonce'>nonce</a></td>
-                        <td class='docblock short'><p>Generate a string for <code>oauth_nonce</code>.</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Generate a string for <code>oauth_nonce</code>.</p>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.protocol_parameters.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.protocol_parameters.html'
                                title='oauthcli::protocol_parameters'>protocol_parameters</a></td>
-                        <td class='docblock short'><p>Generate OAuth parameters set.
+                        <td class='docblock short'>
+                             <p>Generate OAuth parameters set.
 The return value contains elements whose key is <code>&quot;oauth_foo&quot;</code>.</p>
-</td>
+
+                        </td>
                     </tr>
                 
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.timestamp.html'
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.timestamp.html'
                                title='oauthcli::timestamp'>timestamp</a></td>
-                        <td class='docblock short'><p>Generate a string for <code>oauth_timestamp</code>.</p>
-</td>
+                        <td class='docblock short'>
+                             <p>Generate a string for <code>oauth_timestamp</code>.</p>
+
+                        </td>
                     </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
@@ -98,7 +112,7 @@ The return value contains elements whose key is <code>&quot;oauth_foo&quot;</cod
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -113,7 +127,7 @@ The return value contains elements whose key is <code>&quot;oauth_foo&quot;</cod
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -123,6 +137,10 @@ The return value contains elements whose key is <code>&quot;oauth_foo&quot;</cod
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

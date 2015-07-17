@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/distributions/gamma.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rand-0.3.8/src/distributions/gamma.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>gamma.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -454,6 +454,11 @@
 <span id="412">412</span>
 <span id="413">413</span>
 <span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -471,8 +476,6 @@
 
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>GammaRepr</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ChiSquaredRepr</span>::<span class='op'>*</span>;
-
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Open01</span>};
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>normal</span>::<span class='ident'>StandardNormal</span>;
@@ -508,10 +511,12 @@
 <span class='doccomment'>/// for Generating Gamma Variables&quot; *ACM Trans. Math. Softw.* 26, 3</span>
 <span class='doccomment'>/// (September 2000),</span>
 <span class='doccomment'>/// 363-372. DOI:[10.1145/358407.358414](http://doi.acm.org/10.1145/358407.358414)</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Gamma</span> {
     <span class='ident'>repr</span>: <span class='ident'>GammaRepr</span>,
 }
 
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>enum</span> <span class='ident'>GammaRepr</span> {
     <span class='ident'>Large</span>(<span class='ident'>GammaLargeShape</span>),
     <span class='ident'>One</span>(<span class='ident'>Exp</span>),
@@ -532,6 +537,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See `Gamma` for sampling from a Gamma distribution with general</span>
 <span class='doccomment'>/// shape parameters.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>GammaSmallShape</span> {
     <span class='ident'>inv_shape</span>: <span class='ident'>f64</span>,
     <span class='ident'>large_shape</span>: <span class='ident'>GammaLargeShape</span>
@@ -541,6 +547,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See `Gamma` for sampling from a Gamma distribution with general</span>
 <span class='doccomment'>/// shape parameters.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>GammaLargeShape</span> {
     <span class='ident'>scale</span>: <span class='ident'>f64</span>,
     <span class='ident'>c</span>: <span class='ident'>f64</span>,
@@ -649,10 +656,12 @@
 <span class='doccomment'>/// let v = chi.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from a χ²(11) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ChiSquared</span> {
     <span class='ident'>repr</span>: <span class='ident'>ChiSquaredRepr</span>,
 }
 
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>enum</span> <span class='ident'>ChiSquaredRepr</span> {
     <span class='comment'>// k == 1, Gamma(alpha, ..) is particularly slow for alpha &lt; 1,</span>
     <span class='comment'>// e.g. when alpha = 1/2 as it would be for this case, so special-</span>
@@ -705,6 +714,7 @@
 <span class='doccomment'>/// let v = f.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from an F(2, 32) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>FisherF</span> {
     <span class='ident'>numer</span>: <span class='ident'>ChiSquared</span>,
     <span class='ident'>denom</span>: <span class='ident'>ChiSquared</span>,
@@ -748,6 +758,7 @@
 <span class='doccomment'>/// let v = t.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from a t(11) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>StudentT</span> {
     <span class='ident'>chi</span>: <span class='ident'>ChiSquared</span>,
     <span class='ident'>dof</span>: <span class='ident'>f64</span>
@@ -807,7 +818,7 @@
         }
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_chi_squared_invalid_dof</span>() {
         <span class='ident'>ChiSquared</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>);
     }
@@ -836,7 +847,6 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
     <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>test</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>test</span>::<span class='ident'>Bencher</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>size_of</span>;
     <span class='kw'>use</span> <span class='ident'>distributions</span>::<span class='ident'>IndependentSample</span>;
@@ -877,7 +887,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -892,7 +902,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -902,6 +912,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

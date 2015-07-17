@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/distributions/normal.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rand-0.3.8/src/distributions/normal.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>normal.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -254,9 +254,6 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -269,8 +266,6 @@
 <span class='comment'>// except according to those terms.</span>
 
 <span class='doccomment'>//! The normal and derived distributions.</span>
-
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Rand</span>, <span class='ident'>Open01</span>};
 <span class='kw'>use</span> <span class='ident'>distributions</span>::{<span class='ident'>ziggurat</span>, <span class='ident'>ziggurat_tables</span>, <span class='ident'>Sample</span>, <span class='ident'>IndependentSample</span>};
@@ -288,7 +283,7 @@
 <span class='doccomment'>/// Generate Normal Random</span>
 <span class='doccomment'>/// Samples*](http://www.doornik.com/research/ziggurat.pdf). Nuffield</span>
 <span class='doccomment'>/// College, Oxford</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>StandardNormal</span>(<span class='kw'>pub</span> <span class='ident'>f64</span>);
 
 <span class='kw'>impl</span> <span class='ident'>Rand</span> <span class='kw'>for</span> <span class='ident'>StandardNormal</span> {
@@ -343,7 +338,7 @@
 <span class='doccomment'>/// let v = normal.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from a N(2, 9) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Normal</span> {
     <span class='ident'>mean</span>: <span class='ident'>f64</span>,
     <span class='ident'>std_dev</span>: <span class='ident'>f64</span>,
@@ -390,7 +385,7 @@
 <span class='doccomment'>/// let v = log_normal.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from an ln N(2, 9) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>LogNormal</span> {
     <span class='ident'>norm</span>: <span class='ident'>Normal</span>
 }
@@ -431,7 +426,7 @@
         }
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_normal_invalid_sd</span>() {
         <span class='ident'>Normal</span>::<span class='ident'>new</span>(<span class='number'>10.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
     }
@@ -447,7 +442,7 @@
         }
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_log_normal_invalid_sd</span>() {
         <span class='ident'>LogNormal</span>::<span class='ident'>new</span>(<span class='number'>10.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
     }
@@ -456,7 +451,6 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
     <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>test</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>test</span>::<span class='ident'>Bencher</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>size_of</span>;
     <span class='kw'>use</span> <span class='ident'>distributions</span>::{<span class='ident'>Sample</span>};
@@ -483,7 +477,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -498,7 +492,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -508,6 +502,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

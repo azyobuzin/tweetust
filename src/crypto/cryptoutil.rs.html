@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.18/src/cryptoutil.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rust-crypto-0.2.31/src/cryptoutil.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>cryptoutil.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -607,6 +607,28 @@
 <span id="565">565</span>
 <span id="566">566</span>
 <span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2012-2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -620,9 +642,7 @@
 
 <span class='kw'>use</span> <span class='ident'>std</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>io</span>, <span class='ident'>mem</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::{<span class='ident'>Int</span>, <span class='ident'>UnsignedInt</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::<span class='ident'>bytes</span>::{<span class='ident'>MutableByteVector</span>, <span class='ident'>copy_memory</span>};
 
 <span class='kw'>use</span> <span class='ident'>buffer</span>::{<span class='ident'>ReadBuffer</span>, <span class='ident'>WriteBuffer</span>, <span class='ident'>BufferResult</span>};
 <span class='kw'>use</span> <span class='ident'>buffer</span>::<span class='ident'>BufferResult</span>::{<span class='ident'>BufferUnderflow</span>, <span class='ident'>BufferOverflow</span>};
@@ -635,7 +655,7 @@
     <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>to_be</span>();
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>input</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='ident'>tmp</span>, <span class='number'>8</span>);
+        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>tmp</span>, <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='number'>8</span>);
     }
 }
 
@@ -646,7 +666,7 @@
     <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>to_le</span>();
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>input</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='ident'>tmp</span>, <span class='number'>8</span>);
+        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>tmp</span>, <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='number'>8</span>);
     }
 }
 
@@ -656,9 +676,9 @@
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>);
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='ident'>input</span>.<span class='ident'>len</span>()) {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>input</span>.<span class='ident'>len</span>()) {
             <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>y</span>).<span class='ident'>to_le</span>();
-            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='ident'>x</span>, <span class='kw-2'>&amp;</span><span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>, <span class='number'>8</span>);
+            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='kw-2'>&amp;</span><span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>, <span class='ident'>x</span>, <span class='number'>8</span>);
             <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>offset</span>(<span class='number'>8</span>);
             <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>offset</span>(<span class='number'>1</span>);
         }
@@ -672,7 +692,7 @@
     <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>to_be</span>();
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>input</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='ident'>tmp</span>, <span class='number'>4</span>);
+        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>tmp</span>, <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='number'>4</span>);
     }
 }
 
@@ -683,7 +703,22 @@
     <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>to_le</span>();
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>input</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='ident'>tmp</span>, <span class='number'>4</span>);
+        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>tmp</span>, <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>), <span class='number'>4</span>);
+    }
+}
+
+<span class='doccomment'>/// Write a vector of u32s into a vector of bytes. The values are written in little-endian format.</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>write_u32v_le</span> (<span class='ident'>dst</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>[<span class='ident'>u8</span>], <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u32</span>]) {
+    <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>dst</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>4</span> <span class='op'>*</span> <span class='ident'>input</span>.<span class='ident'>len</span>());
+    <span class='kw'>unsafe</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u32</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>);
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>input</span>.<span class='ident'>len</span>() {
+            <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>y</span>).<span class='ident'>to_le</span>();
+            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='kw-2'>&amp;</span><span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>, <span class='ident'>x</span>, <span class='number'>4</span>);
+            <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>offset</span>(<span class='number'>4</span>);
+            <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>offset</span>(<span class='number'>1</span>);
+        }
     }
 }
 
@@ -691,12 +726,12 @@
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_u64v_be</span>(<span class='ident'>dst</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>[<span class='ident'>u64</span>], <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>dst</span>.<span class='ident'>len</span>() <span class='op'>*</span> <span class='number'>8</span> <span class='op'>==</span> <span class='ident'>input</span>.<span class='ident'>len</span>());
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u64</span>;
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='ident'>dst</span>.<span class='ident'>len</span>()) {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>);
+        <span class='kw'>for</span> _ <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>dst</span>.<span class='ident'>len</span>()) {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
-            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='ident'>y</span>, <span class='number'>8</span>);
-            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Int</span>::<span class='ident'>from_be</span>(<span class='ident'>tmp</span>);
+            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>y</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='number'>8</span>);
+            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>u64</span>::<span class='ident'>from_be</span>(<span class='ident'>tmp</span>);
             <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>offset</span>(<span class='number'>1</span>);
             <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>offset</span>(<span class='number'>8</span>);
         }
@@ -707,12 +742,12 @@
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_u64v_le</span>(<span class='ident'>dst</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>[<span class='ident'>u64</span>], <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>dst</span>.<span class='ident'>len</span>() <span class='op'>*</span> <span class='number'>8</span> <span class='op'>==</span> <span class='ident'>input</span>.<span class='ident'>len</span>());
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u64</span>;
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='ident'>dst</span>.<span class='ident'>len</span>()) {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>);
+        <span class='kw'>for</span> _ <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>dst</span>.<span class='ident'>len</span>()) {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
-            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='ident'>y</span>, <span class='number'>8</span>);
-            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Int</span>::<span class='ident'>from_le</span>(<span class='ident'>tmp</span>);
+            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>y</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='number'>8</span>);
+            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>u64</span>::<span class='ident'>from_le</span>(<span class='ident'>tmp</span>);
             <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>offset</span>(<span class='number'>1</span>);
             <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>offset</span>(<span class='number'>8</span>);
         }
@@ -723,12 +758,12 @@
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_u32v_be</span>(<span class='ident'>dst</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>[<span class='ident'>u32</span>], <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>dst</span>.<span class='ident'>len</span>() <span class='op'>*</span> <span class='number'>4</span> <span class='op'>==</span> <span class='ident'>input</span>.<span class='ident'>len</span>());
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u32</span>;
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='ident'>dst</span>.<span class='ident'>len</span>()) {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u32</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>);
+        <span class='kw'>for</span> _ <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>dst</span>.<span class='ident'>len</span>()) {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
-            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='ident'>y</span>, <span class='number'>4</span>);
-            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Int</span>::<span class='ident'>from_be</span>(<span class='ident'>tmp</span>);
+            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>y</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='number'>4</span>);
+            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>u32</span>::<span class='ident'>from_be</span>(<span class='ident'>tmp</span>);
             <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>offset</span>(<span class='number'>1</span>);
             <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>offset</span>(<span class='number'>4</span>);
         }
@@ -739,12 +774,12 @@
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read_u32v_le</span>(<span class='ident'>dst</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span>[<span class='ident'>u32</span>], <span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) {
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>dst</span>.<span class='ident'>len</span>() <span class='op'>*</span> <span class='number'>4</span> <span class='op'>==</span> <span class='ident'>input</span>.<span class='ident'>len</span>());
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u32</span>;
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span>;
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='ident'>dst</span>.<span class='ident'>len</span>()) {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>x</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u32</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>);
+        <span class='kw'>for</span> _ <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>dst</span>.<span class='ident'>len</span>()) {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
-            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='ident'>y</span>, <span class='number'>4</span>);
-            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Int</span>::<span class='ident'>from_le</span>(<span class='ident'>tmp</span>);
+            <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>y</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='number'>4</span>);
+            <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>u32</span>::<span class='ident'>from_le</span>(<span class='ident'>tmp</span>);
             <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>offset</span>(<span class='number'>1</span>);
             <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>offset</span>(<span class='number'>4</span>);
         }
@@ -756,8 +791,8 @@
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>input</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>4</span>);
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
-        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>), <span class='number'>4</span>);
-        <span class='ident'>Int</span>::<span class='ident'>from_le</span>(<span class='ident'>tmp</span>)
+        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>), <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='number'>4</span>);
+        <span class='ident'>u32</span>::<span class='ident'>from_le</span>(<span class='ident'>tmp</span>)
     }
 }
 
@@ -766,8 +801,8 @@
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>input</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>4</span>);
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
-        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping_memory</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>), <span class='number'>4</span>);
-        <span class='ident'>Int</span>::<span class='ident'>from_be</span>(<span class='ident'>tmp</span>)
+        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>input</span>.<span class='ident'>get_unchecked</span>(<span class='number'>0</span>), <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>, <span class='number'>4</span>);
+        <span class='ident'>u32</span>::<span class='ident'>from_be</span>(<span class='ident'>tmp</span>)
     }
 }
 
@@ -780,8 +815,27 @@
     <span class='kw'>let</span> <span class='ident'>p</span> <span class='op'>=</span> <span class='ident'>plaintext</span>.<span class='ident'>as_ptr</span>();
     <span class='kw'>let</span> <span class='ident'>k</span> <span class='op'>=</span> <span class='ident'>keystream</span>.<span class='ident'>as_ptr</span>();
     <span class='kw'>let</span> <span class='ident'>d</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>as_mut_ptr</span>();
-    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0isize</span>, <span class='ident'>plaintext</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>isize</span>) {
+    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0isize</span>..<span class='ident'>plaintext</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>isize</span>) {
         <span class='kw'>unsafe</span>{ <span class='op'>*</span><span class='ident'>d</span>.<span class='ident'>offset</span>(<span class='ident'>i</span>) <span class='op'>=</span> <span class='op'>*</span><span class='ident'>p</span>.<span class='ident'>offset</span>(<span class='ident'>i</span>) <span class='op'>^</span> <span class='op'>*</span><span class='ident'>k</span>.<span class='ident'>offset</span>(<span class='ident'>i</span>) };
+    }
+}
+
+<span class='doccomment'>/// Copy bytes from src to dest</span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>copy_memory</span>(<span class='ident'>src</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>], <span class='ident'>dst</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
+    <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>dst</span>.<span class='ident'>len</span>() <span class='op'>&gt;=</span> <span class='ident'>src</span>.<span class='ident'>len</span>());
+    <span class='kw'>unsafe</span> {
+        <span class='kw'>let</span> <span class='ident'>srcp</span> <span class='op'>=</span> <span class='ident'>src</span>.<span class='ident'>as_ptr</span>();
+        <span class='kw'>let</span> <span class='ident'>dstp</span> <span class='op'>=</span> <span class='ident'>dst</span>.<span class='ident'>as_mut_ptr</span>();
+        <span class='ident'>ptr</span>::<span class='ident'>copy_nonoverlapping</span>(<span class='ident'>srcp</span>, <span class='ident'>dstp</span>, <span class='ident'>src</span>.<span class='ident'>len</span>());
+    }
+}
+
+<span class='doccomment'>/// Zero all bytes in dst</span>
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>zero</span>(<span class='ident'>dst</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
+    <span class='kw'>unsafe</span> {
+        <span class='ident'>ptr</span>::<span class='ident'>write_bytes</span>(<span class='ident'>dst</span>.<span class='ident'>as_mut_ptr</span>(), <span class='number'>0</span>, <span class='ident'>dst</span>.<span class='ident'>len</span>());
     }
 }
 
@@ -838,40 +892,29 @@
     }
 }
 
-
-<span class='kw'>trait</span> <span class='ident'>ToBits</span> {
-    <span class='doccomment'>/// Convert the value in bytes to the number of bits, a tuple where the 1st item is the</span>
-    <span class='doccomment'>/// high-order value and the 2nd item is the low order value.</span>
-    <span class='kw'>fn</span> <span class='ident'>to_bits</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> (<span class='kw'>Self</span>, <span class='kw'>Self</span>);
-}
-
-<span class='kw'>impl</span> <span class='ident'>ToBits</span> <span class='kw'>for</span> <span class='ident'>u64</span> {
-    <span class='kw'>fn</span> <span class='ident'>to_bits</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> (<span class='ident'>u64</span>, <span class='ident'>u64</span>) {
-        (<span class='self'>self</span> <span class='op'>&gt;&gt;</span> <span class='number'>61</span>, <span class='self'>self</span> <span class='op'>&lt;&lt;</span> <span class='number'>3</span>)
-    }
+<span class='doccomment'>/// Convert the value in bytes to the number of bits, a tuple where the 1st item is the</span>
+<span class='doccomment'>/// high-order value and the 2nd item is the low order value.</span>
+<span class='kw'>fn</span> <span class='ident'>to_bits</span>(<span class='ident'>x</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> (<span class='ident'>u64</span>, <span class='ident'>u64</span>) {
+    (<span class='ident'>x</span> <span class='op'>&gt;&gt;</span> <span class='number'>61</span>, <span class='ident'>x</span> <span class='op'>&lt;&lt;</span> <span class='number'>3</span>)
 }
 
 <span class='doccomment'>/// Adds the specified number of bytes to the bit count. panic!() if this would cause numeric</span>
 <span class='doccomment'>/// overflow.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_bytes_to_bits</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Int</span> <span class='op'>+</span> <span class='ident'>ToBits</span><span class='op'>&gt;</span>(<span class='ident'>bits</span>: <span class='ident'>T</span>, <span class='ident'>bytes</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
-    <span class='kw'>let</span> (<span class='ident'>new_high_bits</span>, <span class='ident'>new_low_bits</span>) <span class='op'>=</span> <span class='ident'>bytes</span>.<span class='ident'>to_bits</span>();
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_bytes_to_bits</span>(<span class='ident'>bits</span>: <span class='ident'>u64</span>, <span class='ident'>bytes</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>u64</span> {
+    <span class='kw'>let</span> (<span class='ident'>new_high_bits</span>, <span class='ident'>new_low_bits</span>) <span class='op'>=</span> <span class='ident'>to_bits</span>(<span class='ident'>bytes</span>);
 
-    <span class='kw'>if</span> <span class='ident'>new_high_bits</span> <span class='op'>&gt;</span> <span class='ident'>Int</span>::<span class='ident'>zero</span>() {
+    <span class='kw'>if</span> <span class='ident'>new_high_bits</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
         <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Numeric overflow occured.&quot;</span>)
     }
 
-    <span class='kw'>match</span> <span class='ident'>bits</span>.<span class='ident'>checked_add</span>(<span class='ident'>new_low_bits</span>) {
-        <span class='prelude-val'>Some</span>(<span class='ident'>x</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='ident'>x</span>,
-        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Numeric overflow occured.&quot;</span>)
-    }
+    <span class='ident'>bits</span>.<span class='ident'>checked_add</span>(<span class='ident'>new_low_bits</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Numeric overflow occured.&quot;</span>)
 }
 
 <span class='doccomment'>/// Adds the specified number of bytes to the bit count, which is a tuple where the first element is</span>
 <span class='doccomment'>/// the high order value. panic!() if this would cause numeric overflow.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_bytes_to_bits_tuple</span>
-        <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Int</span> <span class='op'>+</span> <span class='ident'>UnsignedInt</span> <span class='op'>+</span> <span class='ident'>ToBits</span><span class='op'>&gt;</span>
-        (<span class='ident'>bits</span>: (<span class='ident'>T</span>, <span class='ident'>T</span>), <span class='ident'>bytes</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> (<span class='ident'>T</span>, <span class='ident'>T</span>) {
-    <span class='kw'>let</span> (<span class='ident'>new_high_bits</span>, <span class='ident'>new_low_bits</span>) <span class='op'>=</span> <span class='ident'>bytes</span>.<span class='ident'>to_bits</span>();
+        (<span class='ident'>bits</span>: (<span class='ident'>u64</span>, <span class='ident'>u64</span>), <span class='ident'>bytes</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> (<span class='ident'>u64</span>, <span class='ident'>u64</span>) {
+    <span class='kw'>let</span> (<span class='ident'>new_high_bits</span>, <span class='ident'>new_low_bits</span>) <span class='op'>=</span> <span class='ident'>to_bits</span>(<span class='ident'>bytes</span>);
     <span class='kw'>let</span> (<span class='ident'>hi</span>, <span class='ident'>low</span>) <span class='op'>=</span> <span class='ident'>bits</span>;
 
     <span class='comment'>// Add the low order value - if there is no overflow, then add the high order values</span>
@@ -879,7 +922,7 @@
     <span class='comment'>// before adding them.</span>
     <span class='kw'>match</span> <span class='ident'>low</span>.<span class='ident'>checked_add</span>(<span class='ident'>new_low_bits</span>) {
         <span class='prelude-val'>Some</span>(<span class='ident'>x</span>) <span class='op'>=&gt;</span> {
-            <span class='kw'>if</span> <span class='ident'>new_high_bits</span> <span class='op'>==</span> <span class='ident'>Int</span>::<span class='ident'>zero</span>() {
+            <span class='kw'>if</span> <span class='ident'>new_high_bits</span> <span class='op'>==</span> <span class='number'>0</span> {
                 <span class='comment'>// This is the fast path - every other alternative will rarely occur in practice</span>
                 <span class='comment'>// considering how large an input would need to be for those paths to be used.</span>
                 <span class='kw'>return</span> (<span class='ident'>hi</span>, <span class='ident'>x</span>);
@@ -891,8 +934,7 @@
             }
         },
         <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {
-            <span class='kw'>let</span> <span class='ident'>one</span>: <span class='ident'>T</span> <span class='op'>=</span> <span class='ident'>Int</span>::<span class='ident'>one</span>();
-            <span class='kw'>let</span> <span class='ident'>z</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>new_high_bits</span>.<span class='ident'>checked_add</span>(<span class='ident'>one</span>) {
+            <span class='kw'>let</span> <span class='ident'>z</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>new_high_bits</span>.<span class='ident'>checked_add</span>(<span class='number'>1</span>) {
                 <span class='prelude-val'>Some</span>(<span class='ident'>w</span>) <span class='op'>=&gt;</span> <span class='ident'>w</span>,
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Numeric overflow occured.&quot;</span>)
             };
@@ -904,7 +946,7 @@
                 <span class='comment'>// run in practice. This is the reason that this function requires that the type T</span>
                 <span class='comment'>// be UnsignedInt - overflow is not defined for Signed types. This function could</span>
                 <span class='comment'>// be implemented for signed types as well if that were needed.</span>
-                <span class='prelude-val'>Some</span>(<span class='ident'>y</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> (<span class='ident'>y</span>, <span class='ident'>low</span> <span class='op'>+</span> <span class='ident'>new_low_bits</span>),
+                <span class='prelude-val'>Some</span>(<span class='ident'>y</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> (<span class='ident'>y</span>, <span class='ident'>low</span>.<span class='ident'>wrapping_add</span>(<span class='ident'>new_low_bits</span>)),
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Numeric overflow occured.&quot;</span>)
             }
         }
@@ -963,15 +1005,15 @@
                 <span class='kw'>let</span> <span class='ident'>buffer_remaining</span> <span class='op'>=</span> <span class='ident'>size</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>buffer_idx</span>;
                 <span class='kw'>if</span> <span class='ident'>input</span>.<span class='ident'>len</span>() <span class='op'>&gt;=</span> <span class='ident'>buffer_remaining</span> {
                         <span class='ident'>copy_memory</span>(
-                            <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='self'>self</span>.<span class='ident'>buffer_idx</span>..<span class='ident'>size</span>],
-                            <span class='kw-2'>&amp;</span><span class='ident'>input</span>[..<span class='ident'>buffer_remaining</span>]);
+                            <span class='kw-2'>&amp;</span><span class='ident'>input</span>[..<span class='ident'>buffer_remaining</span>],
+                            <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='self'>self</span>.<span class='ident'>buffer_idx</span>..<span class='ident'>size</span>]);
                     <span class='self'>self</span>.<span class='ident'>buffer_idx</span> <span class='op'>=</span> <span class='number'>0</span>;
                     <span class='ident'>func</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>buffer</span>);
                     <span class='ident'>i</span> <span class='op'>+=</span> <span class='ident'>buffer_remaining</span>;
                 } <span class='kw'>else</span> {
                     <span class='ident'>copy_memory</span>(
-                        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='self'>self</span>.<span class='ident'>buffer_idx</span>..<span class='self'>self</span>.<span class='ident'>buffer_idx</span> <span class='op'>+</span> <span class='ident'>input</span>.<span class='ident'>len</span>()],
-                        <span class='ident'>input</span>);
+                        <span class='ident'>input</span>,
+                        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='self'>self</span>.<span class='ident'>buffer_idx</span>..<span class='self'>self</span>.<span class='ident'>buffer_idx</span> <span class='op'>+</span> <span class='ident'>input</span>.<span class='ident'>len</span>()]);
                     <span class='self'>self</span>.<span class='ident'>buffer_idx</span> <span class='op'>+=</span> <span class='ident'>input</span>.<span class='ident'>len</span>();
                     <span class='kw'>return</span>;
                 }
@@ -989,8 +1031,8 @@
             <span class='comment'>// be empty.</span>
             <span class='kw'>let</span> <span class='ident'>input_remaining</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>i</span>;
             <span class='ident'>copy_memory</span>(
-                <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='number'>0</span>..<span class='ident'>input_remaining</span>],
-                <span class='kw-2'>&amp;</span><span class='ident'>input</span>[<span class='ident'>i</span>..]);
+                <span class='kw-2'>&amp;</span><span class='ident'>input</span>[<span class='ident'>i</span>..],
+                <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='number'>0</span>..<span class='ident'>input_remaining</span>]);
             <span class='self'>self</span>.<span class='ident'>buffer_idx</span> <span class='op'>+=</span> <span class='ident'>input_remaining</span>;
         }
 
@@ -1000,7 +1042,7 @@
 
         <span class='kw'>fn</span> <span class='ident'>zero_until</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>idx</span>: <span class='ident'>usize</span>) {
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>idx</span> <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>buffer_idx</span>);
-            <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='self'>self</span>.<span class='ident'>buffer_idx</span>..<span class='ident'>idx</span>].<span class='ident'>set_memory</span>(<span class='number'>0</span>);
+            <span class='ident'>zero</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>buffer</span>[<span class='self'>self</span>.<span class='ident'>buffer_idx</span>..<span class='ident'>idx</span>]);
             <span class='self'>self</span>.<span class='ident'>buffer_idx</span> <span class='op'>=</span> <span class='ident'>idx</span>;
         }
 
@@ -1035,6 +1077,8 @@
     <span class='ident'>buffer</span>: [<span class='ident'>u8</span>; <span class='number'>64</span>],
     <span class='ident'>buffer_idx</span>: <span class='ident'>usize</span>,
 }
+
+<span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>FixedBuffer64</span> { <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>FixedBuffer64</span> { <span class='op'>*</span><span class='self'>self</span> } }
 
 <span class='kw'>impl</span> <span class='ident'>FixedBuffer64</span> {
     <span class='doccomment'>/// Create a new buffer</span>
@@ -1095,8 +1139,8 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>test</span> {
+    <span class='kw'>use</span> <span class='ident'>std</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Int</span>;
 
     <span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>IsaacRng</span>;
     <span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>distributions</span>::{<span class='ident'>IndependentSample</span>, <span class='ident'>Range</span>};
@@ -1131,48 +1175,48 @@
     <span class='comment'>// A normal addition - no overflow occurs</span>
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_add_bytes_to_bits_ok</span>() {
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>(<span class='number'>100</span>, <span class='number'>10</span>) <span class='op'>==</span> <span class='number'>180</span>);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits</span>(<span class='number'>100</span>, <span class='number'>10</span>) <span class='op'>==</span> <span class='number'>180</span>);
     }
 
     <span class='comment'>// A simple failure case - adding 1 to the max value</span>
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_add_bytes_to_bits_overflow</span>() {
-        <span class='ident'>add_bytes_to_bits</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>(<span class='ident'>Int</span>::<span class='ident'>max_value</span>(), <span class='number'>1</span>);
+        <span class='ident'>add_bytes_to_bits</span>(<span class='ident'>std</span>::<span class='ident'>u64</span>::<span class='ident'>MAX</span>, <span class='number'>1</span>);
     }
 
     <span class='comment'>// A normal addition - no overflow occurs (fast path)</span>
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_add_bytes_to_bits_tuple_ok</span>() {
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits_tuple</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>((<span class='number'>5</span>, <span class='number'>100</span>), <span class='number'>10</span>) <span class='op'>==</span> (<span class='number'>5</span>, <span class='number'>180</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits_tuple</span>((<span class='number'>5</span>, <span class='number'>100</span>), <span class='number'>10</span>) <span class='op'>==</span> (<span class='number'>5</span>, <span class='number'>180</span>));
     }
 
     <span class='comment'>// The low order value overflows into the high order value</span>
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_add_bytes_to_bits_tuple_ok2</span>() {
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits_tuple</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>((<span class='number'>5</span>, <span class='ident'>Int</span>::<span class='ident'>max_value</span>()), <span class='number'>1</span>) <span class='op'>==</span> (<span class='number'>6</span>, <span class='number'>7</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits_tuple</span>((<span class='number'>5</span>, <span class='ident'>std</span>::<span class='ident'>u64</span>::<span class='ident'>MAX</span>), <span class='number'>1</span>) <span class='op'>==</span> (<span class='number'>6</span>, <span class='number'>7</span>));
     }
 
     <span class='comment'>// The value to add is too large to be converted into bits without overflowing its type</span>
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_add_bytes_to_bits_tuple_ok3</span>() {
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits_tuple</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>((<span class='number'>5</span>, <span class='number'>0</span>), <span class='number'>0x4000000000000001</span>) <span class='op'>==</span> (<span class='number'>7</span>, <span class='number'>8</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>add_bytes_to_bits_tuple</span>((<span class='number'>5</span>, <span class='number'>0</span>), <span class='number'>0x4000000000000001</span>) <span class='op'>==</span> (<span class='number'>7</span>, <span class='number'>8</span>));
     }
 
     <span class='comment'>// A simple failure case - adding 1 to the max value</span>
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_add_bytes_to_bits_tuple_overflow</span>() {
-        <span class='ident'>add_bytes_to_bits_tuple</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>((<span class='ident'>Int</span>::<span class='ident'>max_value</span>(), <span class='ident'>Int</span>::<span class='ident'>max_value</span>()), <span class='number'>1</span>);
+        <span class='ident'>add_bytes_to_bits_tuple</span>((<span class='ident'>std</span>::<span class='ident'>u64</span>::<span class='ident'>MAX</span>, <span class='ident'>std</span>::<span class='ident'>u64</span>::<span class='ident'>MAX</span>), <span class='number'>1</span>);
     }
 
     <span class='comment'>// The value to add is too large to convert to bytes without overflowing its type, but the high</span>
     <span class='comment'>// order value from this conversion overflows when added to the existing high order value</span>
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_add_bytes_to_bits_tuple_overflow2</span>() {
-        <span class='kw'>let</span> <span class='ident'>value</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>Int</span>::<span class='ident'>max_value</span>();
-        <span class='ident'>add_bytes_to_bits_tuple</span>::<span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span>((<span class='ident'>value</span> <span class='op'>-</span> <span class='number'>1</span>, <span class='number'>0</span>), <span class='number'>0x8000000000000000</span>);
+        <span class='kw'>let</span> <span class='ident'>value</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>std</span>::<span class='ident'>u64</span>::<span class='ident'>MAX</span>;
+        <span class='ident'>add_bytes_to_bits_tuple</span>((<span class='ident'>value</span> <span class='op'>-</span> <span class='number'>1</span>, <span class='number'>0</span>), <span class='number'>0x8000000000000000</span>);
     }
 }
 </pre>
@@ -1183,7 +1227,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -1198,7 +1242,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -1208,6 +1252,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

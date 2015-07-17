@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.21/src/host.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/url-0.2.36/src/host.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>host.rs.html -- source</title>
@@ -34,7 +34,7 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -315,6 +315,11 @@
 <span id="273">273</span>
 <span id="274">274</span>
 <span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013-2014 Simon Sapin.</span>
 <span class='comment'>//</span>
@@ -324,7 +329,7 @@
 <span class='comment'>// option. This file may not be copied, modified, or distributed</span>
 <span class='comment'>// except according to those terms.</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::{<span class='ident'>AsciiExt</span>, <span class='ident'>OwnedAsciiExt</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::<span class='ident'>AsciiExt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Formatter</span>};
 <span class='kw'>use</span> <span class='ident'>parser</span>::{<span class='ident'>ParseResult</span>, <span class='ident'>ParseError</span>};
@@ -332,7 +337,7 @@
 
 
 <span class='doccomment'>/// The host name of an URL.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Hash</span>, <span class='ident'>PartialOrd</span>, <span class='ident'>Ord</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Host</span> {
     <span class='doccomment'>/// A (DNS) domain name or an IPv4 address.</span>
     <span class='doccomment'>///</span>
@@ -348,7 +353,7 @@
 
 
 <span class='doccomment'>/// A 128 bit IPv6 address</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Copy</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Copy</span>, <span class='ident'>Debug</span>, <span class='ident'>Hash</span>, <span class='ident'>PartialOrd</span>, <span class='ident'>Ord</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Ipv6Address</span> {
     <span class='kw'>pub</span> <span class='ident'>pieces</span>: [<span class='ident'>u16</span>; <span class='number'>8</span>]
 }
@@ -381,7 +386,7 @@
             ][..]).<span class='ident'>is_some</span>() {
                 <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>InvalidDomainCharacter</span>)
             } <span class='kw'>else</span> {
-                <span class='prelude-val'>Ok</span>(<span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='ident'>domain</span>.<span class='ident'>to_string</span>().<span class='ident'>into_ascii_lowercase</span>()))
+                <span class='prelude-val'>Ok</span>(<span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='ident'>domain</span>.<span class='ident'>to_ascii_lowercase</span>()))
             }
         }
     }
@@ -419,6 +424,11 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>piece_pointer</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>compress_pointer</span> <span class='op'>=</span> <span class='prelude-val'>None</span>;
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
+
+        <span class='kw'>if</span> <span class='ident'>len</span> <span class='op'>&lt;</span> <span class='number'>2</span> {
+            <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>InvalidIpv6Address</span>)
+        }
+
         <span class='kw'>if</span> <span class='ident'>input</span>[<span class='number'>0</span>] <span class='op'>==</span> <span class='string'>b&#39;:&#39;</span> {
             <span class='kw'>if</span> <span class='ident'>input</span>[<span class='number'>1</span>] <span class='op'>!=</span> <span class='string'>b&#39;:&#39;</span> {
                 <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>InvalidIpv6Address</span>)
@@ -599,7 +609,7 @@
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -614,7 +624,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -624,6 +634,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>

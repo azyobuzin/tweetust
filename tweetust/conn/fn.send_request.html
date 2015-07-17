@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>tweetust</a>::<wbr><a href='index.html'>conn</a></p><div class='block mod'><h2>Modules</h2><a class='mod ' href='application_only_authenticator/index.html' title=''>application_only_authenticator</a><a class='mod ' href='oauth_authenticator/index.html' title=''>oauth_authenticator</a></div><div class='block enum'><h2>Enums</h2><a class='enum ' href='enum.Parameter.html' title=''>Parameter</a></div><div class='block trait'><h2>Traits</h2><a class='trait ' href='trait.Authenticator.html' title=''>Authenticator</a><a class='trait ' href='trait.ToParameter.html' title=''>ToParameter</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.parse_json.html' title='Parse the JSON string to T with rustc-serialize. As a stopgap measure, this function renames `type` to `type_`.'>parse_json</a><a class='fn ' href='fn.request_twitter.html' title=''>request_twitter</a><a class='fn current' href='fn.send_request.html' title=''>send_request</a></div>
+        <p class='location'><a href='../index.html'>tweetust</a>::<wbr><a href='index.html'>conn</a></p><script>window.sidebarCurrent = {name: 'send_request', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -34,24 +34,26 @@
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>tweetust</a>::<wbr><a href='index.html'>conn</a>::<wbr><a class='fn' href=''>send_request</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span></span></h1>
-<pre class='rust fn'>pub fn send_request(method: <a class='enum' href='../../hyper/method/enum.Method.html' title='hyper::method::Method'>Method</a>, url: <a class='struct' href='../../url/struct.Url.html' title='url::Url'>Url</a>, params: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../tweetust/conn/enum.Parameter.html' title='tweetust::conn::Parameter'>Parameter</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, authorization: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='type' href='../../hyper/type.HttpResult.html' title='hyper::HttpResult'>HttpResult</a>&lt;<a class='struct' href='../../hyper/client/response/struct.Response.html' title='hyper::client::response::Response'>Response</a>&gt;</pre></section>
+<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>tweetust</a>::<wbr><a href='index.html'>conn</a>::<wbr><a class='fn' href=''>send_request</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-17273' class='srclink' href='../../src/tweetust/conn/mod.rs.html#79-127' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn send_request(method: <a class='enum' href='../../hyper/method/enum.Method.html' title='hyper::method::Method'>Method</a>, url: <a class='struct' href='../../url/struct.Url.html' title='url::Url'>Url</a>, params: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../tweetust/conn/enum.Parameter.html' title='tweetust::conn::Parameter'>Parameter</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, authorization: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='type' href='../../hyper/error/type.Result.html' title='hyper::error::Result'>Result</a>&lt;<a class='struct' href='../../hyper/client/response/struct.Response.html' title='hyper::client::response::Response'>Response</a>&gt;</pre></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
     <div id="help" class="hidden">
         <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
+            <h1>Keyboard Shortcuts</h1>
             <dl>
                 <dt>?</dt>
                 <dd>Show this help dialog</dd>
@@ -66,7 +68,7 @@
             </dl>
         </div>
         <div class="infos">
-            <h1>Search tricks</h1>
+            <h1>Search Tricks</h1>
             <p>
                 Prefix searches with a type followed by a colon (e.g.
                 <code>fn:</code>) to restrict the search to a given type.
@@ -76,6 +78,10 @@
                 <code>struct</code>, <code>enum</code>,
                 <code>trait</code>, <code>typedef</code> (or
                 <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
             </p>
         </div>
     </div>
