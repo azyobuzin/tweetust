@@ -141,6 +141,11 @@ well.</p>
     <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>slice_unchecked</span>(<span class='number'>0</span>, <span class='number'>21</span>), <span class='string'>&quot;Löwe 老虎 Léopard&quot;</span>);
 }
 </pre>
+</div><h4 id='method.slice_mut_unchecked' class='method'><code>unsafe fn <a href='#method.slice_mut_unchecked' class='fnname'>slice_mut_unchecked</a>(&amp;mut self, begin: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, end: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; &amp;mut <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<div class='stability'><em class='stab unstable'>Unstable<p>: recently added</p>
+</em></div><div class='docblock'><p>Takes a bytewise mutable slice from a string.</p>
+
+<p>Same as <code>slice_unchecked</code>, but works with <code>&amp;mut str</code> instead of <code>&amp;str</code>.</p>
 </div><h4 id='method.slice_chars' class='method'><code>fn <a href='#method.slice_chars' class='fnname'>slice_chars</a>(&amp;self, begin: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, end: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
 <div class='stability'><em class='stab unstable'>Unstable<p>: may have yet to prove its worth</p>
 </em></div><div class='docblock'><p>Returns a slice of the string from the character range [<code>begin</code>..<code>end</code>).</p>
@@ -304,7 +309,7 @@ beyond the character that was shifted.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s2</span>, <span class='string'>&quot;we 老虎 Léopard&quot;</span>);
 </pre>
 </div><h4 id='method.split_at' class='method'><code>fn <a href='#method.split_at' class='fnname'>split_at</a>(&amp;self, mid: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(&amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</a></code></h4>
-<div class='stability'><em class='stab unstable'>Unstable<p>: library is unlikely to be stabilized with the current layout and name, use std::collections instead</p>
+<div class='stability'><em class='stab unstable'>Unstable<p>: recently added</p>
 </em></div><div class='docblock'><p>Divide one string slice into two at an index.</p>
 
 <p>The index <code>mid</code> is a byte offset from the start of the string
@@ -326,6 +331,9 @@ or if it is not on a character boundary.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>a</span>, <span class='string'>&quot;Löwe&quot;</span>);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>b</span>, <span class='string'>&quot; 老虎 Léopard&quot;</span>);
 </pre>
+</div><h4 id='method.split_at_mut' class='method'><code>fn <a href='#method.split_at_mut' class='fnname'>split_at_mut</a>(&amp;mut self, mid: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(&amp;mut <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, &amp;mut <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</a></code></h4>
+<div class='stability'><em class='stab unstable'>Unstable<p>: recently added</p>
+</em></div><div class='docblock'><p>Divide one mutable string slice into two at an index.</p>
 </div><h4 id='method.chars' class='method'><code>fn <a href='#method.chars' class='fnname'>chars</a>(&amp;self) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/core/str/struct.Chars.html' title='core::str::Chars'>Chars</a></code></h4>
 <div class='docblock'><p>An iterator over the codepoints of <code>self</code>.</p>
 

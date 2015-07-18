@@ -231,7 +231,7 @@ wrapping around at the boundary of the type.</p>
 </div><h4 id='method.wrapping_mul' class='method'><code>fn <a href='#method.wrapping_mul' class='fnname'>wrapping_mul</a>(self, rhs: <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
 <div class='docblock'><p>Wrapping (modular) multiplication. Computes <code>self * other</code>, wrapping around at the boundary of the type.</p>
 </div><h4 id='method.wrapping_div' class='method'><code>fn <a href='#method.wrapping_div' class='fnname'>wrapping_div</a>(self, rhs: <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
-<div class='docblock'><p>Wrapping (modular) division. Computes <code>floor(self / other)</code>,
+<div class='docblock'><p>Wrapping (modular) division. Computes <code>self / other</code>,
 wrapping around at the boundary of the type.</p>
 
 <p>The only case where such wrapping can occur is when one
@@ -239,7 +239,7 @@ divides <code>MIN / -1</code> on a signed type (where <code>MIN</code> is the
 negative minimal value for the type); this is equivalent
 to <code>-MIN</code>, a positive value that is too large to represent
 in the type. In such a case, this function returns <code>MIN</code>
-itself..</p>
+itself.</p>
 </div><h4 id='method.wrapping_rem' class='method'><code>fn <a href='#method.wrapping_rem' class='fnname'>wrapping_rem</a>(self, rhs: <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
 <div class='docblock'><p>Wrapping (modular) remainder. Computes <code>self % other</code>,
 wrapping around at the boundary of the type.</p>
