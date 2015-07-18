@@ -7,6 +7,7 @@ documentation = "http://azyobuzin.github.io/tweetust/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 keywords = ["twitter", "tweet"]
 license = "MIT"
+exclude = ["clientgen/**/*", ".*"]
 
 [dependencies]
 hyper = "*"
