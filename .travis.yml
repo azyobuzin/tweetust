@@ -6,10 +6,10 @@ notifications:
 
 env:
   global:
-    - secure: UFWq/+DBSnfopXVzfTSI9VFQAvalPH2akY8zNVY9Lz8ChM25OaHYj3GR7B3l4bSOWFUkY4N7KugLvEh+fJDOKKcSQWKAkpmd8duS9N55jvQiM/qNXUsGahqFqnsLhGAJW07EfP2P9usCnF0MbKw4tE5LGq91UdBdtfCpMkfLv9M=
+    - secure: E2IyNp5+CInsJ3B4aT2Ux3ULk7QytrCG+5Dx7DMTSTKSexdxn93zEhBedBudONlOWRIg5/6Iyw88yAAt7Ftc1rZ0HfIXG1jYKEINzftJgAJ233WhBVplF6kpqRxAb3CREpYfPkSKi2sDmFKeLUkBHXLS4lQJ5iJ4RewoKUq+xsk=
 
 install:
-  - curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- -y --channel=nightly
+  - curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- -y
 
 before_script:
   - git clone -b gh-pages "https://$GH_TOKEN@github.com/azyobuzin/tweetust.git" target/doc
@@ -29,5 +29,5 @@ after_success:
   - git add --all
   - git config user.email gh-bot@azyobuzi.net
   - git config user.name azyobuzin_bot
-  - git commit -m "$TRAVIS_COMMIT"
+  - git commit -qm "$TRAVIS_COMMIT"
   - '[ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && git push origin gh-pages'

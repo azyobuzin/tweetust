@@ -8,7 +8,6 @@ use ::{ApplicationOnlyAuthenticator, TwitterError, TwitterResult};
 use conn::{request_twitter, parse_json};
 use conn::Parameter::Value;
 
-#[inline]
 fn percent_encode(input: &str) -> String {
     form_urlencoded::byte_serialize(input.as_bytes()).collect()
 }
