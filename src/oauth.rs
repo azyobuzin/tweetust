@@ -71,7 +71,7 @@ impl RequestTokenRequestBuilder {
         );
         let res = try!(request_twitter(
             Post, request_token_url.clone(), &params[..], authorization));
-        let v = form_urlencoded::parse(res.raw_response.as_bytes());
+        let v = form_urlencoded::parse(res.raw_response.as_bytes()).collect::<Vec<_>>();
         let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
         let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
         let oauth_callback_confirmed = v.iter()
@@ -81,11 +81,11 @@ impl RequestTokenRequestBuilder {
             Some(_) => Ok(res.object(RequestTokenResponse {
                 consumer_key: self.consumer_key.clone(),
                 consumer_secret: self.consumer_secret.clone(),
-                oauth_token: oauth_token.unwrap().1.clone(),
-                oauth_token_secret: oauth_token_secret.unwrap().1.clone(),
+                oauth_token: oauth_token.unwrap().1.clone().to_string(),
+                oauth_token_secret: oauth_token_secret.unwrap().1.clone().to_string(),
                 oauth_callback_confirmed: oauth_callback_confirmed.unwrap_or(false)
             })),
-            None => Err(TwitterError::ParseError(res))
+            None => Err(TwitterError::ParseError(res.clone()))
         }
     }
 }
@@ -151,7 +151,7 @@ impl AccessTokenRequestBuilder {
         );
         let res = try!(request_twitter(
             Post, access_token_url.clone(), &[], authorization));
-        let v = form_urlencoded::parse(res.raw_response.as_bytes());
+        let v = form_urlencoded::parse(res.raw_response.as_bytes()).collect::<Vec<_>>();
         let oauth_token = v.iter().find(|x| x.0 == "oauth_token");
         let oauth_token_secret = v.iter().find(|x| x.0 == "oauth_token_secret");
         let user_id = v.iter().find(|x| x.0 == "user_id")
@@ -161,12 +161,12 @@ impl AccessTokenRequestBuilder {
             Some(_) => Ok(res.object(AccessTokenResponse {
                 consumer_key: self.consumer_key.to_string(),
                 consumer_secret: self.consumer_secret.to_string(),
-                oauth_token: oauth_token.unwrap().1.clone(),
-                oauth_token_secret: oauth_token_secret.unwrap().1.clone(),
+                oauth_token: oauth_token.unwrap().1.clone().to_string(),
+                oauth_token_secret: oauth_token_secret.unwrap().1.clone().to_string(),
                 user_id: user_id.unwrap(),
-                screen_name: screen_name.unwrap().1.clone()
+                screen_name: screen_name.unwrap().1.clone().to_string()
             })),
-            None => Err(TwitterError::ParseError(res))
+            None => Err(TwitterError::ParseError(res.clone()))
         }
     }
 }

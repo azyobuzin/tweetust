@@ -3,17 +3,14 @@
 
 use hyper::Post;
 use rustc_serialize::base64::{self, ToBase64};
-use url::{percent_encoding, Url};
+use url::{form_urlencoded, percent_encoding, Url};
 use ::{ApplicationOnlyAuthenticator, TwitterError, TwitterResult};
 use conn::{request_twitter, parse_json};
 use conn::Parameter::Value;
 
 #[inline]
 fn percent_encode(input: &str) -> String {
-    percent_encoding::utf8_percent_encode(
-        input,
-        percent_encoding::FORM_URLENCODED_ENCODE_SET
-    )
+    form_urlencoded::byte_serialize(input.as_bytes()).collect()
 }
 
 fn basic_authorization(consumer_key: &str, consumer_secret: &str) -> String {
@@ -95,8 +92,10 @@ impl InvalidateTokenRequestBuilder {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/invalidate_token").unwrap(),
-            &[Value("access_token", percent_encoding::lossy_utf8_percent_decode(
-                self.access_token.as_bytes()))],
+            &[Value(
+                "access_token",
+                String::from_utf8(percent_encoding::percent_decode(self.access_token.as_bytes()).collect()).unwrap()
+            )],
             basic_authorization(
                 &self.consumer_key[..], &self.consumer_secret[..])
         ));

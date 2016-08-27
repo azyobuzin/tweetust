@@ -63,45 +63,48 @@ fn is_multipart(params: &[Parameter]) -> bool {
 fn create_query<'a, I>(pairs: I) -> String
     where I: Iterator<Item=(&'a str, &'a str)>
 {
-    let es = oauthcli::encode_set();
+    let es = oauthcli::OAUTH_ENCODE_SET;
     let mut s = String::new();
     for (key, val) in pairs {
         if s.len() > 0 {
             s.push('&');
         }
-        percent_encoding::utf8_percent_encode_to(key, es, &mut s);
-        s.push('=');
-        percent_encoding::utf8_percent_encode_to(val, es, &mut s);
+        write!(
+            &mut s,
+            "{}={}",
+            percent_encoding::utf8_percent_encode(key, es),
+            percent_encoding::utf8_percent_encode(val, es)
+        ).unwrap();
     }
     s
 }
 
-pub fn send_request(method: Method, mut url: Url, params: &[Parameter],
+pub fn send_request(method: Method, url: Url, params: &[Parameter],
     authorization: String) -> hyper::Result<Response>
 {
+    let mut request_url = url.clone();
+
     let has_body = match method {
         Get | Delete | Head => false,
         _ => true
     };
 
     if !has_body {
-        let query = match url.query_pairs() {
-            Some(x) => x,
-            None => Vec::new()
-        };
-        url.query = Some(create_query(
-            query.iter().map(|x| (&x.0[..], &x.1[..])).chain(
+        let query_pairs = url.query_pairs().collect::<Vec<_>>();
+        let query = create_query(
+            query_pairs.iter().map(|x| (&x.0[..], &x.1[..])).chain(
                 params.iter().map(|x| match x {
                     &Parameter::Value(key, ref val) => (key, &val[..]),
                     _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
-        ));
+        );
+        request_url.set_query(Some(&query[..]));
     }
 
     let client = hyper::Client::new();
     let body;
-    let mut req = client.request(method, url);
+    let mut req = client.request(method, request_url);
 
     if has_body {
         if is_multipart(params) {

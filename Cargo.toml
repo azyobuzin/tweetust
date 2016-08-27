@@ -1,6 +1,6 @@
 [package]
 name = "tweetust"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "Experimental Twitter Library"
 documentation = "http://azyobuzin.github.io/tweetust/tweetust/"
@@ -10,7 +10,7 @@ license = "MIT"
 exclude = ["clientgen/**/*", ".*"]
 
 [dependencies]
-hyper = "*"
-oauthcli = "*"
-rustc-serialize = "*"
-url = "*"
+hyper = "0.9"
+oauthcli = "0.1"
+rustc-serialize = "0.3"
+url = "1.2"
