@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rust-crypto-0.2.31/src/aessafe.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.36/src/aessafe.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>aessafe.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -24,10 +26,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -1434,7 +1436,7 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
                 };
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> [[<span class='number'>0u32</span>; <span class='number'>4</span>]; (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rounds</span> <span class='op'>+</span> <span class='number'>1</span>)];
                 <span class='ident'>create_round_keys</span>(<span class='ident'>key</span>, <span class='ident'>KeyType</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>mode</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-                <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rounds</span> <span class='op'>+</span> <span class='number'>1</span>) {
+                <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rounds</span> <span class='op'>+</span> <span class='number'>1</span> {
                     <span class='ident'>a</span>.<span class='ident'>sk</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>bit_slice_4x4_with_u16</span>(<span class='ident'>tmp</span>[<span class='ident'>i</span>][<span class='number'>0</span>], <span class='ident'>tmp</span>[<span class='ident'>i</span>][<span class='number'>1</span>], <span class='ident'>tmp</span>[<span class='ident'>i</span>][<span class='number'>2</span>], <span class='ident'>tmp</span>[<span class='ident'>i</span>][<span class='number'>3</span>]);
                 }
                 <span class='ident'>a</span>
@@ -1532,7 +1534,7 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
                 };
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> [[<span class='number'>0u32</span>; <span class='number'>4</span>]; (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rounds</span> <span class='op'>+</span> <span class='number'>1</span>)];
                 <span class='ident'>create_round_keys</span>(<span class='ident'>key</span>, <span class='ident'>KeyType</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>mode</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>);
-                <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rounds</span> <span class='op'>+</span> <span class='number'>1</span>) {
+                <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rounds</span> <span class='op'>+</span> <span class='number'>1</span> {
                     <span class='ident'>a</span>.<span class='ident'>sk</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>bit_slice_fill_4x4_with_u32x4</span>(
                         <span class='ident'>tmp</span>[<span class='ident'>i</span>][<span class='number'>0</span>],
                         <span class='ident'>tmp</span>[<span class='ident'>i</span>][<span class='number'>1</span>],
@@ -1651,7 +1653,7 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     };
 
     <span class='comment'>// Calculate the rest of the round keys</span>
-    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='ident'>key_words</span>..(<span class='ident'>rounds</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>*</span> <span class='number'>4</span>) {
+    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>key_words</span>..(<span class='ident'>rounds</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>*</span> <span class='number'>4</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>round_keys</span>[(<span class='ident'>i</span> <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>/</span> <span class='number'>4</span>][(<span class='ident'>i</span> <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='number'>4</span>];
         <span class='kw'>if</span> (<span class='ident'>i</span> <span class='op'>%</span> <span class='ident'>key_words</span>) <span class='op'>==</span> <span class='number'>0</span> {
             <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>sub_word</span>(<span class='ident'>tmp</span>.<span class='ident'>rotate_right</span>(<span class='number'>8</span>)) <span class='op'>^</span> <span class='ident'>RCON</span>[(<span class='ident'>i</span> <span class='op'>/</span> <span class='ident'>key_words</span>) <span class='op'>-</span> <span class='number'>1</span>];
@@ -1665,8 +1667,8 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     <span class='comment'>// Decryption round keys require extra processing</span>
     <span class='kw'>match</span> <span class='ident'>key_type</span> {
         <span class='ident'>KeyType</span>::<span class='ident'>Decryption</span> <span class='op'>=&gt;</span> {
-            <span class='kw'>for</span> <span class='ident'>j</span> <span class='kw'>in</span> (<span class='number'>1</span>..<span class='ident'>rounds</span>) {
-                <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='number'>4</span>) {
+            <span class='kw'>for</span> <span class='ident'>j</span> <span class='kw'>in</span> <span class='number'>1</span>..<span class='ident'>rounds</span> {
+                <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>4</span> {
                     <span class='ident'>round_keys</span>[<span class='ident'>j</span>][<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>inv_mcol</span>(<span class='ident'>round_keys</span>[<span class='ident'>j</span>][<span class='ident'>i</span>]);
                 }
             }
@@ -1678,13 +1680,13 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// This trait defines all of the operations needed for a type to be processed as part of an AES</span>
 <span class='comment'>// encryption or decryption operation.</span>
 <span class='kw'>trait</span> <span class='ident'>AesOps</span> {
-    <span class='kw'>fn</span> <span class='ident'>sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>add_round_key</span>(<span class='self'>self</span>, <span class='ident'>rk</span>: <span class='kw-2'>&amp;</span><span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_sub_bytes</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_shift_rows</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_mix_columns</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>add_round_key</span>(<span class='self'>self</span>, <span class='ident'>rk</span>: <span class='kw-2'>&amp;</span><span class='self'>Self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 }
 
 <span class='kw'>fn</span> <span class='ident'>encrypt_core</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AesOps</span> <span class='op'>+</span> <span class='ident'>Copy</span><span class='op'>&gt;</span>(<span class='ident'>state</span>: <span class='kw-2'>&amp;</span><span class='ident'>S</span>, <span class='ident'>sk</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>S</span>]) <span class='op'>-&gt;</span> <span class='ident'>S</span> {
@@ -1692,7 +1694,7 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>state</span>.<span class='ident'>add_round_key</span>(<span class='kw-2'>&amp;</span><span class='ident'>sk</span>[<span class='number'>0</span>]);
 
     <span class='comment'>// Remaining rounds (except last round)</span>
-    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>1</span>..<span class='ident'>sk</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>) {
+    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>1</span>..<span class='ident'>sk</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span> {
         <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>tmp</span>.<span class='ident'>sub_bytes</span>();
         <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>tmp</span>.<span class='ident'>shift_rows</span>();
         <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>tmp</span>.<span class='ident'>mix_columns</span>();
@@ -1712,7 +1714,7 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>state</span>.<span class='ident'>add_round_key</span>(<span class='kw-2'>&amp;</span><span class='ident'>sk</span>[<span class='ident'>sk</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>]);
 
     <span class='comment'>// Remaining rounds (except last round)</span>
-    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>1</span>..<span class='ident'>sk</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>) {
+    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>1</span>..<span class='ident'>sk</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span> {
         <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>tmp</span>.<span class='ident'>inv_sub_bytes</span>();
         <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>tmp</span>.<span class='ident'>inv_shift_rows</span>();
         <span class='ident'>tmp</span> <span class='op'>=</span> <span class='ident'>tmp</span>.<span class='ident'>inv_mix_columns</span>();
@@ -1748,8 +1750,8 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     <span class='comment'>// basis. That transformation could be done via pseudocode that roughly looks like the</span>
     <span class='comment'>// following:</span>
     <span class='comment'>//</span>
-    <span class='comment'>// for x in (0..8) {</span>
-    <span class='comment'>//     for y in (0..8) {</span>
+    <span class='comment'>// for x in 0..8 {</span>
+    <span class='comment'>//     for y in 0..8 {</span>
     <span class='comment'>//         result.x ^= input.y &amp; MATRIX[7 - y][x]</span>
     <span class='comment'>//     }</span>
     <span class='comment'>// }</span>
@@ -2110,7 +2112,7 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// is used as part of bit slicing the round keys.</span>
 <span class='kw'>fn</span> <span class='ident'>bit_slice_fill_4x4_with_u32x4</span>(<span class='ident'>a</span>: <span class='ident'>u32</span>, <span class='ident'>b</span>: <span class='ident'>u32</span>, <span class='ident'>c</span>: <span class='ident'>u32</span>, <span class='ident'>d</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>Bs8State</span><span class='op'>&lt;</span><span class='ident'>u32x4</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>tmp</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>128</span>];
-    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='number'>8</span>) {
+    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>8</span> {
         <span class='ident'>write_u32_le</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>[<span class='ident'>i</span> <span class='op'>*</span> <span class='number'>16</span>..<span class='ident'>i</span> <span class='op'>*</span> <span class='number'>16</span> <span class='op'>+</span> <span class='number'>4</span>], <span class='ident'>a</span>);
         <span class='ident'>write_u32_le</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>[<span class='ident'>i</span> <span class='op'>*</span> <span class='number'>16</span> <span class='op'>+</span> <span class='number'>4</span>..<span class='ident'>i</span> <span class='op'>*</span> <span class='number'>16</span> <span class='op'>+</span> <span class='number'>8</span>], <span class='ident'>b</span>);
         <span class='ident'>write_u32_le</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>tmp</span>[<span class='ident'>i</span> <span class='op'>*</span> <span class='number'>16</span> <span class='op'>+</span> <span class='number'>8</span>..<span class='ident'>i</span> <span class='op'>*</span> <span class='number'>16</span> <span class='op'>+</span> <span class='number'>12</span>], <span class='ident'>c</span>);
@@ -2189,19 +2191,19 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// Operations in GF(2^2) using normal basis (Omega^2,Omega)</span>
 <span class='kw'>trait</span> <span class='ident'>Gf2Ops</span> {
     <span class='comment'>// multiply</span>
-    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='self'>Self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
     <span class='comment'>// scale by N = Omega^2</span>
-    <span class='kw'>fn</span> <span class='ident'>scl_n</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>scl_n</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
     <span class='comment'>// scale by N^2 = Omega</span>
-    <span class='kw'>fn</span> <span class='ident'>scl_n2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>scl_n2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
     <span class='comment'>// square</span>
-    <span class='kw'>fn</span> <span class='ident'>sq</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sq</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
     <span class='comment'>// Same as sqaure</span>
-    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 }
 
 <span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Copy</span><span class='op'>&gt;</span> <span class='ident'>Gf2Ops</span> <span class='kw'>for</span> <span class='ident'>Bs2State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
@@ -2240,14 +2242,14 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// Operations in GF(2^4) using normal basis (alpha^8,alpha^2)</span>
 <span class='kw'>trait</span> <span class='ident'>Gf4Ops</span> {
     <span class='comment'>// multiply</span>
-    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>y</span>: <span class='self'>Self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
     <span class='comment'>// square &amp; scale by nu</span>
     <span class='comment'>// nu = beta^8 = N^2*alpha^2, N = w^2</span>
-    <span class='kw'>fn</span> <span class='ident'>sq_scl</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sq_scl</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
     <span class='comment'>// inverse</span>
-    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 }
 
 <span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Copy</span><span class='op'>&gt;</span> <span class='ident'>Gf4Ops</span> <span class='kw'>for</span> <span class='ident'>Bs4State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
@@ -2282,7 +2284,7 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 <span class='comment'>// Operations in GF(2^8) using normal basis (d^16,d)</span>
 <span class='kw'>trait</span> <span class='ident'>Gf8Ops</span> {
     <span class='comment'>// inverse</span>
-    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 }
 
 <span class='kw'>impl</span> <span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Default</span><span class='op'>&gt;</span> <span class='ident'>Gf8Ops</span> <span class='kw'>for</span> <span class='ident'>Bs8State</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
@@ -2399,12 +2401,12 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     }
 }
 
-<span class='kw'>trait</span> <span class='ident'>AesBitValueOps</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Not</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Default</span> {
-    <span class='kw'>fn</span> <span class='ident'>shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>inv_shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>ror1</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>ror2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>ror3</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+<span class='kw'>trait</span> <span class='ident'>AesBitValueOps</span>: <span class='ident'>BitXor</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>BitAnd</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Not</span><span class='op'>&lt;</span><span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Default</span> <span class='op'>+</span> <span class='ident'>Sized</span> {
+    <span class='kw'>fn</span> <span class='ident'>shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>inv_shift_row</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>ror1</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>ror2</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>ror3</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 }
 
 <span class='kw'>impl</span> <span class='ident'>AesBitValueOps</span> <span class='kw'>for</span> <span class='ident'>u16</span> {
@@ -2509,40 +2511,51 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard Shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search Tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-            <p>
-                Search functions by type signature (e.g.
-                <code>vec -> usize</code>)
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -2554,6 +2567,6 @@ finite field which allows for efficient computation of the AES S-Boxes. See [7] 
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['crypto'] = [];
+implementors["crypto"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

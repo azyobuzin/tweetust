@@ -9,7 +9,9 @@
 
     <title>tweetust::models::tweets::Tweet - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -24,10 +26,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'><a href='../../index.html'>tweetust</a>::<wbr><a href='../index.html'>models</a>::<wbr><a href='index.html'>tweets</a></p><script>window.sidebarCurrent = {name: 'Tweet', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -42,107 +44,127 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>tweetust</a>::<wbr><a href='../index.html'>models</a>::<wbr><a href='index.html'>tweets</a>::<wbr><a class='struct' href=''>Tweet</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-23715' class='srclink' href='../../../src/tweetust/models/tweets.rs.html#8-35' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-4173' class='srclink' href='../../../src/tweetust/src/models/tweets.rs.html#8-35' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Tweet {
-    pub contributors: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Contributor.html' title='tweetust::models::tweets::Contributor'>Contributor</a>&gt;&gt;,
-    pub coordinates: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Coordinates.html' title='tweetust::models::tweets::Coordinates'>Coordinates</a>&gt;,
-    pub created_at: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
-    pub current_user_retweet: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.CurrentUserRetweet.html' title='tweetust::models::tweets::CurrentUserRetweet'>CurrentUserRetweet</a>&gt;,
-    pub entities: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/entities/struct.Entities.html' title='tweetust::models::entities::Entities'>Entities</a>&gt;,
-    pub extended_entities: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/entities/struct.ExtendedEntities.html' title='tweetust::models::entities::ExtendedEntities'>ExtendedEntities</a>&gt;,
-    pub favorite_count: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;,
-    pub favorited: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
-    pub filter_level: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
-    pub id: <a href='http://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>,
-    pub in_reply_to_screen_name: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
-    pub in_reply_to_status_id: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>&gt;,
-    pub in_reply_to_user_id: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>&gt;,
-    pub lang: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
-    pub place: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/places/struct.Place.html' title='tweetust::models::places::Place'>Place</a>&gt;,
-    pub possibly_sensitive: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
-    pub retweet_count: <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>,
-    pub retweeted: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
-    pub retweeted_status: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a>&gt;&gt;,
-    pub source: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
-    pub text: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
-    pub user: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/users/struct.User.html' title='tweetust::models::users::User'>User</a>&gt;,
-    pub withheld_copyright: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
-    pub withheld_in_countries: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;,
-    pub withheld_scope: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
-}</pre><h2 class='fields'>Fields</h2>
-<table><tr class='stab '>
-                                  <td id='structfield.contributors'><code>contributors</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.coordinates'><code>coordinates</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.created_at'><code>created_at</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.current_user_retweet'><code>current_user_retweet</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.entities'><code>entities</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.extended_entities'><code>extended_entities</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.favorite_count'><code>favorite_count</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.favorited'><code>favorited</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.filter_level'><code>filter_level</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.id'><code>id</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.in_reply_to_screen_name'><code>in_reply_to_screen_name</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.in_reply_to_status_id'><code>in_reply_to_status_id</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.in_reply_to_user_id'><code>in_reply_to_user_id</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.lang'><code>lang</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.place'><code>place</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.possibly_sensitive'><code>possibly_sensitive</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.retweet_count'><code>retweet_count</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.retweeted'><code>retweeted</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.retweeted_status'><code>retweeted_status</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.source'><code>source</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.text'><code>text</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.user'><code>user</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.withheld_copyright'><code>withheld_copyright</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.withheld_in_countries'><code>withheld_in_countries</code></td><td></td></tr><tr class='stab '>
-                                  <td id='structfield.withheld_scope'><code>withheld_scope</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, other: &amp;<a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.ne' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='../../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></h3><div class='impl-items'><h4 id='method.decode' class='method'><code>fn <a href='../../../rustc_serialize/serialize/trait.Decodable.html#method.decode' class='fnname'>decode</a>&lt;__D: <a class='trait' href='../../../rustc_serialize/serialize/trait.Decoder.html' title='rustc_serialize::serialize::Decoder'>Decoder</a>&gt;(__arg_0: &amp;mut __D) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a>, __D::Error&gt;</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></h4>
-<h4 id='method.clone_from' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
-</div></section>
+    pub contributors: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Contributor.html' title='tweetust::models::tweets::Contributor'>Contributor</a>&gt;&gt;,
+    pub coordinates: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Coordinates.html' title='tweetust::models::tweets::Coordinates'>Coordinates</a>&gt;,
+    pub created_at: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
+    pub current_user_retweet: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.CurrentUserRetweet.html' title='tweetust::models::tweets::CurrentUserRetweet'>CurrentUserRetweet</a>&gt;,
+    pub entities: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/entities/struct.Entities.html' title='tweetust::models::entities::Entities'>Entities</a>&gt;,
+    pub extended_entities: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/entities/struct.ExtendedEntities.html' title='tweetust::models::entities::ExtendedEntities'>ExtendedEntities</a>&gt;,
+    pub favorite_count: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;,
+    pub favorited: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
+    pub filter_level: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>,
+    pub in_reply_to_screen_name: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub in_reply_to_status_id: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>&gt;,
+    pub in_reply_to_user_id: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>&gt;,
+    pub lang: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+    pub place: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/places/struct.Place.html' title='tweetust::models::places::Place'>Place</a>&gt;,
+    pub possibly_sensitive: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
+    pub retweet_count: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>,
+    pub retweeted: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
+    pub retweeted_status: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a>&gt;&gt;,
+    pub source: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
+    pub text: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>,
+    pub user: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/users/struct.User.html' title='tweetust::models::users::User'>User</a>&gt;,
+    pub withheld_copyright: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;,
+    pub withheld_in_countries: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;,
+    pub withheld_scope: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;,
+}</pre><h2 class='fields'>Fields</h2><span id='structfield.contributors' class='structfield'><code>contributors: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Contributor.html' title='tweetust::models::tweets::Contributor'>Contributor</a>&gt;&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.coordinates' class='structfield'><code>coordinates: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Coordinates.html' title='tweetust::models::tweets::Coordinates'>Coordinates</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.created_at' class='structfield'><code>created_at: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code>
+                           </span><span class='stab '></span><span id='structfield.current_user_retweet' class='structfield'><code>current_user_retweet: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.CurrentUserRetweet.html' title='tweetust::models::tweets::CurrentUserRetweet'>CurrentUserRetweet</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.entities' class='structfield'><code>entities: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/entities/struct.Entities.html' title='tweetust::models::entities::Entities'>Entities</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.extended_entities' class='structfield'><code>extended_entities: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/entities/struct.ExtendedEntities.html' title='tweetust::models::entities::ExtendedEntities'>ExtendedEntities</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.favorite_count' class='structfield'><code>favorite_count: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.favorited' class='structfield'><code>favorited: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.filter_level' class='structfield'><code>filter_level: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.id' class='structfield'><code>id: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a></code>
+                           </span><span class='stab '></span><span id='structfield.in_reply_to_screen_name' class='structfield'><code>in_reply_to_screen_name: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.in_reply_to_status_id' class='structfield'><code>in_reply_to_status_id: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.in_reply_to_user_id' class='structfield'><code>in_reply_to_user_id: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.lang' class='structfield'><code>lang: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.place' class='structfield'><code>place: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/places/struct.Place.html' title='tweetust::models::places::Place'>Place</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.possibly_sensitive' class='structfield'><code>possibly_sensitive: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.retweet_count' class='structfield'><code>retweet_count: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code>
+                           </span><span class='stab '></span><span id='structfield.retweeted' class='structfield'><code>retweeted: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.retweeted_status' class='structfield'><code>retweeted_status: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a>&gt;&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.source' class='structfield'><code>source: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code>
+                           </span><span class='stab '></span><span id='structfield.text' class='structfield'><code>text: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code>
+                           </span><span class='stab '></span><span id='structfield.user' class='structfield'><code>user: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../tweetust/models/users/struct.User.html' title='tweetust::models::users::User'>User</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.withheld_copyright' class='structfield'><code>withheld_copyright: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.withheld_in_countries' class='structfield'><code>withheld_in_countries: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;</code>
+                           </span><span class='stab '></span><span id='structfield.withheld_scope' class='structfield'><code>withheld_scope: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code>
+                           </span><span class='stab '></span><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4059' class='srclink' href='../../../src/tweetust/src/models/tweets.rs.html#7' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.decode' class='method'><code>fn <a href='../../../rustc_serialize/serialize/trait.Decodable.html#tymethod.decode' class='fnname'>decode</a>&lt;__D:&nbsp;<a class='trait' href='../../../rustc_serialize/serialize/trait.Decoder.html' title='rustc_serialize::serialize::Decoder'>Decoder</a>&gt;(__arg_0: &amp;mut __D) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a>,&nbsp;__D::Error&gt;</code></h4>
+</div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4115' class='srclink' href='../../../src/tweetust/src/models/tweets.rs.html#7' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4145' class='srclink' href='../../../src/tweetust/src/models/tweets.rs.html#7' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4199' class='srclink' href='../../../src/tweetust/src/models/tweets.rs.html#37' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-4200' class='srclink' href='../../../src/tweetust/src/models/tweets.rs.html#38-40' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, other: &amp;<a class='struct' href='../../../tweetust/models/tweets/struct.Tweet.html' title='tweetust::models::tweets::Tweet'>Tweet</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard Shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search Tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-            <p>
-                Search functions by type signature (e.g.
-                <code>vec -> usize</code>)
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -154,6 +176,6 @@
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
     
-    <script async src="../../../search-index.js"></script>
+    <script defer src="../../../search-index.js"></script>
 </body>
 </html>

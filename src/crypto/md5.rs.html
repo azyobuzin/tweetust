@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/rust-crypto-0.2.31/src/md5.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rust-crypto-0.2.36/src/md5.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>md5.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -24,10 +26,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -366,6 +368,8 @@
 <span id="324">324</span>
 <span id="325">325</span>
 <span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -383,6 +387,7 @@
 
 
 <span class='comment'>// A structure that represents that state of a digest computation for the MD5 digest function</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>Md5State</span> {
     <span class='ident'>s0</span>: <span class='ident'>u32</span>,
     <span class='ident'>s1</span>: <span class='ident'>u32</span>,
@@ -520,6 +525,7 @@
 
 
 <span class='doccomment'>/// The MD5 Digest algorithm</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Md5</span> {
     <span class='ident'>length_bytes</span>: <span class='ident'>u64</span>,
     <span class='ident'>buffer</span>: <span class='ident'>FixedBuffer64</span>,
@@ -534,7 +540,7 @@
             <span class='ident'>length_bytes</span>: <span class='number'>0</span>,
             <span class='ident'>buffer</span>: <span class='ident'>FixedBuffer64</span>::<span class='ident'>new</span>(),
             <span class='ident'>state</span>: <span class='ident'>Md5State</span>::<span class='ident'>new</span>(),
-            <span class='ident'>finished</span>: <span class='boolval'>false</span>
+            <span class='ident'>finished</span>: <span class='bool-val'>false</span>
         }
     }
 }
@@ -554,7 +560,7 @@
         <span class='self'>self</span>.<span class='ident'>length_bytes</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='self'>self</span>.<span class='ident'>buffer</span>.<span class='ident'>reset</span>();
         <span class='self'>self</span>.<span class='ident'>state</span>.<span class='ident'>reset</span>();
-        <span class='self'>self</span>.<span class='ident'>finished</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+        <span class='self'>self</span>.<span class='ident'>finished</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
     }
 
     <span class='kw'>fn</span> <span class='ident'>result</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>u8</span>]) {
@@ -564,7 +570,7 @@
             <span class='ident'>write_u32_le</span>(<span class='self'>self</span>.<span class='ident'>buffer</span>.<span class='ident'>next</span>(<span class='number'>4</span>), (<span class='self'>self</span>.<span class='ident'>length_bytes</span> <span class='op'>&lt;&lt;</span> <span class='number'>3</span>) <span class='kw'>as</span> <span class='ident'>u32</span>);
             <span class='ident'>write_u32_le</span>(<span class='self'>self</span>.<span class='ident'>buffer</span>.<span class='ident'>next</span>(<span class='number'>4</span>), (<span class='self'>self</span>.<span class='ident'>length_bytes</span> <span class='op'>&gt;&gt;</span> <span class='number'>29</span>) <span class='kw'>as</span> <span class='ident'>u32</span>);
             <span class='ident'>self_state</span>.<span class='ident'>process_block</span>(<span class='self'>self</span>.<span class='ident'>buffer</span>.<span class='ident'>full_buffer</span>());
-            <span class='self'>self</span>.<span class='ident'>finished</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+            <span class='self'>self</span>.<span class='ident'>finished</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
         }
 
         <span class='ident'>write_u32_le</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>out</span>[<span class='number'>0</span>..<span class='number'>4</span>], <span class='self'>self</span>.<span class='ident'>state</span>.<span class='ident'>s0</span>);
@@ -699,40 +705,51 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard Shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search Tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-            <p>
-                Search functions by type signature (e.g.
-                <code>vec -> usize</code>)
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -744,6 +761,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/hyper-0.6.4/src/http/h2.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.9.10/src/http/h2.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>h2.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -24,10 +26,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -844,6 +846,12 @@
 <span id="802">802</span>
 <span id="803">803</span>
 <span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Adapts the `solicit`-provided HTTP/2 implementation into the `HttpMessage` API.</span>
 
@@ -851,6 +859,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::<span class='ident'>Shutdown</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::<span class='ident'>AsciiExt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::<span class='ident'>Duration</span>;
 
 <span class='kw'>use</span> <span class='ident'>http</span>::{
     <span class='ident'>Protocol</span>,
@@ -861,7 +870,7 @@
 };
 <span class='kw'>use</span> <span class='ident'>net</span>::{<span class='ident'>NetworkStream</span>, <span class='ident'>NetworkConnector</span>};
 <span class='kw'>use</span> <span class='ident'>net</span>::{<span class='ident'>HttpConnector</span>, <span class='ident'>HttpStream</span>};
-<span class='kw'>use</span> <span class='ident'>url</span>::<span class='ident'>Url</span>;
+<span class='kw'>use</span> <span class='ident'>url</span>::<span class='ident'>Position</span> <span class='kw'>as</span> <span class='ident'>UrlPosition</span>;
 <span class='kw'>use</span> <span class='ident'>header</span>::<span class='ident'>Headers</span>;
 
 <span class='kw'>use</span> <span class='ident'>header</span>;
@@ -956,7 +965,7 @@
     <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> <span class='ident'>Http2ConnectError</span>;
 
     <span class='doccomment'>/// Establishes a network connection that can be used by HTTP/2 connections.</span>
-    <span class='kw'>fn</span> <span class='ident'>connect</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ClientStream</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Stream</span><span class='op'>&gt;</span>, <span class='ident'>Self</span>::<span class='prelude-val'>Err</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>connect</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ClientStream</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Stream</span><span class='op'>&gt;</span>, <span class='self'>Self</span>::<span class='prelude-val'>Err</span><span class='op'>&gt;</span> {
         <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>write_preface</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>stream</span>));
         <span class='prelude-val'>Ok</span>(<span class='ident'>ClientStream</span>(<span class='ident'>Http2Stream</span>(<span class='self'>self</span>.<span class='ident'>stream</span>), <span class='self'>self</span>.<span class='ident'>scheme</span>, <span class='self'>self</span>.<span class='ident'>host</span>))
     }
@@ -1108,16 +1117,6 @@
     }
 }
 
-<span class='doccomment'>/// A helper function that prepares the path of a request by extracting it from the given `Url`.</span>
-<span class='kw'>fn</span> <span class='ident'>prepare_path</span>(<span class='ident'>url</span>: <span class='ident'>Url</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>uri</span> <span class='op'>=</span> <span class='ident'>url</span>.<span class='ident'>serialize_path</span>().<span class='ident'>unwrap</span>();
-    <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>q</span>) <span class='op'>=</span> <span class='ident'>url</span>.<span class='ident'>query</span> {
-        <span class='ident'>uri</span>.<span class='ident'>push</span>(<span class='string'>&#39;?&#39;</span>);
-        <span class='ident'>uri</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>q</span>[..]);
-    }
-    <span class='ident'>uri</span>.<span class='ident'>into_bytes</span>()
-}
-
 <span class='doccomment'>/// A helper function that prepares the headers that should be sent in an HTTP/2 message.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Adapts the `Headers` into a list of octet string pairs.</span>
@@ -1148,7 +1147,7 @@
 <span class='doccomment'>/// A helper function that prepares the body for sending in an HTTP/2 request.</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>fn</span> <span class='ident'>prepare_body</span>(<span class='ident'>body</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span> {
-    <span class='kw'>if</span> <span class='ident'>body</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>0</span> {
+    <span class='kw'>if</span> <span class='ident'>body</span>.<span class='ident'>is_empty</span>() {
         <span class='prelude-val'>None</span>
     } <span class='kw'>else</span> {
         <span class='prelude-val'>Some</span>(<span class='ident'>body</span>)
@@ -1168,7 +1167,7 @@
     }
 
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>raw_headers</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-    <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>, <span class='kw-2'>ref</span> <span class='ident'>value</span>) <span class='kw'>in</span> <span class='ident'>headers</span>.<span class='ident'>iter</span>() {
+    <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>, <span class='kw-2'>ref</span> <span class='ident'>value</span>) <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>headers</span> {
         <span class='ident'>raw_headers</span>.<span class='ident'>push</span>(<span class='ident'>httparse</span>::<span class='ident'>Header</span> { <span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>name</span>, <span class='ident'>value</span>: <span class='kw-2'>&amp;</span><span class='ident'>value</span> });
     }
 
@@ -1220,7 +1219,7 @@
         <span class='kw'>let</span> (<span class='ident'>RequestHead</span> { <span class='ident'>headers</span>, <span class='ident'>method</span>, <span class='ident'>url</span> }, <span class='ident'>body</span>) <span class='op'>=</span> (<span class='ident'>request</span>.<span class='ident'>head</span>, <span class='ident'>request</span>.<span class='ident'>body</span>);
 
         <span class='kw'>let</span> <span class='ident'>method</span> <span class='op'>=</span> <span class='ident'>method</span>.<span class='ident'>as_ref</span>().<span class='ident'>as_bytes</span>();
-        <span class='kw'>let</span> <span class='ident'>path</span> <span class='op'>=</span> <span class='ident'>prepare_path</span>(<span class='ident'>url</span>);
+        <span class='kw'>let</span> <span class='ident'>path</span> <span class='op'>=</span> <span class='ident'>url</span>[<span class='ident'>UrlPosition</span>::<span class='ident'>BeforePath</span>..<span class='ident'>UrlPosition</span>::<span class='ident'>AfterQuery</span>].<span class='ident'>as_bytes</span>();
         <span class='kw'>let</span> <span class='ident'>extra_headers</span> <span class='op'>=</span> <span class='ident'>prepare_headers</span>(<span class='ident'>headers</span>);
         <span class='kw'>let</span> <span class='ident'>body</span> <span class='op'>=</span> <span class='ident'>prepare_body</span>(<span class='ident'>body</span>);
 
@@ -1245,6 +1244,21 @@
         <span class='prelude-val'>Ok</span>(<span class='ident'>head</span>)
     }
 
+    <span class='kw'>fn</span> <span class='ident'>has_body</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='bool-val'>true</span>
+    }
+
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>set_read_timeout</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>_dur</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Duration</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='prelude-val'>Ok</span>(())
+    }
+
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>set_write_timeout</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>_dur</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Duration</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='prelude-val'>Ok</span>(())
+    }
+
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>close_connection</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> ::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='prelude-val'>Ok</span>(())
     }
@@ -1259,7 +1273,7 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>Http2Protocol</span>, <span class='ident'>prepare_headers</span>, <span class='ident'>parse_headers</span>, <span class='ident'>parse_response</span>};
+    <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>Http2Protocol</span>, <span class='ident'>prepare_headers</span>, <span class='ident'>parse_headers</span>, <span class='ident'>parse_response</span>};
 
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='ident'>Read</span>};
 
@@ -1344,7 +1358,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mock_connector</span> <span class='op'>=</span> <span class='ident'>MockHttp2Connector</span>::<span class='ident'>new</span>();
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>headers</span> <span class='op'>=</span> <span class='ident'>Headers</span>::<span class='ident'>new</span>();
         <span class='ident'>headers</span>.<span class='ident'>set</span>(<span class='ident'>header</span>::<span class='ident'>ContentLength</span>(<span class='number'>3</span>));
-        <span class='ident'>headers</span>.<span class='ident'>set</span>(<span class='ident'>header</span>::<span class='ident'>ETag</span>(<span class='ident'>header</span>::<span class='ident'>EntityTag</span>::<span class='ident'>new</span>(<span class='boolval'>true</span>, <span class='string'>&quot;tag&quot;</span>.<span class='ident'>into</span>())));
+        <span class='ident'>headers</span>.<span class='ident'>set</span>(<span class='ident'>header</span>::<span class='ident'>ETag</span>(<span class='ident'>header</span>::<span class='ident'>EntityTag</span>::<span class='ident'>new</span>(<span class='bool-val'>true</span>, <span class='string'>&quot;tag&quot;</span>.<span class='ident'>into</span>())));
         <span class='ident'>mock_connector</span>.<span class='ident'>new_response_stream</span>(<span class='string'>b&quot;200&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>headers</span>, <span class='prelude-val'>Some</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>1</span>, <span class='number'>2</span>, <span class='number'>3</span>]));
         <span class='kw'>let</span> <span class='ident'>protocol</span> <span class='op'>=</span> <span class='ident'>Http2Protocol</span>::<span class='ident'>with_connector</span>(<span class='ident'>mock_connector</span>);
 
@@ -1403,13 +1417,13 @@
         <span class='ident'>server_stream</span>.<span class='ident'>read</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='number'>0</span>; <span class='number'>24</span>]).<span class='ident'>unwrap</span>();
         <span class='comment'>// The first frame are the settings</span>
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='ident'>server_stream</span>.<span class='ident'>recv_frame</span>().<span class='ident'>unwrap</span>() {
-            <span class='ident'>HttpFrame</span>::<span class='ident'>SettingsFrame</span>(_) <span class='op'>=&gt;</span> <span class='boolval'>true</span>,
-            _ <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            <span class='ident'>HttpFrame</span>::<span class='ident'>SettingsFrame</span>(_) <span class='op'>=&gt;</span> <span class='bool-val'>true</span>,
+            _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>,
         });
         <span class='comment'>// Now the ACK to the server&#39;s settings.</span>
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='ident'>server_stream</span>.<span class='ident'>recv_frame</span>().<span class='ident'>unwrap</span>() {
-            <span class='ident'>HttpFrame</span>::<span class='ident'>SettingsFrame</span>(_) <span class='op'>=&gt;</span> <span class='boolval'>true</span>,
-            _ <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            <span class='ident'>HttpFrame</span>::<span class='ident'>SettingsFrame</span>(_) <span class='op'>=&gt;</span> <span class='bool-val'>true</span>,
+            _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>,
         });
     }
 
@@ -1437,7 +1451,7 @@
         <span class='kw'>let</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>server_stream</span>.<span class='ident'>recv_frame</span>().<span class='ident'>unwrap</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='ident'>frame</span> {
             <span class='ident'>HttpFrame</span>::<span class='ident'>HeadersFrame</span>(<span class='kw-2'>ref</span> <span class='ident'>frame</span>) <span class='op'>=&gt;</span> <span class='ident'>frame</span>.<span class='ident'>is_end_of_stream</span>(),
-            _ <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>,
         });
     }
 
@@ -1468,11 +1482,11 @@
         <span class='kw'>let</span> <span class='ident'>frame</span> <span class='op'>=</span> <span class='ident'>server_stream</span>.<span class='ident'>recv_frame</span>().<span class='ident'>unwrap</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='ident'>frame</span> {
             <span class='ident'>HttpFrame</span>::<span class='ident'>HeadersFrame</span>(<span class='kw-2'>ref</span> <span class='ident'>frame</span>) <span class='op'>=&gt;</span> <span class='op'>!</span><span class='ident'>frame</span>.<span class='ident'>is_end_of_stream</span>(),
-            _ <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>,
         });
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='ident'>server_stream</span>.<span class='ident'>recv_frame</span>().<span class='ident'>unwrap</span>() {
             <span class='ident'>HttpFrame</span>::<span class='ident'>DataFrame</span>(<span class='kw-2'>ref</span> <span class='ident'>frame</span>) <span class='op'>=&gt;</span> <span class='ident'>frame</span>.<span class='ident'>data</span> <span class='op'>==</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>1</span>, <span class='number'>2</span>, <span class='number'>3</span>],
-            _ <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>,
         });
     }
 
@@ -1489,8 +1503,8 @@
         <span class='kw'>let</span> <span class='ident'>h2headers</span> <span class='op'>=</span> <span class='ident'>prepare_headers</span>(<span class='ident'>headers</span>);
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
-            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;foo=bar; Path=/&quot;</span>.<span class='ident'>to_vec</span>()),
-            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;baz=quux; Path=/&quot;</span>.<span class='ident'>to_vec</span>()),
+            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;foo=bar&quot;</span>.<span class='ident'>to_vec</span>()),
+            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;baz=quux&quot;</span>.<span class='ident'>to_vec</span>()),
         ], <span class='ident'>h2headers</span>);
     }
 
@@ -1528,8 +1542,8 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_http2_parse_headers_with_set_cookie</span>() {
         <span class='kw'>let</span> <span class='ident'>h2headers</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[
-            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;foo=bar; Path=/&quot;</span>.<span class='ident'>to_vec</span>()),
-            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;baz=quux; Path=/&quot;</span>.<span class='ident'>to_vec</span>()),
+            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;foo=bar&quot;</span>.<span class='ident'>to_vec</span>()),
+            (<span class='string'>b&quot;set-cookie&quot;</span>.<span class='ident'>to_vec</span>(), <span class='string'>b&quot;baz=quux&quot;</span>.<span class='ident'>to_vec</span>()),
         ];
         <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='ident'>header</span>::<span class='ident'>SetCookie</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
             <span class='ident'>cookie</span>::<span class='ident'>Cookie</span>::<span class='ident'>new</span>(<span class='string'>&quot;foo&quot;</span>.<span class='ident'>to_owned</span>(), <span class='string'>&quot;bar&quot;</span>.<span class='ident'>to_owned</span>()),
@@ -1655,40 +1669,51 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard Shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search Tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-            <p>
-                Search functions by type signature (e.g.
-                <code>vec -> usize</code>)
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -1700,6 +1725,6 @@
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
     
-    <script async src="../../../search-index.js"></script>
+    <script defer src="../../../search-index.js"></script>
 </body>
 </html>

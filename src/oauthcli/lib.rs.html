@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-0a35038f75765ae4/oauthcli-0.0.7/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/oauthcli-0.1.2/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -24,10 +26,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -265,34 +267,6 @@
 <span id="223">223</span>
 <span id="224">224</span>
 <span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Yet Another OAuth 1.0 Client Library for Rust</span>
 
@@ -306,12 +280,11 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>Ordering</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Write</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>crypto</span>::{<span class='ident'>hmac</span>, <span class='ident'>sha1</span>};
 <span class='kw'>use</span> <span class='ident'>crypto</span>::<span class='ident'>mac</span>::<span class='ident'>Mac</span>;
 <span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
 <span class='kw'>use</span> <span class='ident'>serialize</span>::<span class='ident'>base64</span>::{<span class='self'>self</span>, <span class='ident'>ToBase64</span>};
-<span class='kw'>use</span> <span class='ident'>url</span>::{<span class='ident'>percent_encoding</span>, <span class='ident'>Url</span>};
+<span class='kw'>use</span> <span class='ident'>url</span>::{<span class='ident'>percent_encoding</span>, <span class='ident'>Host</span>, <span class='ident'>Url</span>};
 
 <span class='doccomment'>/// Available `oauth_signature_method` types.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Clone</span>)]</span>
@@ -331,69 +304,46 @@
     }
 }
 
-<span class='kw'>static</span> <span class='ident'>ENCODE_SET_MAP</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>; <span class='number'>256</span>] <span class='op'>=</span> <span class='kw-2'>&amp;</span>[
-    <span class='string'>&quot;%00&quot;</span>, <span class='string'>&quot;%01&quot;</span>, <span class='string'>&quot;%02&quot;</span>, <span class='string'>&quot;%03&quot;</span>, <span class='string'>&quot;%04&quot;</span>, <span class='string'>&quot;%05&quot;</span>, <span class='string'>&quot;%06&quot;</span>, <span class='string'>&quot;%07&quot;</span>,
-    <span class='string'>&quot;%08&quot;</span>, <span class='string'>&quot;%09&quot;</span>, <span class='string'>&quot;%0A&quot;</span>, <span class='string'>&quot;%0B&quot;</span>, <span class='string'>&quot;%0C&quot;</span>, <span class='string'>&quot;%0D&quot;</span>, <span class='string'>&quot;%0E&quot;</span>, <span class='string'>&quot;%0F&quot;</span>,
-    <span class='string'>&quot;%10&quot;</span>, <span class='string'>&quot;%11&quot;</span>, <span class='string'>&quot;%12&quot;</span>, <span class='string'>&quot;%13&quot;</span>, <span class='string'>&quot;%14&quot;</span>, <span class='string'>&quot;%15&quot;</span>, <span class='string'>&quot;%16&quot;</span>, <span class='string'>&quot;%17&quot;</span>,
-    <span class='string'>&quot;%18&quot;</span>, <span class='string'>&quot;%19&quot;</span>, <span class='string'>&quot;%1A&quot;</span>, <span class='string'>&quot;%1B&quot;</span>, <span class='string'>&quot;%1C&quot;</span>, <span class='string'>&quot;%1D&quot;</span>, <span class='string'>&quot;%1E&quot;</span>, <span class='string'>&quot;%1F&quot;</span>,
-    <span class='string'>&quot;%20&quot;</span>, <span class='string'>&quot;%21&quot;</span>, <span class='string'>&quot;%22&quot;</span>, <span class='string'>&quot;%23&quot;</span>, <span class='string'>&quot;%24&quot;</span>, <span class='string'>&quot;%25&quot;</span>, <span class='string'>&quot;%26&quot;</span>, <span class='string'>&quot;%27&quot;</span>,
-    <span class='string'>&quot;%28&quot;</span>, <span class='string'>&quot;%29&quot;</span>, <span class='string'>&quot;%2A&quot;</span>, <span class='string'>&quot;%2B&quot;</span>, <span class='string'>&quot;%2C&quot;</span>, <span class='string'>&quot;-&quot;</span>, <span class='string'>&quot;.&quot;</span>, <span class='string'>&quot;%2F&quot;</span>,
-    <span class='string'>&quot;0&quot;</span>, <span class='string'>&quot;1&quot;</span>, <span class='string'>&quot;2&quot;</span>, <span class='string'>&quot;3&quot;</span>, <span class='string'>&quot;4&quot;</span>, <span class='string'>&quot;5&quot;</span>, <span class='string'>&quot;6&quot;</span>, <span class='string'>&quot;7&quot;</span>,
-    <span class='string'>&quot;8&quot;</span>, <span class='string'>&quot;9&quot;</span>, <span class='string'>&quot;%3A&quot;</span>, <span class='string'>&quot;%3B&quot;</span>, <span class='string'>&quot;%3C&quot;</span>, <span class='string'>&quot;%3D&quot;</span>, <span class='string'>&quot;%3E&quot;</span>, <span class='string'>&quot;%3F&quot;</span>,
-    <span class='string'>&quot;%40&quot;</span>, <span class='string'>&quot;A&quot;</span>, <span class='string'>&quot;B&quot;</span>, <span class='string'>&quot;C&quot;</span>, <span class='string'>&quot;D&quot;</span>, <span class='string'>&quot;E&quot;</span>, <span class='string'>&quot;F&quot;</span>, <span class='string'>&quot;G&quot;</span>,
-    <span class='string'>&quot;H&quot;</span>, <span class='string'>&quot;I&quot;</span>, <span class='string'>&quot;J&quot;</span>, <span class='string'>&quot;K&quot;</span>, <span class='string'>&quot;L&quot;</span>, <span class='string'>&quot;M&quot;</span>, <span class='string'>&quot;N&quot;</span>, <span class='string'>&quot;O&quot;</span>,
-    <span class='string'>&quot;P&quot;</span>, <span class='string'>&quot;Q&quot;</span>, <span class='string'>&quot;R&quot;</span>, <span class='string'>&quot;S&quot;</span>, <span class='string'>&quot;T&quot;</span>, <span class='string'>&quot;U&quot;</span>, <span class='string'>&quot;V&quot;</span>, <span class='string'>&quot;W&quot;</span>,
-    <span class='string'>&quot;X&quot;</span>, <span class='string'>&quot;Y&quot;</span>, <span class='string'>&quot;Z&quot;</span>, <span class='string'>&quot;%5B&quot;</span>, <span class='string'>&quot;%5C&quot;</span>, <span class='string'>&quot;%5D&quot;</span>, <span class='string'>&quot;%5E&quot;</span>, <span class='string'>&quot;_&quot;</span>,
-    <span class='string'>&quot;%60&quot;</span>, <span class='string'>&quot;a&quot;</span>, <span class='string'>&quot;b&quot;</span>, <span class='string'>&quot;c&quot;</span>, <span class='string'>&quot;d&quot;</span>, <span class='string'>&quot;e&quot;</span>, <span class='string'>&quot;f&quot;</span>, <span class='string'>&quot;g&quot;</span>,
-    <span class='string'>&quot;h&quot;</span>, <span class='string'>&quot;i&quot;</span>, <span class='string'>&quot;j&quot;</span>, <span class='string'>&quot;k&quot;</span>, <span class='string'>&quot;l&quot;</span>, <span class='string'>&quot;m&quot;</span>, <span class='string'>&quot;n&quot;</span>, <span class='string'>&quot;o&quot;</span>,
-    <span class='string'>&quot;p&quot;</span>, <span class='string'>&quot;q&quot;</span>, <span class='string'>&quot;r&quot;</span>, <span class='string'>&quot;s&quot;</span>, <span class='string'>&quot;t&quot;</span>, <span class='string'>&quot;u&quot;</span>, <span class='string'>&quot;v&quot;</span>, <span class='string'>&quot;w&quot;</span>,
-    <span class='string'>&quot;x&quot;</span>, <span class='string'>&quot;y&quot;</span>, <span class='string'>&quot;z&quot;</span>, <span class='string'>&quot;%7B&quot;</span>, <span class='string'>&quot;%7C&quot;</span>, <span class='string'>&quot;%7D&quot;</span>, <span class='string'>&quot;~&quot;</span>, <span class='string'>&quot;%7F&quot;</span>,
-    <span class='string'>&quot;%80&quot;</span>, <span class='string'>&quot;%81&quot;</span>, <span class='string'>&quot;%82&quot;</span>, <span class='string'>&quot;%83&quot;</span>, <span class='string'>&quot;%84&quot;</span>, <span class='string'>&quot;%85&quot;</span>, <span class='string'>&quot;%86&quot;</span>, <span class='string'>&quot;%87&quot;</span>,
-    <span class='string'>&quot;%88&quot;</span>, <span class='string'>&quot;%89&quot;</span>, <span class='string'>&quot;%8A&quot;</span>, <span class='string'>&quot;%8B&quot;</span>, <span class='string'>&quot;%8C&quot;</span>, <span class='string'>&quot;%8D&quot;</span>, <span class='string'>&quot;%8E&quot;</span>, <span class='string'>&quot;%8F&quot;</span>,
-    <span class='string'>&quot;%90&quot;</span>, <span class='string'>&quot;%91&quot;</span>, <span class='string'>&quot;%92&quot;</span>, <span class='string'>&quot;%93&quot;</span>, <span class='string'>&quot;%94&quot;</span>, <span class='string'>&quot;%95&quot;</span>, <span class='string'>&quot;%96&quot;</span>, <span class='string'>&quot;%97&quot;</span>,
-    <span class='string'>&quot;%98&quot;</span>, <span class='string'>&quot;%99&quot;</span>, <span class='string'>&quot;%9A&quot;</span>, <span class='string'>&quot;%9B&quot;</span>, <span class='string'>&quot;%9C&quot;</span>, <span class='string'>&quot;%9D&quot;</span>, <span class='string'>&quot;%9E&quot;</span>, <span class='string'>&quot;%9F&quot;</span>,
-    <span class='string'>&quot;%A0&quot;</span>, <span class='string'>&quot;%A1&quot;</span>, <span class='string'>&quot;%A2&quot;</span>, <span class='string'>&quot;%A3&quot;</span>, <span class='string'>&quot;%A4&quot;</span>, <span class='string'>&quot;%A5&quot;</span>, <span class='string'>&quot;%A6&quot;</span>, <span class='string'>&quot;%A7&quot;</span>,
-    <span class='string'>&quot;%A8&quot;</span>, <span class='string'>&quot;%A9&quot;</span>, <span class='string'>&quot;%AA&quot;</span>, <span class='string'>&quot;%AB&quot;</span>, <span class='string'>&quot;%AC&quot;</span>, <span class='string'>&quot;%AD&quot;</span>, <span class='string'>&quot;%AE&quot;</span>, <span class='string'>&quot;%AF&quot;</span>,
-    <span class='string'>&quot;%B0&quot;</span>, <span class='string'>&quot;%B1&quot;</span>, <span class='string'>&quot;%B2&quot;</span>, <span class='string'>&quot;%B3&quot;</span>, <span class='string'>&quot;%B4&quot;</span>, <span class='string'>&quot;%B5&quot;</span>, <span class='string'>&quot;%B6&quot;</span>, <span class='string'>&quot;%B7&quot;</span>,
-    <span class='string'>&quot;%B8&quot;</span>, <span class='string'>&quot;%B9&quot;</span>, <span class='string'>&quot;%BA&quot;</span>, <span class='string'>&quot;%BB&quot;</span>, <span class='string'>&quot;%BC&quot;</span>, <span class='string'>&quot;%BD&quot;</span>, <span class='string'>&quot;%BE&quot;</span>, <span class='string'>&quot;%BF&quot;</span>,
-    <span class='string'>&quot;%C0&quot;</span>, <span class='string'>&quot;%C1&quot;</span>, <span class='string'>&quot;%C2&quot;</span>, <span class='string'>&quot;%C3&quot;</span>, <span class='string'>&quot;%C4&quot;</span>, <span class='string'>&quot;%C5&quot;</span>, <span class='string'>&quot;%C6&quot;</span>, <span class='string'>&quot;%C7&quot;</span>,
-    <span class='string'>&quot;%C8&quot;</span>, <span class='string'>&quot;%C9&quot;</span>, <span class='string'>&quot;%CA&quot;</span>, <span class='string'>&quot;%CB&quot;</span>, <span class='string'>&quot;%CC&quot;</span>, <span class='string'>&quot;%CD&quot;</span>, <span class='string'>&quot;%CE&quot;</span>, <span class='string'>&quot;%CF&quot;</span>,
-    <span class='string'>&quot;%D0&quot;</span>, <span class='string'>&quot;%D1&quot;</span>, <span class='string'>&quot;%D2&quot;</span>, <span class='string'>&quot;%D3&quot;</span>, <span class='string'>&quot;%D4&quot;</span>, <span class='string'>&quot;%D5&quot;</span>, <span class='string'>&quot;%D6&quot;</span>, <span class='string'>&quot;%D7&quot;</span>,
-    <span class='string'>&quot;%D8&quot;</span>, <span class='string'>&quot;%D9&quot;</span>, <span class='string'>&quot;%DA&quot;</span>, <span class='string'>&quot;%DB&quot;</span>, <span class='string'>&quot;%DC&quot;</span>, <span class='string'>&quot;%DD&quot;</span>, <span class='string'>&quot;%DE&quot;</span>, <span class='string'>&quot;%DF&quot;</span>,
-    <span class='string'>&quot;%E0&quot;</span>, <span class='string'>&quot;%E1&quot;</span>, <span class='string'>&quot;%E2&quot;</span>, <span class='string'>&quot;%E3&quot;</span>, <span class='string'>&quot;%E4&quot;</span>, <span class='string'>&quot;%E5&quot;</span>, <span class='string'>&quot;%E6&quot;</span>, <span class='string'>&quot;%E7&quot;</span>,
-    <span class='string'>&quot;%E8&quot;</span>, <span class='string'>&quot;%E9&quot;</span>, <span class='string'>&quot;%EA&quot;</span>, <span class='string'>&quot;%EB&quot;</span>, <span class='string'>&quot;%EC&quot;</span>, <span class='string'>&quot;%ED&quot;</span>, <span class='string'>&quot;%EE&quot;</span>, <span class='string'>&quot;%EF&quot;</span>,
-    <span class='string'>&quot;%F0&quot;</span>, <span class='string'>&quot;%F1&quot;</span>, <span class='string'>&quot;%F2&quot;</span>, <span class='string'>&quot;%F3&quot;</span>, <span class='string'>&quot;%F4&quot;</span>, <span class='string'>&quot;%F5&quot;</span>, <span class='string'>&quot;%F6&quot;</span>, <span class='string'>&quot;%F7&quot;</span>,
-    <span class='string'>&quot;%F8&quot;</span>, <span class='string'>&quot;%F9&quot;</span>, <span class='string'>&quot;%FA&quot;</span>, <span class='string'>&quot;%FB&quot;</span>, <span class='string'>&quot;%FC&quot;</span>, <span class='string'>&quot;%FD&quot;</span>, <span class='string'>&quot;%FE&quot;</span>, <span class='string'>&quot;%FF&quot;</span>,
-];
+<span class='doccomment'>/// [RFC 5849 section 3.6](http://tools.ietf.org/html/rfc5849#section-3.6).</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
+<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_camel_case_types</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>OAUTH_ENCODE_SET</span>;
 
-<span class='doccomment'>/// Return the EncodeSet of [RFC 5849 section 3.6](http://tools.ietf.org/html/rfc5849#section-3.6).</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>encode_set</span>() <span class='op'>-&gt;</span> <span class='ident'>percent_encoding</span>::<span class='ident'>EncodeSet</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>ENCODE_SET_MAP</span>) }
+<span class='kw'>impl</span> <span class='ident'>percent_encoding</span>::<span class='ident'>EncodeSet</span> <span class='kw'>for</span> <span class='ident'>OAUTH_ENCODE_SET</span> {
+    <span class='kw'>fn</span> <span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>byte</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='op'>!</span>((<span class='ident'>byte</span> <span class='op'>&gt;=</span> <span class='number'>0x30</span> <span class='op'>&amp;&amp;</span> <span class='ident'>byte</span> <span class='op'>&lt;=</span> <span class='number'>0x39</span>)
+        <span class='op'>||</span> (<span class='ident'>byte</span> <span class='op'>&gt;=</span> <span class='number'>0x41</span> <span class='op'>&amp;&amp;</span> <span class='ident'>byte</span> <span class='op'>&lt;=</span> <span class='number'>0x5A</span>)
+        <span class='op'>||</span> (<span class='ident'>byte</span> <span class='op'>&gt;=</span> <span class='number'>0x61</span> <span class='op'>&amp;&amp;</span> <span class='ident'>byte</span> <span class='op'>&lt;=</span> <span class='number'>0x7A</span>)
+        <span class='op'>||</span> <span class='ident'>byte</span> <span class='op'>==</span> <span class='number'>0x2D</span> <span class='op'>||</span> <span class='ident'>byte</span> <span class='op'>==</span> <span class='number'>0x2E</span>
+        <span class='op'>||</span> <span class='ident'>byte</span> <span class='op'>==</span> <span class='number'>0x5F</span> <span class='op'>||</span> <span class='ident'>byte</span> <span class='op'>==</span> <span class='number'>0x7E</span>)
+    }
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>fn</span> <span class='ident'>percent_encode</span>(<span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
-    <span class='ident'>percent_encoding</span>::<span class='ident'>utf8_percent_encode</span>(<span class='ident'>input</span>, <span class='ident'>encode_set</span>())
+    <span class='ident'>percent_encoding</span>::<span class='ident'>utf8_percent_encode</span>(<span class='ident'>input</span>, <span class='ident'>OAUTH_ENCODE_SET</span>)
+        .<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>()
 }
 
 <span class='kw'>fn</span> <span class='ident'>base_string_url</span>(<span class='ident'>url</span>: <span class='ident'>Url</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
-    <span class='kw'>let</span> <span class='ident'>scheme</span> <span class='op'>=</span> <span class='ident'>url</span>.<span class='ident'>scheme</span>.<span class='ident'>to_ascii_lowercase</span>();
+    <span class='kw'>let</span> <span class='ident'>scheme</span> <span class='op'>=</span> <span class='ident'>url</span>.<span class='ident'>scheme</span>().<span class='ident'>to_ascii_lowercase</span>();
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='ident'>scheme</span>[..]
-        { <span class='string'>&quot;http&quot;</span> <span class='op'>=&gt;</span> <span class='boolval'>true</span>, <span class='string'>&quot;https&quot;</span> <span class='op'>=&gt;</span> <span class='boolval'>true</span>, _ <span class='op'>=&gt;</span> <span class='boolval'>false</span> });
+        { <span class='string'>&quot;http&quot;</span> <span class='op'>|</span> <span class='string'>&quot;https&quot;</span> <span class='op'>=&gt;</span> <span class='bool-val'>true</span>, _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span> });
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}://&quot;</span>, <span class='ident'>scheme</span>);
-    <span class='kw'>match</span> <span class='ident'>url</span>.<span class='ident'>scheme_data</span> {
-        <span class='ident'>url</span>::<span class='ident'>SchemeData</span>::<span class='ident'>Relative</span>(<span class='ident'>data</span>) <span class='op'>=&gt;</span> {
-            <span class='ident'>result</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>host</span>.<span class='ident'>to_string</span>().<span class='ident'>to_ascii_lowercase</span>()[..]);
-            <span class='kw'>match</span> <span class='ident'>data</span>.<span class='ident'>port</span> {
-                <span class='prelude-val'>Some</span>(<span class='ident'>p</span>) <span class='op'>=&gt;</span> <span class='kw'>if</span> <span class='ident'>p</span> <span class='op'>!=</span> <span class='ident'>data</span>.<span class='ident'>default_port</span>.<span class='ident'>unwrap</span>() {
-                    <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>result</span>, <span class='string'>&quot;:{}&quot;</span>, <span class='ident'>p</span>).<span class='ident'>ok</span>();
-                 },
-                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> ()
-            }
-            <span class='ident'>result</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>.<span class='ident'>serialize_path</span>()[..]);
+    <span class='kw'>match</span> <span class='ident'>url</span>.<span class='ident'>host</span>() {
+        <span class='prelude-val'>Some</span>(<span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='ident'>host</span>)) <span class='op'>=&gt;</span> {
+            <span class='ident'>result</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>host</span>.<span class='ident'>to_ascii_lowercase</span>()[..]);
         },
-        <span class='ident'>url</span>::<span class='ident'>SchemeData</span>::<span class='ident'>NonRelative</span>(_) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;scheme_data is NonRelative&quot;</span>)
+        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid host&quot;</span>)
     }
+    <span class='kw'>match</span> <span class='ident'>url</span>.<span class='ident'>port</span>() {
+        <span class='prelude-val'>Some</span>(<span class='ident'>p</span>) <span class='op'>=&gt;</span> <span class='kw'>match</span> (<span class='kw-2'>&amp;</span><span class='ident'>scheme</span>[..], <span class='ident'>p</span>) {
+            (<span class='string'>&quot;http&quot;</span>, <span class='number'>80</span>) <span class='op'>|</span> (<span class='string'>&quot;https&quot;</span>, <span class='number'>443</span>) <span class='op'>=&gt;</span> (),
+            _ <span class='op'>=&gt;</span> { <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>result</span>, <span class='string'>&quot;:{}&quot;</span>, <span class='ident'>p</span>).<span class='ident'>ok</span>(); }
+        },
+        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> ()
+    }
+    <span class='ident'>result</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>url</span>.<span class='ident'>path</span>()[..]);
     <span class='ident'>result</span>
 }
 
@@ -411,9 +361,9 @@
     });
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
     <span class='kw'>if</span> <span class='ident'>mutparams</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>first</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>first</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
         <span class='kw'>for</span> (<span class='ident'>key</span>, <span class='ident'>val</span>) <span class='kw'>in</span> <span class='ident'>mutparams</span>.<span class='ident'>into_iter</span>() {
-            <span class='kw'>if</span> <span class='ident'>first</span> { <span class='ident'>first</span> <span class='op'>=</span> <span class='boolval'>false</span>; }
+            <span class='kw'>if</span> <span class='ident'>first</span> { <span class='ident'>first</span> <span class='op'>=</span> <span class='bool-val'>false</span>; }
             <span class='kw'>else</span> { <span class='ident'>result</span>.<span class='ident'>push</span>(<span class='string'>&#39;&amp;&#39;</span>); }
             <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>result</span>, <span class='string'>&quot;{}={}&quot;</span>, <span class='ident'>key</span>, <span class='ident'>val</span>).<span class='ident'>ok</span>();
         }
@@ -450,7 +400,7 @@
     <span class='ident'>h</span>.<span class='ident'>insert</span>(<span class='string'>&quot;oauth_nonce&quot;</span>, <span class='ident'>nonce</span>.<span class='ident'>to_string</span>());
     <span class='kw'>match</span> <span class='ident'>callback</span> { <span class='prelude-val'>Some</span>(<span class='ident'>x</span>) <span class='op'>=&gt;</span> { <span class='ident'>h</span>.<span class='ident'>insert</span>(<span class='string'>&quot;oauth_callback&quot;</span>, <span class='ident'>x</span>.<span class='ident'>to_string</span>()); }, <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> () }
     <span class='kw'>match</span> <span class='ident'>verifier</span> { <span class='prelude-val'>Some</span>(<span class='ident'>x</span>) <span class='op'>=&gt;</span> { <span class='ident'>h</span>.<span class='ident'>insert</span>(<span class='string'>&quot;oauth_verifier&quot;</span>, <span class='ident'>x</span>.<span class='ident'>to_string</span>()); }, <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> () }
-    <span class='comment'>// oauth_version is optional</span>
+    <span class='ident'>h</span>.<span class='ident'>insert</span>(<span class='string'>&quot;oauth_version&quot;</span>, <span class='string'>&quot;1.0&quot;</span>.<span class='ident'>to_string</span>());
     <span class='ident'>h</span>
 }
 
@@ -463,11 +413,7 @@
     <span class='ident'>oauth_params</span>.<span class='ident'>remove</span>(<span class='string'>&quot;realm&quot;</span>);
     <span class='ident'>mutparams</span>.<span class='ident'>extend</span>(<span class='ident'>oauth_params</span>.<span class='ident'>iter</span>()
         .<span class='ident'>map</span>(<span class='op'>|</span>(<span class='ident'>key</span>, <span class='ident'>val</span>)<span class='op'>|</span> (<span class='ident'>key</span>.<span class='ident'>to_string</span>(), <span class='ident'>val</span>.<span class='ident'>clone</span>())));
-    <span class='kw'>let</span> <span class='ident'>query</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>url</span>.<span class='ident'>query_pairs</span>() {
-        <span class='prelude-val'>Some</span>(<span class='ident'>pairs</span>) <span class='op'>=&gt;</span> <span class='ident'>pairs</span>,
-        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>()
-    };
-    <span class='ident'>mutparams</span>.<span class='ident'>extend</span>(<span class='ident'>query</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> (<span class='ident'>x</span>.<span class='number'>0</span>.<span class='ident'>clone</span>(), <span class='ident'>x</span>.<span class='number'>1</span>.<span class='ident'>clone</span>())));
+    <span class='ident'>mutparams</span>.<span class='ident'>extend</span>(<span class='ident'>url</span>.<span class='ident'>query_pairs</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> (<span class='ident'>x</span>.<span class='number'>0</span>.<span class='ident'>to_string</span>(), <span class='ident'>x</span>.<span class='number'>1</span>.<span class='ident'>to_string</span>())));
     <span class='macro'>format</span><span class='macro'>!</span>(
         <span class='string'>&quot;{}&amp;{}&amp;{}&quot;</span>,
         <span class='ident'>method</span>.<span class='ident'>to_ascii_uppercase</span>(),
@@ -491,7 +437,7 @@
             <span class='ident'>h</span>.<span class='ident'>result</span>().<span class='ident'>code</span>().<span class='ident'>to_base64</span>(<span class='ident'>base64</span>::<span class='ident'>Config</span> {
                 <span class='ident'>char_set</span>: <span class='ident'>serialize</span>::<span class='ident'>base64</span>::<span class='ident'>CharacterSet</span>::<span class='ident'>Standard</span>,
                 <span class='ident'>newline</span>: <span class='ident'>serialize</span>::<span class='ident'>base64</span>::<span class='ident'>Newline</span>::<span class='ident'>LF</span>,
-                <span class='ident'>pad</span>: <span class='boolval'>true</span>,
+                <span class='ident'>pad</span>: <span class='bool-val'>true</span>,
                 <span class='ident'>line_length</span>: <span class='prelude-val'>None</span>
             })
         },
@@ -534,9 +480,9 @@
         <span class='ident'>token</span>, <span class='ident'>token_secret</span>, <span class='ident'>signature_method</span>, <span class='ident'>timestamp</span>, <span class='ident'>nonce</span>, <span class='ident'>callback</span>, <span class='ident'>verifier</span>, <span class='ident'>params</span>);
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='string'>&quot;OAuth &quot;</span>.<span class='ident'>to_string</span>();
     <span class='kw'>if</span> <span class='ident'>p</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>first</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>first</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
         <span class='kw'>for</span> (<span class='kw-2'>&amp;</span><span class='ident'>key</span>, <span class='ident'>val</span>) <span class='kw'>in</span> <span class='ident'>p</span>.<span class='ident'>iter</span>() {
-            <span class='kw'>if</span> <span class='ident'>first</span> { <span class='ident'>first</span> <span class='op'>=</span> <span class='boolval'>false</span>; }
+            <span class='kw'>if</span> <span class='ident'>first</span> { <span class='ident'>first</span> <span class='op'>=</span> <span class='bool-val'>false</span>; }
             <span class='kw'>else</span> { <span class='ident'>result</span>.<span class='ident'>push</span>(<span class='string'>&#39;,&#39;</span>); }
             <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>result</span>, <span class='string'>&quot;{}=\&quot;{}\&quot;&quot;</span>,
                 <span class='ident'>percent_encode</span>(<span class='ident'>key</span>), <span class='ident'>percent_encode</span>(<span class='kw-2'>&amp;</span><span class='ident'>val</span>[..])).<span class='ident'>ok</span>();
@@ -553,40 +499,51 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard Shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search Tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-            <p>
-                Search functions by type signature (e.g.
-                <code>vec -> usize</code>)
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -598,6 +555,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
