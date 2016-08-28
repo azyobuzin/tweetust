@@ -17,10 +17,12 @@
 //! # The first tweeting
 //! When you created OAuthAuthenticator and set to `auth` variable, you can tweet in a minute.
 //!
-//! ```ignore
-//! // extern crate tweetust; or use tweetust;
+//! ```no_run
+//! # use tweetust::*;
+//! let auth = OAuthAuthenticator::new("API Key", "API Secret", "Access Token", "Access Token Secret");
+//!
 //! let your_tweet =
-//!   tweetust::TwitterClient::new(auth)
+//!   TwitterClient::new(auth)
 //!     .statuses()
 //!     .update("My First Tweet!")
 //!     .execute();
