@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct RateLimitStatus {
     pub limit: i32,
     pub remaining: i32,
@@ -19,23 +19,9 @@ impl TwitterResponse<()> {
         TwitterResponse {
             object: val,
             raw_response: self.raw_response.clone(),
-            rate_limit: self.rate_limit
+            rate_limit: self.rate_limit.clone()
         }
     }
 }
 
-#[derive(Clone, Debug, RustcDecodable)]
-pub struct CursorIds {
-    pub previous_cursor: i64,
-    pub next_cursor: i64,
-    pub ids: Vec<i64>
-}
-
-pub mod error;
-pub mod direct_messages;
-pub mod entities;
-pub mod friendships;
-pub mod places;
-pub mod search;
-pub mod tweets;
-pub mod users;
+include!(concat!(env!("OUT_DIR"), "/models/_models_list.rs"));

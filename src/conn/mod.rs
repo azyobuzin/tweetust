@@ -10,8 +10,9 @@ use hyper::client::Response;
 use hyper::method::Method;
 use hyper::status::StatusClass;
 use oauthcli;
-use rustc_serialize::{json, Decodable};
 use url::{percent_encoding, Url};
+use serde;
+use serde_json;
 use ::{TwitterError, TwitterResult};
 use models::*;
 use models::error::{Error, ErrorResponse};
@@ -129,11 +130,7 @@ pub fn send_request(method: Method, url: Url, params: &[Parameter],
     req.send()
 }
 
-#[derive(Debug, RustcDecodable)]
-struct InternalErrorResponse {
-    errors: Option<Vec<Error>>,
-    error: Option<Vec<Error>>
-}
+include!(concat!(env!("OUT_DIR"), "/conn/internal_error_response.rs"));
 
 fn read_to_twitter_result(source: hyper::Result<Response>) -> TwitterResult<()> {
     match source {
@@ -164,7 +161,7 @@ fn read_to_twitter_result(source: hyper::Result<Response>) -> TwitterResult<()> 
                     }),
                     _ => {
                         // Error response
-                        let dec: json::DecodeResult<InternalErrorResponse> = json::decode(&body[..]);
+                        let dec = parse_json::<InternalErrorResponse>(&body);
                         let errors = dec.ok().and_then(|x| x.errors.or(x.error));
                         Err(TwitterError::ErrorResponse(ErrorResponse {
                             status: res.status,
@@ -187,8 +184,6 @@ pub fn request_twitter(method: Method, url: Url, params: &[Parameter],
     read_to_twitter_result(send_request(method, url, params, authorization))
 }
 
-/// Parse the JSON string to T with rustc-serialize.
-/// As a stopgap measure, this function renames `type` to `type_`.
-pub fn parse_json<T: Decodable>(s: &str) -> json::DecodeResult<T> {
-    json::decode(&s.replace("\"type\":", "\"type_\":")[..])
+pub fn parse_json<T: serde::de::Deserialize>(s: &str) -> serde_json::Result<T> {
+    serde_json::from_str(s)
 }

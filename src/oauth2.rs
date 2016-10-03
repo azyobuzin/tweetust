@@ -8,6 +8,8 @@ use ::{ApplicationOnlyAuthenticator, TwitterError, TwitterResult};
 use conn::{request_twitter, parse_json};
 use conn::Parameter::Value;
 
+include!(concat!(env!("OUT_DIR"), "/oauth2_models.rs"));
+
 fn percent_encode(input: &str) -> String {
     form_urlencoded::byte_serialize(input.as_bytes()).collect()
 }
@@ -24,12 +26,6 @@ fn basic_authorization(consumer_key: &str, consumer_secret: &str) -> String {
                 line_length: None
             })
     )
-}
-
-#[derive(Clone, Debug, RustcDecodable)]
-pub struct TokenResponse {
-    pub token_type: String,
-    pub access_token: String
 }
 
 impl TokenResponse {
@@ -72,11 +68,6 @@ pub fn token(consumer_key: &str, consumer_secret: &str) -> TokenRequestBuilder {
         consumer_secret: consumer_secret.to_string(),
         grant_type: "client_credentials".to_string()
     }
-}
-
-#[derive(Clone, Debug, RustcDecodable)]
-pub struct InvalidateTokenResponse {
-    pub access_token: String
 }
 
 #[derive(Clone, Debug)]

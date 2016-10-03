@@ -34,11 +34,12 @@
 extern crate hyper;
 extern crate oauthcli;
 extern crate rustc_serialize;
+extern crate serde;
+extern crate serde_json;
 extern crate url;
 
 use std::error::Error;
 use std::fmt;
-use rustc_serialize::json;
 use models::TwitterResponse;
 use models::error::ErrorResponse;
 
@@ -56,7 +57,7 @@ pub mod oauth2;
 pub enum TwitterError {
     ErrorResponse(ErrorResponse),
     HttpError(hyper::Error),
-    JsonError(json::DecoderError, TwitterResponse<()>),
+    JsonError(serde_json::Error, TwitterResponse<()>),
     ParseError(TwitterResponse<()>)
 }
 
