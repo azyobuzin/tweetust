@@ -1,4 +1,4 @@
-//! Tweetust is the simple wrapper for Twitter API.
+//! Tweetust is a simple wrapper for Twitter API.
 //!
 //! # Getting started
 //! This is a Twitter API wrapper, so you must lean Twitter API.
@@ -27,6 +27,7 @@
 //!     .update("My First Tweet!")
 //!     .execute();
 //! ```
+//!
 //! It's easy for people who have leaned about Twitter, isn't it?
 
 #![warn(unused_import_braces)]

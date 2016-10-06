@@ -1,6 +1,7 @@
 //! The low-level functions for connecting to Twitter with any authorization.
 //! Usually, you will not use this module.
 
+use std::borrow::{Borrow, Cow};
 use std::fmt::{self, Write};
 use std::io::Read;
 use std::rc::Rc;
@@ -21,13 +22,14 @@ pub mod application_only_authenticator;
 pub mod oauth_authenticator;
 
 pub enum Parameter<'a> {
-    Value(&'a str, String),
-    File(&'a str, &'a mut (Read + 'a))
+    Value(Cow<'a, str>, Cow<'a, str>),
+    File(Cow<'a, str>, &'a mut (Read + 'a))
 }
 
+// TODO: clients.rs あたりに移動する, というか要らなくなる？
 impl<'a> Parameter<'a> {
     pub fn key_value<T: ToString>(key: &'a str, value: T) -> Parameter<'a> {
-        Parameter::Value(key, value.to_string())
+        Parameter::Value(Cow::Borrowed(key), Cow::Owned(value.to_string()))
     }
 
     pub fn from_vec<T: fmt::Display>(key: &'a str, value: Vec<T>)  -> Parameter<'a> {
@@ -39,7 +41,7 @@ impl<'a> Parameter<'a> {
             write!(&mut val, "{}", elm).unwrap();
         }
 
-        Parameter::Value(key, val)
+        Parameter::Value(Cow::Borrowed(key), Cow::Owned(val))
     }
 }
 
@@ -62,7 +64,7 @@ fn is_multipart(params: &[Parameter]) -> bool {
 }
 
 fn create_query<'a, I>(pairs: I) -> String
-    where I: Iterator<Item=(&'a str, &'a str)>
+    where I: Iterator<Item=(Cow<'a, str>, Cow<'a, str>)>
 {
     let es = oauthcli::OAUTH_ENCODE_SET;
     let mut s = String::new();
@@ -73,14 +75,15 @@ fn create_query<'a, I>(pairs: I) -> String
         write!(
             &mut s,
             "{}={}",
-            percent_encoding::utf8_percent_encode(key, es),
-            percent_encoding::utf8_percent_encode(val, es)
+            percent_encoding::utf8_percent_encode(&key, es),
+            percent_encoding::utf8_percent_encode(&val, es)
         ).unwrap();
     }
     s
 }
 
-pub fn send_request(method: Method, url: Url, params: &[Parameter],
+// TODO: authorization を Authorization 型にする
+pub fn send_request(method: Method, url: &Url, params: &[Parameter],
     authorization: String) -> hyper::Result<Response>
 {
     let mut request_url = url.clone();
@@ -91,16 +94,15 @@ pub fn send_request(method: Method, url: Url, params: &[Parameter],
     };
 
     if !has_body {
-        let query_pairs = url.query_pairs().collect::<Vec<_>>();
         let query = create_query(
-            query_pairs.iter().map(|x| (&x.0[..], &x.1[..])).chain(
+            url.query_pairs().chain(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(key, ref val) => (key, &val[..]),
+                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.borrow()), Cow::Borrowed(val.borrow())),
                     _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
         );
-        request_url.set_query(Some(&query[..]));
+        request_url.set_query(Some(&query));
     }
 
     let client = hyper::Client::new();
@@ -113,7 +115,7 @@ pub fn send_request(method: Method, url: Url, params: &[Parameter],
         } else {
             body = create_query(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(key, ref val) => (key, &val[..]),
+                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.borrow()), Cow::Borrowed(val.borrow())),
                     _ => unreachable!()
                 })
             );
@@ -181,7 +183,7 @@ fn read_to_twitter_result(source: hyper::Result<Response>) -> TwitterResult<()> 
 pub fn request_twitter(method: Method, url: Url, params: &[Parameter],
     authorization: String) -> TwitterResult<()>
 {
-    read_to_twitter_result(send_request(method, url, params, authorization))
+    read_to_twitter_result(send_request(method, &url, params, authorization))
 }
 
 pub fn parse_json<T: serde::de::Deserialize>(s: &str) -> serde_json::Result<T> {

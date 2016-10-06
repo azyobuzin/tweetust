@@ -2,8 +2,8 @@
 name = "tweetust"
 version = "0.2.0"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
-description = "Experimental Twitter Library"
-documentation = "http://azyobuzin.github.io/tweetust/tweetust/"
+description = "The Twitter API wrapper"
+documentation = "https://docs.rs/tweetust/0.2.0/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 keywords = ["twitter", "tweet"]
 license = "MIT"
@@ -12,7 +12,7 @@ build = "build.rs"
 
 [dependencies]
 hyper = "0.9"
-oauthcli = "0.1" #TODO: update later
+oauthcli = { version = "1.0.1", features = ["hyper"] }
 rustc-serialize = "0.3"
 serde = "0.8"
 serde_json = "0.8"

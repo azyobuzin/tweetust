@@ -1,6 +1,7 @@
 //! The functions to get and invalidate your access token for
 //! [Application-only authentication](https://dev.twitter.com/oauth/application-only).
 
+use std::borrow::Cow;
 use hyper::Post;
 use rustc_serialize::base64::{self, ToBase64};
 use url::{form_urlencoded, percent_encoding, Url};
@@ -29,11 +30,12 @@ fn basic_authorization(consumer_key: &str, consumer_secret: &str) -> String {
 }
 
 impl TokenResponse {
-    pub fn to_authenticator(self) -> ApplicationOnlyAuthenticator {
-        ApplicationOnlyAuthenticator(self.access_token)
+    pub fn to_authenticator<'a>(self) -> ApplicationOnlyAuthenticator<'a> {
+        ApplicationOnlyAuthenticator::new(self.access_token)
     }
 }
 
+// TODO: Cow
 #[derive(Clone, Debug)]
 pub struct TokenRequestBuilder {
     consumer_key: String,
@@ -51,7 +53,7 @@ impl TokenRequestBuilder {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/token").unwrap(),
-            &[Value("grant_type", self.grant_type.clone())],
+            &[Value(Cow::Borrowed("grant_type"), Cow::Owned(self.grant_type.clone()))],
             basic_authorization(
                 &self.consumer_key[..], &self.consumer_secret[..])
         ));
@@ -70,6 +72,7 @@ pub fn token(consumer_key: &str, consumer_secret: &str) -> TokenRequestBuilder {
     }
 }
 
+// TODO: Cow
 #[derive(Clone, Debug)]
 pub struct InvalidateTokenRequestBuilder {
     consumer_key: String,
@@ -79,12 +82,13 @@ pub struct InvalidateTokenRequestBuilder {
 
 impl InvalidateTokenRequestBuilder {
     pub fn execute(&self) -> TwitterResult<InvalidateTokenResponse> {
+        let access_token = percent_encoding::percent_decode(self.access_token.as_bytes());
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/invalidate_token").unwrap(),
             &[Value(
-                "access_token",
-                String::from_utf8(percent_encoding::percent_decode(self.access_token.as_bytes()).collect()).unwrap()
+                Cow::Borrowed("access_token"),
+                access_token.decode_utf8_lossy()
             )],
             basic_authorization(
                 &self.consumer_key[..], &self.consumer_secret[..])

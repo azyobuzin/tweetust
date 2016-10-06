@@ -2,6 +2,7 @@
 //! [3-legged OAuth](https://dev.twitter.com/oauth/3-legged) or
 //! [PIN-based OAuth](https://dev.twitter.com/oauth/pin-based).
 
+use std::borrow::Cow;
 use hyper::{Post, Url};
 use oauthcli::{self, SignatureMethod};
 use url::form_urlencoded;
@@ -30,6 +31,7 @@ impl RequestTokenResponse {
     }
 }
 
+// TODO: Cow
 #[derive(Clone, Debug)]
 pub struct RequestTokenRequestBuilder {
     consumer_key: String,
@@ -47,10 +49,11 @@ impl RequestTokenRequestBuilder {
     pub fn execute(&self) -> TwitterResult<RequestTokenResponse> {
         let request_token_url = Url::parse("https://api.twitter.com/oauth/request_token").unwrap();
         let mut params = Vec::new();
-        match self.x_auth_access_type {
-            Some(ref x) => params.push(Value("x_auth_access_type", x.clone())),
-            None => ()
+        if let Some(ref x) = self.x_auth_access_type {
+            // TODO: RequestTokenRequestBuilderのCow化
+            params.push(Value(Cow::Borrowed("x_auth_access_type"), Cow::Owned(x.clone())))
         }
+        // TODO: Builder使う
         let authorization = oauthcli::authorization_header(
             "POST",
             request_token_url.clone(),
@@ -65,7 +68,7 @@ impl RequestTokenRequestBuilder {
             Some(&self.oauth_callback[..]),
             None,
             params.iter().map(|x| match x {
-                &Value(key, ref val) => (key.to_string(), val.clone()),
+                &Value(ref key, ref val) => (key.to_string(), val.to_string()),
                 _ => unreachable!()
             })
         );
@@ -112,16 +115,17 @@ pub struct AccessTokenResponse {
 }
 
 impl AccessTokenResponse {
-    pub fn to_authenticator(&self) -> OAuthAuthenticator {
+    pub fn to_authenticator<'a>(self) -> OAuthAuthenticator<'a> {
         OAuthAuthenticator::new(
-            &self.consumer_key[..],
-            &self.consumer_secret[..],
-            &self.oauth_token[..],
-            &self.oauth_token_secret[..]
+            self.consumer_key,
+            self.consumer_secret,
+            self.oauth_token,
+            self.oauth_token_secret
         )
     }
 }
 
+// TODO: Cow
 #[derive(Clone, Debug)]
 pub struct AccessTokenRequestBuilder {
     consumer_key: String,
