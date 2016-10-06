@@ -18,7 +18,8 @@
 //! When you created OAuthAuthenticator and set to `auth` variable, you can tweet in a minute.
 //!
 //! ```no_run
-//! # use tweetust::*;
+//! use tweetust::*;
+//!
 //! let auth = OAuthAuthenticator::new("API Key", "API Secret", "Access Token", "Access Token Secret");
 //!
 //! let your_tweet =
@@ -34,7 +35,6 @@
 
 extern crate hyper;
 extern crate oauthcli;
-extern crate rustc_serialize;
 extern crate serde;
 extern crate serde_json;
 extern crate url;

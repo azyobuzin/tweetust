@@ -13,7 +13,6 @@ build = "build.rs"
 [dependencies]
 hyper = "0.9"
 oauthcli = { version = "1.0.1", features = ["hyper"] }
-rustc-serialize = "0.3"
 serde = "0.8"
 serde_json = "0.8"
 url = "1.2"

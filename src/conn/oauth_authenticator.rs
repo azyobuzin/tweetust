@@ -1,4 +1,4 @@
-use std::borrow::{Borrow, Cow};
+use std::borrow::Cow;
 use hyper;
 use hyper::client::Response;
 use hyper::method::Method;
@@ -33,52 +33,24 @@ impl<'a> Authenticator for OAuthAuthenticator<'a> {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter]) -> hyper::Result<Response> {
         match Url::parse(url) {
             Ok(ref u) => {
-                /*
-                let multipart = is_multipart(params);
-                let mut auth_params = Vec::<(String, String)>::new();
-                if !multipart {
-                    auth_params.extend(params.iter().map(|x| match x {
-                        &Parameter::Value(key, ref val) => (key.to_string(), val.clone()),
-                        _ => unreachable!()
-                    }));
-                }
-                */
-
-                /*
-                let authorization = oauthcli::authorization_header(
-                    &method.to_string()[..],
-                    u.clone(),
-                    None,
-                    &self.consumer_key[..],
-                    &self.consumer_secret[..],
-                    Some(&self.access_token[..]),
-                    Some(&self.access_token_secret[..]),
-                    SignatureMethod::HmacSha1,
-                    &oauthcli::timestamp()[..],
-                    &oauthcli::nonce()[..],
-                    None,
-                    None,
-                    auth_params.into_iter()
-                );
-                */
                 let authorization = {
                     let mut builder = OAuthAuthorizationHeaderBuilder::new(
                         method.as_ref(),
                         u,
-                        self.consumer_key.borrow(),
-                        self.consumer_secret.borrow(),
+                        self.consumer_key.as_ref(),
+                        self.consumer_secret.as_ref(),
                         SignatureMethod::HmacSha1
                     );
-                    builder.token(self.access_token.borrow(), self.access_token_secret.borrow());
+                    builder.token(self.access_token.as_ref(), self.access_token_secret.as_ref());
 
                     if is_multipart(params) {
                         builder.request_parameters(params.iter().map(|x| match x {
-                            &Parameter::Value(ref key, ref val) => (key.borrow(), val.borrow()),
+                            &Parameter::Value(ref key, ref val) => (key.as_ref(), val.as_ref()),
                             _ => unreachable!()
                         }));
                     }
 
-                    builder.finish_for_twitter().to_string()
+                    builder.finish_for_twitter()
                 };
 
                 send_request(method, u, params, authorization)

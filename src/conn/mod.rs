@@ -1,7 +1,8 @@
 //! The low-level functions for connecting to Twitter with any authorization.
 //! Usually, you will not use this module.
 
-use std::borrow::{Borrow, Cow};
+use std::any::Any;
+use std::borrow::Cow;
 use std::fmt::{self, Write};
 use std::io::Read;
 use std::rc::Rc;
@@ -82,9 +83,8 @@ fn create_query<'a, I>(pairs: I) -> String
     s
 }
 
-// TODO: authorization を Authorization 型にする
-pub fn send_request(method: Method, url: &Url, params: &[Parameter],
-    authorization: String) -> hyper::Result<Response>
+pub fn send_request<S>(method: Method, url: &Url, params: &[Parameter], authorization: S) -> hyper::Result<Response>
+    where S: header::Scheme + Any
 {
     let mut request_url = url.clone();
 
@@ -97,7 +97,7 @@ pub fn send_request(method: Method, url: &Url, params: &[Parameter],
         let query = create_query(
             url.query_pairs().chain(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.borrow()), Cow::Borrowed(val.borrow())),
+                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
                     _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
                 })
             )
@@ -115,7 +115,7 @@ pub fn send_request(method: Method, url: &Url, params: &[Parameter],
         } else {
             body = create_query(
                 params.iter().map(|x| match x {
-                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.borrow()), Cow::Borrowed(val.borrow())),
+                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
                     _ => unreachable!()
                 })
             );
@@ -128,8 +128,7 @@ pub fn send_request(method: Method, url: &Url, params: &[Parameter],
         }
     }
 
-    let req = req.header(header::Authorization(authorization));
-    req.send()
+    req.header(header::Authorization(authorization)).send()
 }
 
 include!(concat!(env!("OUT_DIR"), "/conn/internal_error_response.rs"));
@@ -180,8 +179,8 @@ fn read_to_twitter_result(source: hyper::Result<Response>) -> TwitterResult<()> 
     }
 }
 
-pub fn request_twitter(method: Method, url: Url, params: &[Parameter],
-    authorization: String) -> TwitterResult<()>
+pub fn request_twitter<S>(method: Method, url: Url, params: &[Parameter], authorization: S) -> TwitterResult<()>
+    where S: header::Scheme + Any
 {
     read_to_twitter_result(send_request(method, &url, params, authorization))
 }

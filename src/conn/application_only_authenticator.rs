@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 use hyper;
 use hyper::client::Response;
+use hyper::header::Bearer;
 use hyper::method::Method;
 use url::Url;
 use super::{Authenticator, Parameter, send_request};
@@ -19,7 +20,7 @@ impl<'a> ApplicationOnlyAuthenticator<'a> {
 impl<'a> Authenticator for ApplicationOnlyAuthenticator<'a> {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter]) -> hyper::Result<Response> {
         match Url::parse(url) {
-            Ok(ref u) => send_request(method, u, params, format!("Bearer {}", self.access_token)),
+            Ok(ref u) => send_request(method, u, params, Bearer { token: self.access_token.as_ref().to_owned() }),
             Err(e) => Err(hyper::Error::Uri(e))
         }
     }

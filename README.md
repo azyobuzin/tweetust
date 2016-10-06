@@ -8,7 +8,7 @@ Twitter API wrapper for Rust.
 # Roadmap
 - [x] Use serde
 - [ ] Use Cow to store string
-- [ ] Update oauthcli
+- [x] Update oauthcli
 - [ ] &mut builders
 - [ ] Change the way to generate code: be pure Rust
 - [ ] Support new APIs
