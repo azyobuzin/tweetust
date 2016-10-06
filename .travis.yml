@@ -11,23 +11,9 @@ env:
 install:
   - curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- -y
 
-before_script:
-  - git clone -b gh-pages "https://$GH_TOKEN@github.com/azyobuzin/tweetust.git" target/doc
-  - pushd target/doc
-  - rm -rf !(.git)
-  - popd
-
 script:
   - xbuild clientgen/clientgen.csproj /p:Configuration=Debug
   - mono clientgen/bin/Debug/clientgen.exe
   - cargo build
   - cargo test
   - cargo doc
-
-after_success:
-  - cd target/doc
-  - git add --all
-  - git config user.email gh-bot@azyobuzi.net
-  - git config user.name azyobuzin_bot
-  - git commit -qm "$TRAVIS_COMMIT"
-  - '[ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && git push origin gh-pages'
