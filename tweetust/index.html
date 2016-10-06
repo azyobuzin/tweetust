@@ -47,8 +47,8 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/tweetust/src/lib.rs.html#1-101' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Tweetust is the simple wrapper for Twitter API.</p>
+               </span><a id='src-0' class='srclink' href='../src/tweetust/src/lib.rs.html#1-103' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Tweetust is a simple wrapper for Twitter API.</p>
 
 <h1 id='getting-started' class='section-header'><a href='#getting-started'>Getting started</a></h1>
 <p>This is a Twitter API wrapper, so you must lean Twitter API.
@@ -68,6 +68,8 @@ to make <a href="conn/oauth_authenticator/struct.OAuthAuthenticator.html">OAuthA
 <p>When you created OAuthAuthenticator and set to <code>auth</code> variable, you can tweet in a minute.</p>
 
 <pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tweetust</span>::<span class='op'>*</span>;
+
 <span class='kw'>let</span> <span class='ident'>auth</span> <span class='op'>=</span> <span class='ident'>OAuthAuthenticator</span>::<span class='ident'>new</span>(<span class='string'>&quot;API Key&quot;</span>, <span class='string'>&quot;API Secret&quot;</span>, <span class='string'>&quot;Access Token&quot;</span>, <span class='string'>&quot;Access Token Secret&quot;</span>);
 
 <span class='kw'>let</span> <span class='ident'>your_tweet</span> <span class='op'>=</span>

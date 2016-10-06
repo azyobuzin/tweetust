@@ -69,24 +69,10 @@
 <span id="25">25</span>
 <span id="26">26</span>
 <span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RateLimitStatus</span> {
     <span class='kw'>pub</span> <span class='ident'>limit</span>: <span class='ident'>i32</span>,
     <span class='kw'>pub</span> <span class='ident'>remaining</span>: <span class='ident'>i32</span>,
@@ -105,26 +91,12 @@
         <span class='ident'>TwitterResponse</span> {
             <span class='ident'>object</span>: <span class='ident'>val</span>,
             <span class='ident'>raw_response</span>: <span class='self'>self</span>.<span class='ident'>raw_response</span>.<span class='ident'>clone</span>(),
-            <span class='ident'>rate_limit</span>: <span class='self'>self</span>.<span class='ident'>rate_limit</span>
+            <span class='ident'>rate_limit</span>: <span class='self'>self</span>.<span class='ident'>rate_limit</span>.<span class='ident'>clone</span>()
         }
     }
 }
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>RustcDecodable</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>CursorIds</span> {
-    <span class='kw'>pub</span> <span class='ident'>previous_cursor</span>: <span class='ident'>i64</span>,
-    <span class='kw'>pub</span> <span class='ident'>next_cursor</span>: <span class='ident'>i64</span>,
-    <span class='kw'>pub</span> <span class='ident'>ids</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>i64</span><span class='op'>&gt;</span>
-}
-
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>error</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>direct_messages</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>entities</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>friendships</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>places</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>search</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>tweets</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>users</span>;
+<span class='macro'>include</span><span class='macro'>!</span>(<span class='macro'>concat</span><span class='macro'>!</span>(<span class='macro'>env</span><span class='macro'>!</span>(<span class='string'>&quot;OUT_DIR&quot;</span>), <span class='string'>&quot;/models/_models_list.rs&quot;</span>));
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

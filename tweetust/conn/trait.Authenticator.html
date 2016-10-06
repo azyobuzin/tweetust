@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2913' class='srclink' href='../../src/tweetust/src/conn/mod.rs.html#45-54' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-2888' class='srclink' href='../../src/tweetust/src/conn/mod.rs.html#49-58' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Authenticator: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> {
     fn <a href='#tymethod.send_request' class='fnname'>send_request</a>(&amp;self, method: <a class='enum' href='../../hyper/method/enum.Method.html' title='hyper::method::Method'>Method</a>, url: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, params: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../tweetust/conn/enum.Parameter.html' title='tweetust::conn::Parameter'>Parameter</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='type' href='../../hyper/error/type.Result.html' title='hyper::error::Result'>Result</a>&lt;<a class='struct' href='../../hyper/client/response/struct.Response.html' title='hyper::client::response::Response'>Response</a>&gt;;
 
@@ -61,8 +61,8 @@
         <h3 id='method.request_twitter' class='method stab '><code>fn <a href='#method.request_twitter' class='fnname'>request_twitter</a>(&amp;self, method: <a class='enum' href='../../hyper/method/enum.Method.html' title='hyper::method::Method'>Method</a>, url: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, params: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../tweetust/conn/enum.Parameter.html' title='tweetust::conn::Parameter'>Parameter</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='type' href='../../tweetust/type.TwitterResult.html' title='tweetust::TwitterResult'>TwitterResult</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h3></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl Authenticator for <a class='struct' href='../../tweetust/conn/application_only_authenticator/struct.ApplicationOnlyAuthenticator.html' title='tweetust::conn::application_only_authenticator::ApplicationOnlyAuthenticator'>ApplicationOnlyAuthenticator</a></code></li>
-<li><code>impl Authenticator for <a class='struct' href='../../tweetust/conn/oauth_authenticator/struct.OAuthAuthenticator.html' title='tweetust::conn::oauth_authenticator::OAuthAuthenticator'>OAuthAuthenticator</a></code></li>
+    <li><code>impl&lt;'a&gt; Authenticator for <a class='struct' href='../../tweetust/conn/application_only_authenticator/struct.ApplicationOnlyAuthenticator.html' title='tweetust::conn::application_only_authenticator::ApplicationOnlyAuthenticator'>ApplicationOnlyAuthenticator</a>&lt;'a&gt;</code></li>
+<li><code>impl&lt;'a&gt; Authenticator for <a class='struct' href='../../tweetust/conn/oauth_authenticator/struct.OAuthAuthenticator.html' title='tweetust::conn::oauth_authenticator::OAuthAuthenticator'>OAuthAuthenticator</a>&lt;'a&gt;</code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/tweetust/conn/trait.Authenticator.js">
                  </script></section>

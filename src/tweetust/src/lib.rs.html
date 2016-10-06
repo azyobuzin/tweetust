@@ -143,8 +143,10 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Tweetust is the simple wrapper for Twitter API.</span>
+<span class='doccomment'>//! Tweetust is a simple wrapper for Twitter API.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Getting started</span>
 <span class='doccomment'>//! This is a Twitter API wrapper, so you must lean Twitter API.</span>
@@ -164,7 +166,8 @@
 <span class='doccomment'>//! When you created OAuthAuthenticator and set to `auth` variable, you can tweet in a minute.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```no_run</span>
-<span class='doccomment'>//! # use tweetust::*;</span>
+<span class='doccomment'>//! use tweetust::*;</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! let auth = OAuthAuthenticator::new(&quot;API Key&quot;, &quot;API Secret&quot;, &quot;Access Token&quot;, &quot;Access Token Secret&quot;);</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! let your_tweet =</span>
@@ -173,18 +176,19 @@
 <span class='doccomment'>//!     .update(&quot;My First Tweet!&quot;)</span>
 <span class='doccomment'>//!     .execute();</span>
 <span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! It&#39;s easy for people who have leaned about Twitter, isn&#39;t it?</span>
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>warn</span>(<span class='ident'>unused_import_braces</span>)]</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>hyper</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>oauthcli</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustc_serialize</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>serde</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>serde_json</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>url</span>;
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>::<span class='ident'>Error</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>rustc_serialize</span>::<span class='ident'>json</span>;
 <span class='kw'>use</span> <span class='ident'>models</span>::<span class='ident'>TwitterResponse</span>;
 <span class='kw'>use</span> <span class='ident'>models</span>::<span class='ident'>error</span>::<span class='ident'>ErrorResponse</span>;
 
@@ -202,7 +206,7 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>TwitterError</span> {
     <span class='ident'>ErrorResponse</span>(<span class='ident'>ErrorResponse</span>),
     <span class='ident'>HttpError</span>(<span class='ident'>hyper</span>::<span class='ident'>Error</span>),
-    <span class='ident'>JsonError</span>(<span class='ident'>json</span>::<span class='ident'>DecoderError</span>, <span class='ident'>TwitterResponse</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span>),
+    <span class='ident'>JsonError</span>(<span class='ident'>serde_json</span>::<span class='ident'>Error</span>, <span class='ident'>TwitterResponse</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span>),
     <span class='ident'>ParseError</span>(<span class='ident'>TwitterResponse</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span>)
 }
 
