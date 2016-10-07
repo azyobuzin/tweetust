@@ -3,10 +3,8 @@
 
 use std::any::Any;
 use std::borrow::Cow;
-use std::fmt::{self, Write};
+use std::fmt::Write;
 use std::io::Read;
-use std::rc::Rc;
-use std::string::ToString;
 use hyper::{self, header, mime, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
@@ -27,26 +25,7 @@ pub enum Parameter<'a> {
     File(Cow<'a, str>, &'a mut (Read + 'a))
 }
 
-// TODO: clients.rs あたりに移動する, というか要らなくなる？
-impl<'a> Parameter<'a> {
-    pub fn key_value<T: ToString>(key: &'a str, value: T) -> Parameter<'a> {
-        Parameter::Value(Cow::Borrowed(key), Cow::Owned(value.to_string()))
-    }
-
-    pub fn from_vec<T: fmt::Display>(key: &'a str, value: Vec<T>)  -> Parameter<'a> {
-        let mut val = String::new();
-        for elm in value.into_iter() {
-            if val.len() > 0 {
-                val.push(',');
-            }
-            write!(&mut val, "{}", elm).unwrap();
-        }
-
-        Parameter::Value(Cow::Borrowed(key), Cow::Owned(val))
-    }
-}
-
-pub trait Authenticator: Clone {
+pub trait Authenticator {
     fn send_request(&self, method: Method, url: &str, params: &[Parameter])
         -> hyper::Result<Response>;
 
@@ -158,7 +137,7 @@ fn read_to_twitter_result(source: hyper::Result<Response>) -> TwitterResult<()> 
                 Ok(_) => match res.status.class() {
                     // 2xx
                     StatusClass::Success => Ok(TwitterResponse {
-                        object: (), raw_response: Rc::new(body), rate_limit: rate_limit
+                        object: (), raw_response: body, rate_limit: rate_limit
                     }),
                     _ => {
                         // Error response

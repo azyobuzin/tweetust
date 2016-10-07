@@ -5,6 +5,7 @@ authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "The Twitter API wrapper"
 documentation = "https://docs.rs/tweetust/0.2.0/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
+readme = "README.md"
 keywords = ["twitter", "tweet"]
 license = "MIT"
 exclude = ["clientgen/**/*", ".*"]

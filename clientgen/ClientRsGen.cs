@@ -101,10 +101,10 @@ namespace Tweetust.ClientGen
 
         private void Header()
         {
-            writer.Write(@"use std::rc::Rc;
+            writer.Write(@"use std::borrow::Cow;
 use hyper::{Get, Post};
 use ::{TwitterError, TwitterResult};
-use conn::{Authenticator, Parameter, parse_json};
+use conn::{Authenticator, Parameter};
 use models::CursorIds;
 use models::direct_messages::DirectMessage;
 use models::friendships::{Friendship, Relationship};
@@ -112,13 +112,16 @@ use models::places::Place;
 use models::search::SearchResponse;
 use models::tweets::{OEmbed, Tweet};
 use models::users::{CursorUsers, User};
+use self::helper::*;
+
+mod helper;
 
 #[derive(Clone, Debug)]
-pub struct TwitterClient<T: Authenticator>(pub Rc<T>);
+pub struct TwitterClient<T: Authenticator> { auth: T }
 
 impl<T: Authenticator> TwitterClient<T> {
     pub fn new(authenticator: T) -> TwitterClient<T> {
-        TwitterClient(Rc::new(authenticator))
+        TwitterClient { auth: authenticator }
     }
 ");
         }
@@ -126,8 +129,8 @@ impl<T: Authenticator> TwitterClient<T> {
         private void ClientFactory(string clientName)
         {
             writer.Write(@"
-    pub fn {0}(self) -> {1}Client<T> {{
-        {1}Client(self.0)
+    pub fn {0}(&self) -> {1}Client<T> {{
+        {1}Client {{ auth: &self.auth }}
     }}
 ",
                 ToSnakeCase(clientName), clientName
@@ -138,77 +141,128 @@ impl<T: Authenticator> TwitterClient<T> {
         {
             writer.Write(@"
 #[derive(Clone, Debug)]
-pub struct {0}Client<T: Authenticator>(Rc<T>);
+pub struct {0}Client<'a, T: Authenticator + 'a> {{ auth: &'a T }}
 ",
                 clientName
             );
         }
 
-        private static string GetSliceType(RsType type)
-        {
-            return type.Match(raw => raw.Type, str => "&str", vec => string.Format("&[{0}]", vec.Type), unit => unit.ToString());
-        }
-
-        private static string SliceToVec(RsType type)
-        {
-            return type.Match(raw => "", str => ".to_string()", vec => ".to_vec()", unit => "");
-        }
+        private static string FieldType(RsType type) => type.Match(
+            raw => raw.Type,
+            str => "Cow<'a, str>",
+            vec => "String",
+            unitType => { throw new ArgumentException(); });
 
         private void ClientImpl(string clientName, IEnumerable<RsEndpoint> endpoints)
         {
             writer.WriteLine();
-            writer.Write("impl<T: Authenticator> {0}Client<T> {{", clientName);
+            writer.Write("impl<'a, T: Authenticator> {0}Client<'a, T> {{", clientName);
 
             foreach (var endpoint in endpoints)
             {
-                if (!CheckUnsupported(endpoint)) continue;
-                writer.WriteLine();
-                writer.Write("    pub fn {0}(self", ToSnakeCase(endpoint.Name));
-                foreach (var p in endpoint.RequiredParameters)
-                    writer.Write(", {0}: {1}", p.Name, GetSliceType(p.Type));
-
-                writer.Write(@") -> {0}{1}RequestBuilder<T> {{
-        {0}{1}RequestBuilder {{
-            _auth: self.0",
-                    clientName, endpoint.Name
-                );
-                foreach (var p in endpoint.RequiredParameters)
-                {
-                    writer.WriteLine(',');
-                    writer.Write("            {0}: {0}", p.Name);
-                    writer.Write(SliceToVec(p.Type));
-                }
-                foreach (var p in endpoint.OptionalParameters)
-                {
-                    writer.WriteLine(',');
-                    writer.Write("            {0}: None", p.Name);
-                }
-
-                writer.Write(@"
-        }
-    }
-");
+                GetBuilderFunc(clientName, endpoint);
             }
 
             writer.WriteLine('}');
         }
 
+        private void GetBuilderFunc(string clientName, RsEndpoint endpoint)
+        {
+            if (!CheckUnsupported(endpoint)) return;
+
+            var lifetimeParameter = false;
+            var typeParameters = new List<string>();
+            var sb = new StringBuilder();
+            foreach (var p in endpoint.RequiredParameters)
+            {
+                sb.AppendFormat(", {0}: {1}", p.Name, p.Type.Match(
+                    raw => raw.Type,
+                    str =>
+                    {
+                        typeParameters.Add("Into<Cow<'a, str>>");
+                        return "T" + typeParameters.Count;
+                    },
+                    vec =>
+                    {
+                        if (vec.Type is StringType)
+                        {
+                            // IntoIterator<Item=Into<Cow<'b, str>>
+                            lifetimeParameter = true;
+                            typeParameters.Add("Into<Cow<'b, str>>");
+                            typeParameters.Add($"IntoIterator<Item=T{typeParameters.Count}>");
+                        }
+                        else
+                        {
+                            typeParameters.Add($"IntoIterator<Item={vec.Type}>");
+                        }
+
+                        return "T" + typeParameters.Count;
+                    },
+                    unit => { throw new InvalidOperationException(); }
+                ));
+            }
+
+            writer.WriteLine();
+            writer.Write("    pub fn {0}", ToSnakeCase(endpoint.Name));
+
+            if (typeParameters.Count > 0)
+            {
+                writer.Write('<');
+                if (lifetimeParameter) writer.Write("'b, ");
+                writer.Write(string.Join(", ", typeParameters.Select((x, i) => $"T{i + 1}: {x}")));
+                writer.Write('>');
+            }
+
+            writer.Write("(&self");
+            writer.Write(sb);
+
+            writer.Write(@") -> {0}{1}RequestBuilder<'a, T> {{
+        {0}{1}RequestBuilder {{
+            _auth: self.auth",
+                clientName, endpoint.Name
+            );
+            foreach (var p in endpoint.RequiredParameters)
+            {
+                writer.WriteLine(',');
+                writer.Write("            {0}: ", p.Name);
+                writer.Write(
+                    p.Type.Match(
+                        raw => "{0}",
+                        str => "{0}.into()",
+                        vec => vec.Type is StringType ? "str_collection_parameter({0})" : "collection_paramter({0})",
+                        unit => { throw new InvalidOperationException(); }
+                    ),
+                    p.Name
+                );
+            }
+            foreach (var p in endpoint.OptionalParameters)
+            {
+                writer.WriteLine(',');
+                writer.Write("            {0}: None", p.Name);
+            }
+
+            writer.Write(@"
+        }
+    }
+");
+        }
+
         private void RequestBuilderStruct(string name, RsEndpoint endpoint)
         {
             writer.Write(@"
-pub struct {0}<T: Authenticator> {{
-    _auth: Rc<T>",
+pub struct {0}<'a, T: Authenticator + 'a> {{
+    _auth: &'a T",
                 name
             );
             foreach (var p in endpoint.RequiredParameters)
             {
                 writer.WriteLine(',');
-                writer.Write("    {0}: {1}", p.Name, p.Type);
+                writer.Write("    {0}: {1}", p.Name, FieldType(p.Type));
             }
             foreach (var p in endpoint.OptionalParameters)
             {
                 writer.WriteLine(',');
-                writer.Write("    {0}: Option<{1}>", p.Name, p.Type);
+                writer.Write("    {0}: Option<{1}>", p.Name, FieldType(p.Type));
             }
             writer.Write(@"
 }
@@ -218,17 +272,62 @@ pub struct {0}<T: Authenticator> {{
         private void RequestBuilderImpl(string name, RsEndpoint endpoint)
         {
             writer.WriteLine();
-            writer.Write("impl<T: Authenticator> {0}<T> {{", name);
+            writer.Write("impl<'a, T: Authenticator> {0}<'a, T> {{", name);
 
             foreach (var p in endpoint.OptionalParameters)
             {
-                writer.Write(@"
-    pub fn {0}(mut self, val: {1}) -> Self {{
-        self.{0} = Some(val{2});
+                var lifetimeParameter = false;
+                var typeParameters = new List<string>();
+                var parameterType = p.Type.Match(
+                    raw => raw.Type,
+                    str =>
+                    {
+                        typeParameters.Add("Into<Cow<'a, str>>");
+                        return "T" + typeParameters.Count;
+                    },
+                    vec =>
+                    {
+                        if (vec.Type is StringType)
+                        {
+                            // IntoIterator<Item=Into<Cow<'b, str>>
+                            lifetimeParameter = true;
+                            typeParameters.Add("Into<Cow<'b, str>>");
+                            typeParameters.Add($"IntoIterator<Item=T{typeParameters.Count}>");
+                        }
+                        else
+                        {
+                            typeParameters.Add($"IntoIterator<Item={vec.Type}>");
+                        }
+
+                        return "T" + typeParameters.Count;
+                    },
+                    unit => { throw new InvalidOperationException(); }
+                );
+
+                writer.WriteLine();
+                writer.Write("    pub fn {0}", p.Name);
+
+                if (typeParameters.Count > 0)
+                {
+                    writer.Write('<');
+                    if (lifetimeParameter) writer.Write("'b, ");
+                    writer.Write(string.Join(", ", typeParameters.Select((x, i) => $"T{i + 1}: {x}")));
+                    writer.Write('>');
+                }
+
+                writer.Write(@"(&mut self, val: {0}) -> &mut Self {{
+        self.{1} = Some({2});
         self
     }}
 ",
-                    p.Name, GetSliceType(p.Type), SliceToVec(p.Type)
+                    parameterType,
+                    p.Name,
+                    p.Type.Match(
+                        raw => "val",
+                        str => "val.into()",
+                        vec => vec.Type is StringType ? "str_collection_parameter(val)" : "collection_paramter(val)",
+                        unit => { throw new InvalidOperationException(); }
+                    )
                 );
             }
 
@@ -237,11 +336,13 @@ pub struct {0}<T: Authenticator> {{
             writer.WriteLine('}');
         }
 
-        private static string ParameterFactory(RsType t)
-        {
-            if (t is VecType) return "from_vec";
-            return "key_value";
-        }
+        private static string ConvertParameterFuncName(RsType type) =>
+            type.Match(
+                raw => raw.Type == "bool" ? "bool_parameter" : "parameter",
+                str => "cow_str_parameter",
+                vec => "owned_str_parameter",
+                unit => { throw new ArgumentException(); }
+            );
 
         private void Execute(RsEndpoint endpoint)
         {
@@ -258,18 +359,15 @@ pub struct {0}<T: Authenticator> {{
             {
                 if (p.Name != endpoint.ReservedParameter)
                     writer.WriteLine(
-                        @"        params.push(Parameter::{0}(""{1}"", self.{1}.clone()));",
-                        ParameterFactory(p.Type), p.Name);
+                        @"        params.push({1}(""{0}"", &self.{0}));",
+                        p.Name, ConvertParameterFuncName(p.Type));
             }
 
             foreach (var p in endpoint.OptionalParameters)
             {
-                writer.Write(@"        match self.{0} {{
-            Some(ref x) => params.push(Parameter::{1}(""{0}"", x.clone())),
-            None => ()
-        }}
-",
-                    p.Name, ParameterFactory(p.Type)
+                writer.WriteLine(
+                    @"        if let Some(ref x) = self.{0} {{ params.push({1}(""{0}"", x)) }}",
+                    p.Name, ConvertParameterFuncName(p.Type)
                 );
             }
 
@@ -283,14 +381,10 @@ pub struct {0}<T: Authenticator> {{
             else
                 writer.WriteLine(@"""https://api.twitter.com/1.1/{0}.json"";", endpoint.Uri);
 
-            writer.Write(@"        let res = try!(Authenticator::request_twitter(&*self._auth, {0}, {1}, &params[..]));
-        match parse_json(&res.raw_response[..]) {{
-            Ok(j) => Ok(res.object(j)),
-            Err(e) => Err(TwitterError::JsonError(e, res))
-        }}
+            writer.Write(@"        execute_core(self._auth, {0}, url, &params)
     }}
 ",
-                endpoint.Method, needsFormat ? "&url[..]" : "url"
+                endpoint.Method
             );
         }
     }

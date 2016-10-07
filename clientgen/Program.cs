@@ -12,7 +12,9 @@ namespace Tweetust.ClientGen
                 .Where(x => !x.Contains("test.api"))
                 .Select(ApiParent.Parse);
 
-            using (var writer = new StreamWriter(Path.Combine("src", "clients.rs")))
+            Directory.CreateDirectory(Path.Combine("src", "clients"));
+
+            using (var writer = new StreamWriter(Path.Combine("src", "clients", "mod.rs")))
             {
                 new ClientRsGen(apis, writer).Generate();
             }

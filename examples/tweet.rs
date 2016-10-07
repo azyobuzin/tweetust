@@ -10,13 +10,16 @@ fn main() {
     let mut pin = String::new();
     stdin().read_line(&mut pin).unwrap();
 
-    let access_token = req_token.access_token(&pin[..]).execute().unwrap().object;
+    let access_token = req_token.access_token(pin).execute().unwrap().object;
     let client = tweetust::TwitterClient::new(access_token.to_authenticator());
+
+    let user = client.account().verify_credencials().execute().unwrap().object;
+    println!("Hi, {}!", user.screen_name);
 
     println!("Put your tweet");
     let mut status = String::new();
     stdin().read_line(&mut status).unwrap();
 
-    let response = client.statuses().update(&status[..]).execute().unwrap();
+    let response = client.statuses().update(status).execute().unwrap();
     println!("{:?}", response);
 }

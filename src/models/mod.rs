@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use ::{conn, TwitterError, TwitterResult};
 
 #[derive(Clone, Debug)]
 pub struct RateLimitStatus {
@@ -10,16 +10,19 @@ pub struct RateLimitStatus {
 #[derive(Clone, Debug)]
 pub struct TwitterResponse<T> {
     pub object: T,
-    pub raw_response: Rc<String>,
+    pub raw_response: String,
     pub rate_limit: Option<RateLimitStatus>
 }
 
 impl TwitterResponse<()> {
-    pub fn object<T>(&self, val: T) -> TwitterResponse<T> {
-        TwitterResponse {
-            object: val,
-            raw_response: self.raw_response.clone(),
-            rate_limit: self.rate_limit.clone()
+    pub fn parse_to_object<T: ::serde::de::Deserialize>(self) -> TwitterResult<T> {
+        match conn::parse_json(&self.raw_response) {
+            Ok(x) => Ok(TwitterResponse {
+                object: x,
+                raw_response: self.raw_response,
+                rate_limit: self.rate_limit
+            }),
+            Err(x) => Err(TwitterError::JsonError(x, self))
         }
     }
 }

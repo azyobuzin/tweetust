@@ -5,8 +5,8 @@ use std::borrow::Cow;
 use hyper::Post;
 use hyper::header::Basic;
 use url::{percent_encoding, Url};
-use ::{ApplicationOnlyAuthenticator, TwitterError, TwitterResult};
-use conn::{request_twitter, parse_json};
+use ::{ApplicationOnlyAuthenticator, TwitterResult};
+use conn::request_twitter;
 use conn::Parameter::Value;
 
 include!(concat!(env!("OUT_DIR"), "/oauth2_models.rs"));
@@ -40,10 +40,7 @@ impl<'a> TokenRequestBuilder<'a> {
                 password: Some(self.consumer_secret.as_ref().to_owned())
             }
         ));
-        match parse_json(&res.raw_response[..]) {
-            Ok(j) => Ok(res.object(j)),
-            Err(e) => Err(TwitterError::JsonError(e, res))
-        }
+        res.parse_to_object()
     }
 }
 
@@ -79,10 +76,7 @@ impl<'a> InvalidateTokenRequestBuilder<'a> {
                 password: Some(self.consumer_secret.as_ref().to_owned())
             }
         ));
-        match parse_json(&res.raw_response[..]) {
-            Ok(j) => Ok(res.object(j)),
-            Err(e) => Err(TwitterError::JsonError(e, res))
-        }
+        res.parse_to_object()
     }
 }
 
