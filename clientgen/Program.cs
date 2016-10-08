@@ -9,7 +9,7 @@ namespace Tweetust.ClientGen
         static void Main(string[] args)
         {
             var apis = Directory.GetFiles(Path.Combine("clientgen", "CoreTweet", "ApiTemplates"))
-                .Where(x => !x.Contains("test.api"))
+                .Where(x => !x.Contains("test.api") && !x.Contains("collections.api") && !x.Contains("media.api"))
                 .Select(ApiParent.Parse);
 
             Directory.CreateDirectory(Path.Combine("src", "clients"));

@@ -4,6 +4,7 @@ use std::fmt::Write;
 use hyper::method::Method;
 use ::TwitterResult;
 use conn::{Authenticator, Parameter};
+use super::request::TweetMode;
 
 pub fn collection_paramter<I, D>(values: I) -> String
     where I: IntoIterator<Item=D>, D: fmt::Display
@@ -19,29 +20,36 @@ pub fn collection_paramter<I, D>(values: I) -> String
         }
     }
 
-    return dest;
+    dest
 }
 
-pub fn str_collection_parameter<'a, I, S>(values: I) -> String
-    where I: IntoIterator<Item=S>, S: Into<Cow<'a, str>>
+pub fn str_collection_parameter<I, S>(values: I) -> String
+    where I: IntoIterator<Item=S>, S: AsRef<str>
 {
     let mut iter = values.into_iter();
     let mut dest = String::new();
 
     if let Some(v) = iter.next() {
-        dest.push_str(v.into().as_ref());
+        dest.push_str(v.as_ref());
 
         while let Some(v) = iter.next() {
             dest.push(',');
-            dest.push_str(v.into().as_ref());
+            dest.push_str(v.as_ref());
         }
     }
 
-    return dest;
+    dest
 }
 
 pub fn bool_parameter<'a>(key: &'static str, val: &'a bool) -> Parameter<'a> {
     Parameter::Value(Cow::Borrowed(key), Cow::Borrowed(if *val { "true" } else { "false" }))
+}
+
+pub fn tweet_mode_parameter<'a>(key: &'static str, val: &'a TweetMode) -> Parameter<'a> {
+    Parameter::Value(Cow::Borrowed(key), Cow::Borrowed(match *val {
+        TweetMode::Compat => "compat",
+        TweetMode::Extended => "extended"
+    }))
 }
 
 pub fn owned_str_parameter<'a>(key: &'static str, val: &'a str) -> Parameter<'a> {

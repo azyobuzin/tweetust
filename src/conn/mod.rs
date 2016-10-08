@@ -65,6 +65,8 @@ fn create_query<'a, I>(pairs: I) -> String
 pub fn send_request<S>(method: Method, url: &Url, params: &[Parameter], authorization: S) -> hyper::Result<Response>
     where S: header::Scheme + Any
 {
+    // TODO: refactor
+
     let mut request_url = url.clone();
 
     let has_body = match method {

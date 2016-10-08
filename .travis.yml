@@ -16,4 +16,3 @@ script:
   - mono clientgen/bin/Debug/clientgen.exe
   - cargo build
   - cargo test
-  - cargo doc

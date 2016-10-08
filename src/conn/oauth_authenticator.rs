@@ -43,7 +43,7 @@ impl<'a> Authenticator for OAuthAuthenticator<'a> {
                     );
                     builder.token(self.access_token.as_ref(), self.access_token_secret.as_ref());
 
-                    if is_multipart(params) {
+                    if !is_multipart(params) {
                         builder.request_parameters(params.iter().map(|x| match x {
                             &Parameter::Value(ref key, ref val) => (key.as_ref(), val.as_ref()),
                             _ => unreachable!()

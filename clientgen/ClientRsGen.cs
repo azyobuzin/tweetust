@@ -83,27 +83,31 @@ namespace Tweetust.ClientGen
                 return false;
             }
 
+            if (endpoint.Method == "Impl")
+            {
+                writer.WriteLine("// Warning: {0} requires Impl method", endpoint.Name);
+                return false;
+            }
+
             using (var e = endpoint.RequiredParameters.Concat(endpoint.OptionalParameters)
                 .Where(x => x.Type.Match(raw => raw.Type == "Stream", str => false, vec => false, unit => true))
                 .GetEnumerator())
             {
                 if (e.MoveNext())
                 {
-                    writer.WriteLine("// Warning: Not Implemented: {0} ({1}: {2})", endpoint.Name, e.Current.Name, e.Current.Type);
+                    writer.WriteLine("// Warning: Mutltipart is Not Implemented: {0} ({1}: {2})", endpoint.Name, e.Current.Name, e.Current.Type);
                     return false;
                 }
-                else
-                {
-                    return true;
-                }
             }
+
+            return true;
         }
 
         private void Header()
         {
             writer.Write(@"use std::borrow::Cow;
 use hyper::{Get, Post};
-use ::{TwitterError, TwitterResult};
+use ::TwitterResult;
 use conn::{Authenticator, Parameter};
 use models::CursorIds;
 use models::direct_messages::DirectMessage;
@@ -113,8 +117,10 @@ use models::search::SearchResponse;
 use models::tweets::{OEmbed, Tweet};
 use models::users::{CursorUsers, User};
 use self::helper::*;
+use self::request::*;
 
 mod helper;
+pub mod request;
 
 #[derive(Clone, Debug)]
 pub struct TwitterClient<T: Authenticator> { auth: T }
@@ -170,7 +176,6 @@ pub struct {0}Client<'a, T: Authenticator + 'a> {{ auth: &'a T }}
         {
             if (!CheckUnsupported(endpoint)) return;
 
-            var lifetimeParameter = false;
             var typeParameters = new List<string>();
             var sb = new StringBuilder();
             foreach (var p in endpoint.RequiredParameters)
@@ -186,9 +191,8 @@ pub struct {0}Client<'a, T: Authenticator + 'a> {{ auth: &'a T }}
                     {
                         if (vec.Type is StringType)
                         {
-                            // IntoIterator<Item=Into<Cow<'b, str>>
-                            lifetimeParameter = true;
-                            typeParameters.Add("Into<Cow<'b, str>>");
+                            // IntoIterator<Item=AsRef<str>>
+                            typeParameters.Add("AsRef<str>");
                             typeParameters.Add($"IntoIterator<Item=T{typeParameters.Count}>");
                         }
                         else
@@ -208,7 +212,6 @@ pub struct {0}Client<'a, T: Authenticator + 'a> {{ auth: &'a T }}
             if (typeParameters.Count > 0)
             {
                 writer.Write('<');
-                if (lifetimeParameter) writer.Write("'b, ");
                 writer.Write(string.Join(", ", typeParameters.Select((x, i) => $"T{i + 1}: {x}")));
                 writer.Write('>');
             }
@@ -276,7 +279,6 @@ pub struct {0}<'a, T: Authenticator + 'a> {{
 
             foreach (var p in endpoint.OptionalParameters)
             {
-                var lifetimeParameter = false;
                 var typeParameters = new List<string>();
                 var parameterType = p.Type.Match(
                     raw => raw.Type,
@@ -289,9 +291,8 @@ pub struct {0}<'a, T: Authenticator + 'a> {{
                     {
                         if (vec.Type is StringType)
                         {
-                            // IntoIterator<Item=Into<Cow<'b, str>>
-                            lifetimeParameter = true;
-                            typeParameters.Add("Into<Cow<'b, str>>");
+                            // IntoIterator<Item=AsRef<str>>
+                            typeParameters.Add("AsRef<str>");
                             typeParameters.Add($"IntoIterator<Item=T{typeParameters.Count}>");
                         }
                         else
@@ -310,7 +311,6 @@ pub struct {0}<'a, T: Authenticator + 'a> {{
                 if (typeParameters.Count > 0)
                 {
                     writer.Write('<');
-                    if (lifetimeParameter) writer.Write("'b, ");
                     writer.Write(string.Join(", ", typeParameters.Select((x, i) => $"T{i + 1}: {x}")));
                     writer.Write('>');
                 }
@@ -338,7 +338,9 @@ pub struct {0}<'a, T: Authenticator + 'a> {{
 
         private static string ConvertParameterFuncName(RsType type) =>
             type.Match(
-                raw => raw.Type == "bool" ? "bool_parameter" : "parameter",
+                raw => raw.Type == "bool" ? "bool_parameter"
+                    : raw.Type == "TweetMode" ? "tweet_mode_parameter"
+                    : "parameter",
                 str => "cow_str_parameter",
                 vec => "owned_str_parameter",
                 unit => { throw new ArgumentException(); }
