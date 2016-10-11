@@ -1,3 +1,5 @@
+use std;
+use std::collections::HashMap;
 use ::{conn, TwitterError, TwitterResult};
 
 #[derive(Clone, Debug)]

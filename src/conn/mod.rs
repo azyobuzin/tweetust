@@ -15,7 +15,6 @@ use serde;
 use serde_json;
 use ::{TwitterError, TwitterResult};
 use models::*;
-use models::error::{Error, ErrorResponse};
 
 pub mod application_only_authenticator;
 pub mod oauth_authenticator;

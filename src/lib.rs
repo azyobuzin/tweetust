@@ -42,7 +42,7 @@ extern crate url;
 use std::error::Error;
 use std::fmt;
 use models::TwitterResponse;
-use models::error::ErrorResponse;
+use models::ErrorResponse;
 
 pub use clients::TwitterClient;
 pub use conn::application_only_authenticator::ApplicationOnlyAuthenticator;
