@@ -60,7 +60,8 @@ pub struct OEmbed {
     pub author_name: String,
     pub version: String,
     pub author_url: String,
-    pub type_: String,
+    #[serde(rename = "type")]
+    pub content_type: String,
     pub html: String,
     pub height: Option<i32>,
     pub width: Option<i32>

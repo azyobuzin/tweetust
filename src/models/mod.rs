@@ -1,5 +1,6 @@
 use std;
 use std::collections::HashMap;
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use ::{conn, TwitterError, TwitterResult};
 
 #[derive(Clone, Debug)]

@@ -13,7 +13,7 @@ namespace Tweetust.ClientGen
             this.Source = source;
             this.Name = source.Name;
             this.Method = source.Request;
-            this.ReturnType = ConvertReturnType(source.Type, source.ReturnType);
+            this.ReturnType = CreateReturnType(source);
             this.Uri = source.Uri;
             this.ReservedParameter = source.ReservedName;
 
@@ -62,10 +62,15 @@ namespace Tweetust.ClientGen
                 return obj.RealName.GetHashCode();
             }
         }
-        private static PrmComparer comparer = new PrmComparer();
+        private static readonly PrmComparer comparer = new PrmComparer();
 
-        private static RsType ConvertReturnType(ApiType apiType, string t)
+        private static RsType CreateReturnType(ApiEndpoint endpoint)
         {
+            var t = endpoint.ReturnType;
+
+            if (t == "StringResponse")
+                return new RawType(endpoint.Name + "Response");
+
             if (t.EndsWith("Response"))
                 t = t.Substring(0, t.Length - 8);
 
@@ -80,12 +85,12 @@ namespace Tweetust.ClientGen
                 case "SearchResult":
                     t = "SearchResponse";
                     break;
+                case "Configurations":
+                    t = "Configuration";
+                    break;
                 //TODO: support
                 case "Setting":
                 case "GeoResult":
-                case "Configurations":
-                case "Language":
-                case "List":
                 case "SearchQuery":
                 case "TrendLocation":
                 case "TrendsResult":
@@ -94,7 +99,7 @@ namespace Tweetust.ClientGen
                     return null;
             }
 
-            switch (apiType)
+            switch (endpoint.Type)
             {
                 case ApiType.Void:
                     return new UnitType();
@@ -104,7 +109,7 @@ namespace Tweetust.ClientGen
                     return new VecType(RsType.FromString(t));
                 case ApiType.Cursored:
                     if (t == "long") t = "Id";
-                    return new RawType(string.Concat("Cursor", t, "s"));
+                    return new RawType("Cursor" + t + "s");
                 case ApiType.Dictionary:
                     return null;
                 default:

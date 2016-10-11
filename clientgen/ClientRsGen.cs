@@ -12,10 +12,15 @@ namespace Tweetust.ClientGen
     {
         public ClientRsGen(IEnumerable<ApiParent> apis, TextWriter writer)
         {
-            this.apis = apis.Select(api => new Tuple<string, IReadOnlyList<RsEndpoint>>(
-                api.Name,
-                api.Endpoints.Where(x => !(x is RawLines)).Select(x => new RsEndpoint(x)).ToArray()
-            )).ToArray();
+            this.apis = apis
+                .Select(api => new Tuple<string, IReadOnlyList<RsEndpoint>>(
+                    api.Name,
+                    api.Endpoints
+                        .Where(x => !(x is RawLines) && x.Attributes.Length == 0)
+                        .Select(x => new RsEndpoint(x))
+                        .ToArray()
+                ))
+                .ToArray();
             this.writer = writer;
 
 
@@ -109,13 +114,7 @@ namespace Tweetust.ClientGen
 use hyper::{Get, Post};
 use ::TwitterResult;
 use conn::{Authenticator, Parameter};
-use models::CursorIds;
-use models::direct_messages::DirectMessage;
-use models::friendships::{Friendship, Relationship};
-use models::places::Place;
-use models::search::SearchResponse;
-use models::tweets::{OEmbed, Tweet};
-use models::users::{CursorUsers, User};
+use models::*;
 use self::helper::*;
 use self::request::*;
 

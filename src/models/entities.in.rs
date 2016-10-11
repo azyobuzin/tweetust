@@ -31,6 +31,7 @@ pub struct SymbolEntity {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MediaEntity {
+    pub ext_alt_text: Option<String>,
     pub display_url: String,
     pub expanded_url: String,
     pub id: i64,
@@ -39,7 +40,8 @@ pub struct MediaEntity {
     pub media_url_https: String,
     pub sizes: MediaSizes,
     pub source_status_id: Option<i64>,
-    pub type_: String,
+    #[serde(rename = "type")]
+    pub media_type: String,
     pub url: String,
     pub video_info: Option<VideoInfo>
 }
