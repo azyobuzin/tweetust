@@ -23,9 +23,41 @@ pub struct UserEntitiesField {
     pub urls: Vec<UrlEntity>
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub struct EntityIndices {
+    pub start: i32,
+    pub end: i32
+}
+
+impl Serialize for EntityIndices {
+    fn serialize<S: Serializer>(&self, serializer: &mut S) -> Result<(), S::Error> {
+        let mut state = try!(serializer.serialize_seq(Some(2)));
+        try!(serializer.serialize_seq_elt(&mut state, self.start));
+        try!(serializer.serialize_seq_elt(&mut state, self.end));
+        serializer.serialize_seq_end(state)
+    }
+}
+
+impl Deserialize for EntityIndices {
+    fn deserialize<D: Deserializer>(deserializer: &mut D) -> Result<Self, D::Error> {
+        struct Visitor;
+        impl de::Visitor for Visitor {
+            type Value = EntityIndices;
+            fn visit_seq<V: de::SeqVisitor>(&mut self, mut visitor: V) -> Result<Self::Value, V::Error> {
+                let start: i32 = try!(visitor.visit().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(0))));
+                let end: i32 = try!(visitor.visit().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(1))));
+                try!(visitor.end());
+                Ok(EntityIndices { start: start, end: end })
+            }
+        }
+
+        deserializer.deserialize_seq_fixed_size(2, Visitor)
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SymbolEntity {
-    pub indices: Vec<i32>,
+    pub indices: EntityIndices,
     pub text: String
 }
 
@@ -35,7 +67,7 @@ pub struct MediaEntity {
     pub display_url: String,
     pub expanded_url: String,
     pub id: i64,
-    pub indices: Vec<i32>,
+    pub indices: EntityIndices,
     pub media_url: String,
     pub media_url_https: String,
     pub sizes: MediaSizes,
@@ -79,14 +111,14 @@ pub struct VideoVariant {
 pub struct UrlEntity {
     pub display_url: String,
     pub expanded_url: String,
-    pub indices: Vec<i32>,
+    pub indices: EntityIndices,
     pub url: String
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UserMentionEntity {
     pub id: i64,
-    pub indices: Vec<i32>,
+    pub indices: EntityIndices,
     pub name: String,
     pub screen_name: String
 }
