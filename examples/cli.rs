@@ -46,10 +46,10 @@ fn authorize<'a>() -> Client<'a> {
         handle.flush().unwrap();
     }
 
-    let mut pin = String::new();
+    let mut pin = String::with_capacity(7);
     io::stdin().read_line(&mut pin).unwrap();
 
-    let access_token = req_token.access_token(pin).execute().unwrap().object;
+    let access_token = req_token.access_token(pin.trim()).execute().unwrap().object;
 
     {
         let mut file = fs::File::create(CONFIG_FILE).unwrap();
