@@ -116,10 +116,8 @@ use ::TwitterResult;
 use conn::{Authenticator, Parameter};
 use models::*;
 use self::helper::*;
-use self::request::*;
 
 mod helper;
-pub mod request;
 
 #[derive(Clone, Debug)]
 pub struct TwitterClient<T: Authenticator> { auth: T }

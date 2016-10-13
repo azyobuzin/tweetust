@@ -1,7 +1,7 @@
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Tweet {
     pub contributors: Option<Vec<Contributor>>,
-    pub coordinates: Option<Coordinates>,
+    pub coordinates: Option<TweetCoordinates>,
     pub created_at: String,
     pub current_user_retweet: Option<CurrentUserRetweet>,
     pub entities: Option<Box<Entities>>,
@@ -14,7 +14,7 @@ pub struct Tweet {
     pub in_reply_to_status_id: Option<i64>,
     pub in_reply_to_user_id: Option<i64>,
     pub lang: Option<String>,
-    pub place: Option<Place>,
+    pub place: Option<Box<Place>>,
     pub possibly_sensitive: Option<bool>,
     //pub scopes: Option<BTreeMap<String, json::Json>>,
     pub retweet_count: u32,
@@ -35,8 +35,8 @@ pub struct Contributor {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Coordinates {
-    pub coordinates: Vec<f64>,
+pub struct TweetCoordinates {
+    pub coordinates: Coordinates,
     #[serde(rename = "type")]
     pub coordinates_type: String
 }

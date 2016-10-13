@@ -88,12 +88,13 @@ namespace Tweetust.ClientGen
                 case "Configurations":
                     t = "Configuration";
                     break;
+                case "TrendLocation":
+                    t = "TrendPlace";
+                    break;
                 //TODO: support
                 case "Setting":
                 case "GeoResult":
                 case "SearchQuery":
-                case "TrendLocation":
-                case "TrendsResult":
                 case "ProfileBannerSizes":
                 case "Category":
                     return null;

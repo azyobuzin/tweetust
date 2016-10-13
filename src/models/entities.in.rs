@@ -75,7 +75,7 @@ pub struct MediaEntity {
     #[serde(rename = "type")]
     pub media_type: String,
     pub url: String,
-    pub video_info: Option<VideoInfo>
+    pub video_info: Option<Box<VideoInfo>>
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

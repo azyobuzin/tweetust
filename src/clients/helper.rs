@@ -4,7 +4,7 @@ use std::fmt::Write;
 use hyper::method::Method;
 use ::TwitterResult;
 use conn::{Authenticator, Parameter};
-use super::request::TweetMode;
+use models::TweetMode;
 
 pub fn collection_paramter<I, D>(values: I) -> String
     where I: IntoIterator<Item=D>, D: fmt::Display
