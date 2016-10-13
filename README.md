@@ -1,5 +1,6 @@
 # tweetust
-![crates.io](https://img.shields.io/crates/v/tweetust.svg)
+[![crates.io](https://img.shields.io/crates/v/tweetust.svg)](https://crates.io/crates/tweetust)
+[![Build Status](https://travis-ci.org/azyobuzin/tweetust.svg?branch=master)](https://travis-ci.org/azyobuzin/tweetust)
 
 Twitter API wrapper for Rust.
 
