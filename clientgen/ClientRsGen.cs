@@ -23,11 +23,9 @@ namespace Tweetust.ClientGen
                 .ToArray();
             this.writer = writer;
 
-
-            //TODO: remove this
             foreach (var t in this.apis.SelectMany(a => a.Item2.Select(e => Tuple.Create(a.Item1, e))))
                 if (t.Item2.Source.JsonPath != null)
-                    writer.WriteLine("// Warning: {0}.{1} -> {2} has JSON path '{3}'", t.Item1, t.Item2.Name, t.Item2.Source.ReturnType, t.Item2.Source.JsonPath);
+                    Console.WriteLine("Info: {0}.{1} -> {2} has JSON path '{3}'", t.Item1, t.Item2.Name, t.Item2.Source.ReturnType, t.Item2.Source.JsonPath);
         }
 
         private readonly IReadOnlyList<Tuple<string, IReadOnlyList<RsEndpoint>>> apis;
@@ -84,13 +82,13 @@ namespace Tweetust.ClientGen
         {
             if (endpoint.ReturnType == null)
             {
-                writer.WriteLine("// Warning: Unsupported Return Type: {0} -> {1}", endpoint.Name, endpoint.Source.ReturnType);
+                Console.WriteLine("Warning: Unsupported Return Type: {0} -> {1}", endpoint.Name, endpoint.Source.ReturnType);
                 return false;
             }
 
             if (endpoint.Method == "Impl")
             {
-                writer.WriteLine("// Warning: {0} requires Impl method", endpoint.Name);
+                Console.WriteLine("Warning: {0} requires Impl method", endpoint.Name);
                 return false;
             }
 
@@ -100,7 +98,7 @@ namespace Tweetust.ClientGen
             {
                 if (e.MoveNext())
                 {
-                    writer.WriteLine("// Warning: Mutltipart is Not Implemented: {0} ({1}: {2})", endpoint.Name, e.Current.Name, e.Current.Type);
+                    Console.WriteLine("Warning: Mutltipart is Not Implemented: {0} ({1}: {2})", endpoint.Name, e.Current.Name, e.Current.Type);
                     return false;
                 }
             }

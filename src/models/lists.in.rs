@@ -2,7 +2,7 @@
 pub struct List {
     pub slug: String,
     pub name: String,
-    pub created_at: String,
+    pub created_at: CreatedAt,
     pub uri: String,
     pub subscriber_count: u32,
     pub member_count: u32,

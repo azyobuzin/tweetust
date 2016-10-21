@@ -8,6 +8,6 @@ pub struct DirectMessage {
     pub recipient: User,
     pub recipient_id: i64,
     pub recipient_screen_name: String,
-    pub created_at: String,
+    pub created_at: CreatedAt,
     pub entities: Option<Box<Entities>>
 }

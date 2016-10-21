@@ -71,6 +71,9 @@ namespace Tweetust.ClientGen
             if (t == "StringResponse")
                 return new RawType(endpoint.Name + "Response");
 
+            if (t == "CategoryResponse")
+                return new RawType("SuggestedUsers");
+
             if (t.EndsWith("Response"))
                 t = t.Substring(0, t.Length - 8);
 
@@ -91,13 +94,21 @@ namespace Tweetust.ClientGen
                 case "TrendLocation":
                     t = "TrendPlace";
                     break;
-                //TODO: support
-                case "Setting":
-                case "GeoResult":
                 case "SearchQuery":
-                case "ProfileBannerSizes":
+                    t = "SavedSearch";
+                    break;
+                case "Setting":
+                    t = "AccountSettings";
+                    break;
                 case "Category":
-                    return null;
+                    t = "UserCategory";
+                    break;
+                case "Relationship":
+                    t = "FriendshipResponse";
+                    break;
+                case "GeoResult":
+                    t = "GeoResponse";
+                    break;
             }
 
             switch (endpoint.Type)

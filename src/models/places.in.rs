@@ -1,13 +1,13 @@
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Place {
     pub attributes: HashMap<String, String>,
-    pub bounding_box: BoundingBox,
+    pub bounding_box: Option<Box<BoundingBox>>,
     pub centroid: Option<Coordinates>,
     pub country: String,
     pub country_code: String,
     pub contained_within: Option<Vec<Place>>,
     pub full_name: String,
-    pub geometry: Option<Geometry>,
+    pub geometry: Option<Box<Geometry>>,
     pub id: String,
     pub name: String,
     pub place_type: String,
@@ -95,9 +95,8 @@ pub struct PlaceType {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TrendsResult {
-    // TODO: as_of と created_at はほかの日時形式と違う
-    pub as_of: String,
-    pub created_at: String,
+    pub as_of: chrono::DateTime<chrono::UTC>,
+    pub created_at: chrono::DateTime<chrono::UTC>,
     pub locations: Vec<TrendLocation>,
     pub trends: Vec<Trend>,
 }

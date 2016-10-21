@@ -11,7 +11,7 @@ use tweetust::*;
 type Client<'a> = TwitterClient<OAuthAuthenticator<'a>>;
 
 macro_rules! cmds_map {
-    ($(($name:expr, $cmd:expr)),*) => {{
+    ($(($name:expr, $cmd:expr),)*) => {{
         let mut cmds = CommandMap::new();
         $(cmds.add($name, Box::new($cmd));)*
         cmds
@@ -22,7 +22,8 @@ fn main() {
     let client = create_client();
 
     let cmds = cmds_map! {
-        ("statuses", CmdStatuses::new())
+        ("statuses", CmdStatuses::new()),
+        ("quit", CmdQuit),
     };
 
     let mut buf = String::new();
@@ -150,6 +151,13 @@ impl CommandMap {
     }
 }
 
+struct CmdQuit;
+impl Command for CmdQuit {
+    fn run(&self, _: InputReader, _: &Client) {
+        std::process::exit(0);
+    }
+}
+
 fn handle<O, E, F>(result: Result<O, E>, action: F)
     where E: fmt::Debug, F: FnOnce(O)
 {
@@ -165,7 +173,7 @@ impl CmdStatuses {
         CmdStatuses {
             cmds: cmds_map! {
                 ("update", CmdStatusesUpdate),
-                ("show", CmdStatusesShow)
+                ("show", CmdStatusesShow),
             }
         }
     }
@@ -183,7 +191,7 @@ impl Command for CmdStatusesUpdate {
             handle(
                 client.statuses()
                     .update(status)
-                    //.tweet_mode(models::TweetMode::Extended)
+                    .tweet_mode(models::TweetMode::Extended)
                     .execute(),
                 |x| println!("{:?}", x)
             );
@@ -200,6 +208,7 @@ impl Command for CmdStatusesShow {
             handle(
                 client.statuses()
                     .show(id)
+                    .tweet_mode(models::TweetMode::Extended)
                     .execute(),
                 |x| println!("{:?}", x)
             );

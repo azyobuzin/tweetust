@@ -33,6 +33,7 @@
 
 #![warn(unused_import_braces)]
 
+extern crate chrono;
 extern crate hyper;
 extern crate oauthcli;
 extern crate serde;

@@ -1,9 +1,9 @@
 [package]
 name = "tweetust"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "The Twitter API wrapper"
-documentation = "https://docs.rs/tweetust/0.2.0/tweetust/"
+documentation = "https://docs.rs/tweetust/0.3.0/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 readme = "README.md"
 keywords = ["twitter", "tweet"]
@@ -12,6 +12,7 @@ exclude = ["clientgen/**/*", ".*"]
 build = "build.rs"
 
 [dependencies]
+chrono = { version = "0.2", features = ["serde"] }
 hyper = "0.9"
 oauthcli = { version = "1.0.1", features = ["hyper"] }
 serde = "0.8"

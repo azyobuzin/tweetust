@@ -1,13 +1,23 @@
 use std;
+use std::fmt;
 use std::collections::HashMap;
+use std::ops::Deref;
+use chrono;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use ::{conn, TwitterError, TwitterResult};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct RateLimitStatus {
     pub limit: i32,
     pub remaining: i32,
-    pub reset: i64
+    pub reset: i64,
+}
+
+impl RateLimitStatus {
+    pub fn reset_date_time(&self) -> chrono::DateTime<chrono::UTC> {
+        use chrono::TimeZone;
+        chrono::UTC.timestamp(self.reset, 0)
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -31,6 +41,7 @@ impl TwitterResponse<()> {
 }
 
 // https://serde.rs/enum-str.html
+// TODO: 任意の文字列を受け付けるようにするべき？
 macro_rules! enum_str {
     ($name:ident { $($variant:ident($str:expr), )* }) => {
         #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
@@ -79,7 +90,7 @@ macro_rules! enum_str {
 
 include!(concat!(env!("OUT_DIR"), "/models/_models_list.rs"));
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub enum TweetMode {
     /// Compatibility mode
     Compat,
@@ -87,3 +98,44 @@ pub enum TweetMode {
     Extended
 }
 
+static CREATED_AT_FORMAT: &'static str = "%a %b %d %T %z %Y";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord, Hash)]
+pub struct CreatedAt(pub chrono::DateTime<chrono::FixedOffset>);
+
+impl Deref for CreatedAt {
+    type Target = chrono::DateTime<chrono::FixedOffset>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl fmt::Display for CreatedAt {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        fmt::Display::fmt(&self.format(CREATED_AT_FORMAT), f)
+    }
+}
+
+impl Serialize for CreatedAt {
+    fn serialize<S: Serializer>(&self, serializer: &mut S) -> Result<(), S::Error> {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl Deserialize for CreatedAt {
+    fn deserialize<D: Deserializer>(deserializer: &mut D) -> Result<Self, D::Error> {
+        struct Visitor;
+        impl de::Visitor for Visitor {
+            type Value = CreatedAt;
+            fn visit_str<E: de::Error>(&mut self, v: &str) -> Result<Self::Value, E> {
+                match chrono::DateTime::parse_from_str(v, CREATED_AT_FORMAT) {
+                    Ok(x) => Ok(CreatedAt(x)),
+                    Err(x) => Err(E::invalid_value(&x.to_string()))
+                }
+            }
+        }
+
+        deserializer.deserialize_str(Visitor)
+    }
+}
