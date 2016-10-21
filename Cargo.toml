@@ -19,4 +19,4 @@ serde_json = "0.8"
 url = "1.2"
 
 [build-dependencies]
-serde_codegen = "=0.8.11" # 0.8.12 has a bug
+serde_codegen = "0.8"
