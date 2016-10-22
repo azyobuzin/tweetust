@@ -33,7 +33,7 @@ fn main() {
         buf.clear();
         io::stdin().read_line(&mut buf).unwrap();
         cmds.run(InputReader::new(&buf), &client);
-        println!();
+        print!("\n");
     }
 }
 
