@@ -29,7 +29,7 @@
 //!     .execute();
 //! ```
 //!
-//! It's easy for people who have leaned about Twitter, isn't it?
+//! It's easy for those who have leaned about Twitter, isn't it?
 
 #![warn(unused_import_braces)]
 

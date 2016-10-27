@@ -4,14 +4,11 @@ sudo: true
 notifications:
   email: false
 
-env:
-  global:
-    - secure: E2IyNp5+CInsJ3B4aT2Ux3ULk7QytrCG+5Dx7DMTSTKSexdxn93zEhBedBudONlOWRIg5/6Iyw88yAAt7Ftc1rZ0HfIXG1jYKEINzftJgAJ233WhBVplF6kpqRxAb3CREpYfPkSKi2sDmFKeLUkBHXLS4lQJ5iJ4RewoKUq+xsk=
-
 install:
   - curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- -y
 
 script:
+  - cargo test --manifest-path clientgen_test/Cargo.toml
   - xbuild clientgen/clientgen.csproj /p:Configuration=Debug
   - mono clientgen/bin/Debug/clientgen.exe
   - cargo build
