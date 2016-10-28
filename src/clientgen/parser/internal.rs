@@ -1,3 +1,4 @@
+use std::str;
 use nom::*;
 
 #[derive(Debug)]
@@ -28,7 +29,7 @@ pub enum EndpointElement<'a> {
     Description(&'a [u8]),
     Returns(&'a [u8]),
     Params(Vec<Param<'a>>),
-    Other { name: &'a [u8], content: &'a [u8] },
+    Other(&'a [u8], &'a [u8]),
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -48,8 +49,7 @@ pub struct Param<'a> {
 #[derive(Debug, PartialEq, Eq)]
 pub enum ParamKind {
     Required,
-    Either,
-    EitherIndex(u8),
+    Either(u8),
     Optional,
 }
 
@@ -64,10 +64,10 @@ const ERR_MANY1_IGNORE: u32 = 2;
 const ERR_NEITHER_SPACE_NOR_COMMENT: u32 = 10;
 
 macro_rules! assert_match {
-    ($e:expr, $p:pat) => (
+    ($e:expr, $($p:tt)*) => (
         match $e {
-            $p => (),
-            x => panic!("{:?}", x)
+            $($p)* => (),
+            x => panic!("Actual: {:?}\nExpected: {}", x, stringify!($($p)*))
         }
     )
 }
@@ -116,7 +116,7 @@ macro_rules! many1_ignore {
         match $submac!(first_input, $($args)*) {
             IResult::Error(e) => IResult::Error(Err::NodePosition(ErrorKind::Custom(ERR_MANY1_IGNORE), first_input, Box::new(e))),
             IResult::Incomplete(i) => IResult::Incomplete(i),
-            IResult::Done(i1,o1) => {
+            IResult::Done(i1, _) => {
                 let ret;
                 let mut input = i1;
 
@@ -301,3 +301,156 @@ fn attribute_test() {
         IResult::Done(&b"\r\n"[..], WithElement::Attribute { name: &b"Obsolete"[..], value: &b"Use Media.Upload and Statuses.Update."[..] })
     );
 }
+
+named!(with<EndpointElement>, chain!(
+    complete!(tag!("with")) ~
+    space_or_comment0 ~
+    char!('{') ~
+    space_or_comment0 ~
+    x: many0!(terminated!(alt!(json_path | omit_except | attribute), space_or_comment0)) ~
+    char!('}'),
+    || EndpointElement::With(x)
+));
+
+named!(param<Param>, chain!(
+    k: alt!(
+        map!(complete!(tag!("required")), |_| ParamKind::Required) |
+        map!(alt_complete!(tag!("optional") | tag!("semi-optional")), |_| ParamKind::Optional) |
+        chain!(
+            tag!("either") ~ // do not complete! because this is the shortest
+            x: opt!(map_opt!(
+                delimited!(complete!(char!('[')), digit, char!(']')),
+                |x| str::from_utf8(x).ok().and_then(|y| y.parse().ok())
+            )),
+            || ParamKind::Either(x.unwrap_or(0))
+        )
+    ) ~
+    tn: opt!(preceded!(
+        complete!(space_or_comment),
+        separated_nonempty_list!(
+            chain!(space_or_comment0 ~ complete!(char!(',')) ~ space_or_comment0, || ()),
+            chain!(
+                t: complete!(recognize!(many1_ignore!(none_of!(" \t\r\n,}")))) ~
+                space_or_comment ~
+                n: recognize!(many1_ignore!(none_of!(" \t\r\n,}"))),
+                || TypeNamePair { param_type: t, name: n }
+            )
+        )
+    )) ~
+    w: opt!(chain!(
+        complete!(space_or_comment) ~
+        complete!(tag!("when")) ~
+        space ~
+        x: not_line_ending,
+        || x
+    )),
+    move || Param { kind: k, type_name_pairs: tn.unwrap_or_else(Vec::new), when: w }
+));
+
+#[test]
+fn param_test() {
+    assert_match!(
+        param(&b"required int required_number\r\n"[..]),
+        IResult::Done(b"\r\n", Param {
+            kind: ParamKind::Required,
+            type_name_pairs: ref tn,
+            when: None,
+        })
+        if &tn[..] == &[TypeNamePair { param_type: b"int", name: b"required_number" }] 
+    );
+
+    assert_match!(
+        param(&b"optional string optional_string\r\n"[..]),
+        IResult::Done(b"\r\n", Param {
+            kind: ParamKind::Optional,
+            type_name_pairs: ref tn,
+            when: None,
+        })
+        if &tn[..] == &[TypeNamePair { param_type: b"string", name: b"optional_string" }]
+    );
+
+    assert_match!(
+        param(&b"either FileInfo media when FILEINFO\r\n"[..]),
+        IResult::Done(b"\r\n", Param {
+            kind: ParamKind::Either(0),
+            type_name_pairs: ref tn,
+            when: Some(b"FILEINFO"),
+        })
+        if &tn[..] == &[TypeNamePair { param_type: b"FileInfo", name: b"media" }]
+    );
+
+    assert_match!(
+        param(&b"either\r\n"[..]),
+        IResult::Done(b"\r\n", Param {
+            kind: ParamKind::Either(0),
+            type_name_pairs: ref tn,
+            when: None,
+        })
+        if tn.is_empty()
+    );
+
+    assert_match!(
+        param(&b"either string slug, string owner_screen_name\r\n"[..]),
+        IResult::Done(b"\r\n", Param {
+            kind: ParamKind::Either(0),
+            type_name_pairs: ref tn,
+            when: None,
+        })
+        if &tn[..] == &[
+            TypeNamePair { param_type: b"string", name: b"slug" },
+            TypeNamePair { param_type: b"string", name: b"owner_screen_name" },
+        ]
+    );
+
+    assert_match!(
+        param(&b"either[1] int id_2\r\n"[..]),
+        IResult::Done(b"\r\n", Param {
+            kind: ParamKind::Either(1),
+            type_name_pairs: ref tn,
+            when: None,
+        })
+        if &tn[..] == &[TypeNamePair { param_type: b"int", name: b"id_2" }]
+    );
+}
+
+named!(params<EndpointElement>, chain!(
+    complete!(tag!("params")) ~
+    space_or_comment0 ~
+    char!('{') ~
+    space_or_comment0 ~
+    x: many0!(terminated!(param, space_or_comment0)) ~
+    char!('}'),
+    || EndpointElement::Params(x)
+));
+
+named!(text_endpoint_element<EndpointElement>, chain!(
+    n: alphanumeric ~ // do not complete! because it won't return Incomplete
+    space_or_comment0 ~
+    char!('{') ~
+    c: take_until_and_consume!("}"),
+    || match n {
+        b"description" => EndpointElement::Description(c),
+        b"returns" => EndpointElement::Returns(c),
+        n => EndpointElement::Other(n, c)
+    }
+));
+
+#[test]
+fn text_endpoint_element_test() {
+    assert_match!(
+        text_endpoint_element(&b"description\r\n{\r\nDescription of the endpoint.\r\n}\r\n"[..]),
+        IResult::Done(b"\r\n", EndpointElement::Description(b"\r\nDescription of the endpoint.\r\n"))
+    );
+
+    assert_match!(
+        text_endpoint_element(&b"returns\r\n{\r\nDescription of returning value.\r\n}\r\n"[..]),
+        IResult::Done(b"\r\n", EndpointElement::Returns(b"\r\nDescription of returning value.\r\n"))
+    );
+
+    assert_match!(
+        text_endpoint_element(&b"pe // optional\r\n{\r\ncustom.MethodBody(\"for params Expression<>[] overload\");\r\n}\r\n"[..]),
+        IResult::Done(b"\r\n", EndpointElement::Other(b"pe", b"\r\ncustom.MethodBody(\"for params Expression<>[] overload\");\r\n"))
+    );
+}
+
+// TODO: EndpointHeader, RootElement
