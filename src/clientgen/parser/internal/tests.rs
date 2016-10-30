@@ -1,115 +1,106 @@
 use super::*;
 use nom::*;
 
-macro_rules! assert_match {
-    ($e:expr, $($p:tt)*) => (
-        match $e {
-            $($p)* => (),
-            x => panic!("Actual: {:?}\nExpected: {}", x, stringify!($($p)*))
-        }
-    )
-}
-
 #[test]
 fn comment_test() {
-    assert_match!(space_or_comment(b" \t\r\n"), IResult::Done(b"", ()));
-    assert_match!(space_or_comment(b"//test\r\na"), IResult::Done(b"a", ()));
-    assert_match!(space_or_comment(b"#comment\r\na"), IResult::Done(b"a", ()));
+    assert_matches!(space_or_comment(" \t\r\n"), IResult::Done("", ()));
+    assert_matches!(space_or_comment("//test\r\na"), IResult::Done("a", ()));
+    assert_matches!(space_or_comment("#comment\r\na"), IResult::Done("a", ()));
     // #namespace is not a comment
-    assert_match!(space_or_comment(b"#namespace\r\na"), IResult::Error(_));
-    assert_match!(space_or_comment(b"/*a\r\nb*/c"), IResult::Done(b"c", ()));
+    assert_matches!(space_or_comment("#namespace\r\na"), IResult::Error(_));
+    assert_matches!(space_or_comment("/*a\r\nb*/c"), IResult::Done("c", ()));
 }
 
 #[test]
 fn neither_space_nor_comment_test() {
-    assert_match!(neither_space_nor_comment(b""), IResult::Incomplete(Needed::Size(1)));
-    assert_match!(neither_space_nor_comment(b" a"), IResult::Error(Err::Position(ErrorKind::Custom(ERR_NEITHER_SPACE_NOR_COMMENT), b" a")));
-    assert_match!(neither_space_nor_comment(b"a "), IResult::Done(b" ", b"a"));
+    assert_matches!(neither_space_nor_comment(""), IResult::Incomplete(Needed::Size(1)));
+    assert_matches!(neither_space_nor_comment(" a"), IResult::Error(Err::Position(ErrorKind::Custom(ERR_NEITHER_SPACE_NOR_COMMENT), " a")));
+    assert_matches!(neither_space_nor_comment("a "), IResult::Done(" ", "a"));
 }
 
 #[test]
 fn namespace_test() {
-    assert_match!(
-        namespace(&b"#namespace RestTest\r\n"[..]),
-        IResult::Done(b"\r\n", RootElement::Namespace(b"RestTest"))
+    assert_matches!(
+        namespace("#namespace RestTest\r\n"),
+        IResult::Done("\r\n", RootElement::Namespace(RestTest))
     );
 }
 
 #[test]
 fn description_test() {
-    assert_match!(
-        description(&b"#description This contains several types of api for testing.\r\n"[..]),
-        IResult::Done(b"\r\n", RootElement::Description(b"This contains several types of api for testing."))
+    assert_matches!(
+        description("#description This contains several types of api for testing.\r\n"),
+        IResult::Done("\r\n", RootElement::Description("This contains several types of api for testing."))
     );
 }
 
 #[test]
 fn raw_test() {
-    assert_match!(
-        raw(&b"#raw\r\nx\r\n#endraw\r\n"[..]),
-        IResult::Done(b"\r\n", RootElement::Raw(b"\r\nx\r\n"))
+    assert_matches!(
+        raw("#raw\r\nx\r\n#endraw\r\n"),
+        IResult::Done("\r\n", RootElement::Raw("\r\nx\r\n"))
     );
 }
 
 #[test]
 fn json_path_test() {
-    assert_match!(
-        json_path(b"JsonPath=resources\r\n"),
-        IResult::Done(b"\r\n", WithElement::JsonPath(b"resources"))
+    assert_matches!(
+        json_path("JsonPath=resources\r\n"),
+        IResult::Done("\r\n", WithElement::JsonPath("resources"))
     );
 }
 
 #[test]
 fn omit_except_test() {
-    assert_match!(
-        omit_except(b"OmitExcept=static,asyncstatic\r\n"),
-        IResult::Done(b"\r\n", WithElement::OmitExcept(b"static,asyncstatic"))
+    assert_matches!(
+        omit_except("OmitExcept=static,asyncstatic\r\n"),
+        IResult::Done("\r\n", WithElement::OmitExcept("static,asyncstatic"))
     );
 }
 
 #[test]
 fn attribute_test() {
-    assert_match!(
-        attribute(b"[Obsolete]=Use Media.Upload and Statuses.Update.\r\n"),
-        IResult::Done(b"\r\n", WithElement::Attribute { name: b"Obsolete", value: b"Use Media.Upload and Statuses.Update." })
+    assert_matches!(
+        attribute("[Obsolete]=Use Media.Upload and Statuses.Update.\r\n"),
+        IResult::Done("\r\n", WithElement::Attribute { name: "Obsolete", value: "Use Media.Upload and Statuses.Update." })
     );
 }
 
 #[test]
 fn param_test() {
-    assert_match!(
-        param(&b"required int required_number\r\n"[..]),
-        IResult::Done(b"\r\n", Param {
+    assert_matches!(
+        param("required int required_number\r\n"),
+        IResult::Done("\r\n", Param {
             kind: ParamKind::Required,
             type_name_pairs: ref tn,
             when: None,
         })
-        if &tn[..] == &[TypeNamePair { param_type: b"int", name: b"required_number" }] 
+        if &tn[..] == &[TypeNamePair { param_type: "int", name: "required_number" }] 
     );
 
-    assert_match!(
-        param(&b"optional string optional_string\r\n"[..]),
-        IResult::Done(b"\r\n", Param {
+    assert_matches!(
+        param("optional string optional_string\r\n"),
+        IResult::Done("\r\n", Param {
             kind: ParamKind::Optional,
             type_name_pairs: ref tn,
             when: None,
         })
-        if &tn[..] == &[TypeNamePair { param_type: b"string", name: b"optional_string" }]
+        if &tn[..] == &[TypeNamePair { param_type: "string", name: "optional_string" }]
     );
 
-    assert_match!(
-        param(&b"either FileInfo media when FILEINFO\r\n"[..]),
-        IResult::Done(b"\r\n", Param {
+    assert_matches!(
+        param("either FileInfo media when FILEINFO\r\n"),
+        IResult::Done("\r\n", Param {
             kind: ParamKind::Either(0),
             type_name_pairs: ref tn,
-            when: Some(b"FILEINFO"),
+            when: Some("FILEINFO"),
         })
-        if &tn[..] == &[TypeNamePair { param_type: b"FileInfo", name: b"media" }]
+        if &tn[..] == &[TypeNamePair { param_type: "FileInfo", name: "media" }]
     );
 
-    assert_match!(
-        param(&b"either\r\n"[..]),
-        IResult::Done(b"\r\n", Param {
+    assert_matches!(
+        param("either\r\n"),
+        IResult::Done("\r\n", Param {
             kind: ParamKind::Either(0),
             type_name_pairs: ref tn,
             when: None,
@@ -117,56 +108,56 @@ fn param_test() {
         if tn.is_empty()
     );
 
-    assert_match!(
-        param(&b"either string slug, string owner_screen_name\r\n"[..]),
-        IResult::Done(b"\r\n", Param {
+    assert_matches!(
+        param("either string slug, string owner_screen_name\r\n"),
+        IResult::Done("\r\n", Param {
             kind: ParamKind::Either(0),
             type_name_pairs: ref tn,
             when: None,
         })
         if &tn[..] == &[
-            TypeNamePair { param_type: b"string", name: b"slug" },
-            TypeNamePair { param_type: b"string", name: b"owner_screen_name" },
+            TypeNamePair { param_type: "string", name: "slug" },
+            TypeNamePair { param_type: "string", name: "owner_screen_name" },
         ]
     );
 
-    assert_match!(
-        param(&b"either[1] int id_2\r\n"[..]),
-        IResult::Done(b"\r\n", Param {
+    assert_matches!(
+        param("either[1] int id_2\r\n"),
+        IResult::Done("\r\n", Param {
             kind: ParamKind::Either(1),
             type_name_pairs: ref tn,
             when: None,
         })
-        if &tn[..] == &[TypeNamePair { param_type: b"int", name: b"id_2" }]
+        if &tn[..] == &[TypeNamePair { param_type: "int", name: "id_2" }]
     );
 }
 
 #[test]
 fn text_endpoint_element_test() {
-    assert_match!(
-        text_endpoint_element(&b"description\r\n{\r\nDescription of the endpoint.\r\n}\r\n"[..]),
-        IResult::Done(b"\r\n", EndpointElement::Description(b"\r\nDescription of the endpoint.\r\n"))
+    assert_matches!(
+        text_endpoint_element("description\r\n{\r\nDescription of the endpoint.\r\n}\r\n"),
+        IResult::Done("\r\n", EndpointElement::Description("\r\nDescription of the endpoint.\r\n"))
     );
 
-    assert_match!(
-        text_endpoint_element(&b"returns\r\n{\r\nDescription of returning value.\r\n}\r\n"[..]),
-        IResult::Done(b"\r\n", EndpointElement::Returns(b"\r\nDescription of returning value.\r\n"))
+    assert_matches!(
+        text_endpoint_element("returns\r\n{\r\nDescription of returning value.\r\n}\r\n"),
+        IResult::Done("\r\n", EndpointElement::Returns("\r\nDescription of returning value.\r\n"))
     );
 
-    assert_match!(
-        text_endpoint_element(&b"pe // optional\r\n{\r\ncustom.MethodBody(\"for params Expression<>[] overload\");\r\n}\r\n"[..]),
-        IResult::Done(b"\r\n", EndpointElement::Other(b"pe", b"\r\ncustom.MethodBody(\"for params Expression<>[] overload\");\r\n"))
+    assert_matches!(
+        text_endpoint_element("pe // optional\r\n{\r\ncustom.MethodBody(\"for params Expression<>[] overload\");\r\n}\r\n"),
+        IResult::Done("\r\n", EndpointElement::Other("pe", "\r\ncustom.MethodBody(\"for params Expression<>[] overload\");\r\n"))
     );
 }
 
 #[test]
 fn endpoint_header_test() {
-    assert_match!(
-        endpoint_header(&b"endpoint Dictionary<Dictionary<string,RateLimit>> RateLimitStatus : Get application/rate_limit_status\r\n"[..]),
-        IResult::Done(b"\r\n", EndpointHeader {
-            return_type: b"Dictionary<Dictionary<string,RateLimit>>",
-            name: b"RateLimitStatus",
-            endpoint_type: EndpointType::Get(b"application/rate_limit_status"),
+    assert_matches!(
+        endpoint_header("endpoint Dictionary<Dictionary<string,RateLimit>> RateLimitStatus : Get application/rate_limit_status\r\n"),
+        IResult::Done("\r\n", EndpointHeader {
+            return_type: "Dictionary<Dictionary<string,RateLimit>>",
+            name: "RateLimitStatus",
+            endpoint_type: EndpointType::Get("application/rate_limit_status"),
         })
     );
 

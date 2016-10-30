@@ -1,6 +1,8 @@
 //! build.rs test
 
 #[macro_use] extern crate log;
+#[macro_use] #[no_link]
+extern crate matches;
 #[macro_use] extern crate nom;
 
 #[path = "../../src/clientgen/mod.rs"]
