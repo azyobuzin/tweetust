@@ -1,3 +1,4 @@
+use super::{EndpointType, Param, ParamKind, TypeNamePair};
 use std::str;
 use std::str::FromStr;
 use nom::*;
@@ -19,13 +20,6 @@ pub struct EndpointHeader<'a> {
     pub endpoint_type: EndpointType<'a>,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum EndpointType<'a> {
-    Impl,
-    Get(&'a str),
-    Post(&'a str),
-}
-
 #[derive(Debug)]
 pub enum EndpointElement<'a> {
     With(Vec<WithElement<'a>>),
@@ -39,27 +33,7 @@ pub enum EndpointElement<'a> {
 pub enum WithElement<'a> {
     JsonPath(&'a str),
     OmitExcept(&'a str),
-    Attribute { name: &'a str, value: &'a str },
-}
-
-#[derive(Debug)]
-pub struct Param<'a> {
-    pub kind: ParamKind,
-    pub type_name_pairs: Vec<TypeNamePair<'a>>,
-    pub when: Option<&'a str>
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub enum ParamKind {
-    Required,
-    Either(u8),
-    Optional,
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub struct TypeNamePair<'a> {
-    pub param_type: &'a str,
-    pub name: &'a str,
+    Attribute(&'a str, &'a str),
 }
 
 const ERR_MANY0_IGNORE: u32 = 1;
@@ -168,7 +142,8 @@ named!(slash_comment<&str, ()>, chain!(complete!(tag_s!("//")) ~ take_until_line
 
 named!(hash_comment<&str, ()>, chain!(
     complete!(tag_s!("#")) ~
-    not!(alt_complete!(tag_s!("namespace") | tag_s!("description") | tag_s!("raw") | tag_s!("endraw"))) ~
+    // alt_complete! does not complete! parsers later than first
+    not!(alt!(complete!(tag_s!("namespace")) | complete!(tag_s!("description")) | complete!(tag_s!("raw")) | complete!(tag_s!("endraw")))) ~
     take_until_line_ending,
     || ()
 ));
@@ -179,7 +154,7 @@ named!(multi_comment<&str, ()>, chain!(
     || ()
 ));
 
-named!(pub space_or_comment<&str, ()>, many1_ignore!(alt!(map!(multispace, |_| ()) | slash_comment | hash_comment | multi_comment)));
+named!(pub space_or_comment<&str, ()>, many1_ignore!(alt!(value!((), multispace) | slash_comment | hash_comment | multi_comment)));
 named!(space_or_comment0<&str, Option<()> >, opt!(space_or_comment));
 
 pub fn neither_space_nor_comment(input: &str) -> IResult<&str, &str, u32> {
@@ -210,14 +185,14 @@ named!(pub namespace<&str, RootElement>, chain!(
     complete!(tag_s!("#namespace")) ~
     space ~
     x: take_until_line_ending,
-    || RootElement::Namespace(x)
+    || RootElement::Namespace(x.trim())
 ));
 
 named!(pub description<&str, RootElement>, chain!(
     complete!(tag_s!("#description")) ~
     space ~
     x: take_until_line_ending,
-    || RootElement::Description(x)
+    || RootElement::Description(x.trim())
 ));
 
 named!(pub raw<&str, RootElement>, chain!(
@@ -229,13 +204,13 @@ named!(pub raw<&str, RootElement>, chain!(
 named!(pub json_path<&str, WithElement>, chain!(
     complete!(tag_s!("JsonPath=")) ~
     x: take_until_line_ending,
-    || WithElement::JsonPath(x)
+    || WithElement::JsonPath(x.trim())
 ));
 
 named!(pub omit_except<&str, WithElement>, chain!(
     complete!(tag_s!("OmitExcept=")) ~
     x: take_until_line_ending,
-    || WithElement::OmitExcept(x)
+    || WithElement::OmitExcept(x.trim())
 ));
 
 named!(pub attribute<&str, WithElement>, chain!(
@@ -243,7 +218,7 @@ named!(pub attribute<&str, WithElement>, chain!(
     name: take_until_and_consume_s2!("]") ~
     tag_s!("=") ~
     value: take_until_line_ending,
-    || WithElement::Attribute { name: name, value: value }
+    || WithElement::Attribute(name.trim(), value.trim())
 ));
 
 named!(with<&str, EndpointElement>, chain!(
@@ -251,7 +226,10 @@ named!(with<&str, EndpointElement>, chain!(
     space_or_comment0 ~
     tag_s!("{") ~
     space_or_comment0 ~
-    x: many0!(terminated!(alt!(json_path | omit_except | attribute), space_or_comment0)) ~
+    x: many0!(terminated!(
+        alt!(json_path | omit_except | attribute),
+        space_or_comment0
+    )) ~
     tag_s!("}"),
     || EndpointElement::With(x)
 ));
@@ -262,10 +240,10 @@ fn is_valid_for_param_ident(c: char) -> bool {
 
 named!(pub param<&str, Param>, chain!(
     k: alt!(
-        map!(complete!(tag_s!("required")), |_| ParamKind::Required) |
-        map!(alt_complete!(tag_s!("semi-optional") | tag_s!("optional")), |_| ParamKind::Optional) |
+        value!(ParamKind::Required, complete!(tag_s!("required"))) |
+        value!(ParamKind::Optional, alt!(complete!(tag_s!("semi-optional")) | complete!(tag_s!("optional")))) |
         chain!(
-            tag_s!("either") ~ // do not complete! because this is the shortest
+            complete!(tag_s!("either")) ~
             x: opt!(map_res!(
                 delimited!(complete!(tag_s!("[")), digit, tag_s!("]")),
                 u8::from_str
@@ -290,17 +268,23 @@ named!(pub param<&str, Param>, chain!(
         complete!(tag_s!("when")) ~
         space ~
         x: take_until_line_ending,
-        || x
+        || x.trim()
     )),
     move || Param { kind: k, type_name_pairs: tn.unwrap_or_else(Vec::new), when: w }
 ));
 
-named!(params<&str, EndpointElement>, chain!(
+named!(pub params<&str, EndpointElement>, chain!(
     complete!(tag_s!("params")) ~
     space_or_comment0 ~
     tag_s!("{") ~
     space_or_comment0 ~
-    x: many0!(terminated!(param, space_or_comment0)) ~
+    x: many0!(terminated!(
+        flat_map!(
+            take_until_line_ending,
+            param
+        ),
+        space_or_comment0
+    )) ~
     tag_s!("}"),
     || EndpointElement::Params(x)
 ));
@@ -327,7 +311,7 @@ named!(pub endpoint_header<&str, EndpointHeader>, chain!(
     tag_s!(":") ~
     space_or_comment0 ~
     et: alt!(
-        map!(tag_s!("Impl"), |_| EndpointType::Impl) |
+        value!(EndpointType::Impl, tag_s!("Impl")) |
         chain!(
             tag_s!("Get") ~
             space_or_comment ~
@@ -343,3 +327,32 @@ named!(pub endpoint_header<&str, EndpointHeader>, chain!(
     ),
     || EndpointHeader { return_type: rt, name: n, endpoint_type: et }
 ));
+
+named!(endpoint<&str, RootElement>, chain!(
+    h: endpoint_header ~
+    space_or_comment0 ~
+    tag_s!("{") ~
+    space_or_comment0 ~
+    e: many0!(terminated!(
+        alt!(with | params | text_endpoint_element),
+        space_or_comment0
+    )) ~
+    tag_s!("}"),
+    || RootElement::Endpoint { header: h, elements: e }
+));
+
+named!(pub root<&str, Vec<RootElement> >, complete!(terminated!(
+    many1!(terminated!(
+        alt!(namespace | description | endpoint | raw),
+        space_or_comment0
+    )),
+    eof
+)));
+
+pub fn parse_api_template(input: &str) -> Result<Vec<RootElement>, Err<&str>> {
+    match root(input) {
+        IResult::Done(_, x) => Ok(x),
+        IResult::Error(x) => Err(x),
+        IResult::Incomplete(_) => unreachable!() // root is wrapping parsers with complete!
+    }
+}
