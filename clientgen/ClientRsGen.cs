@@ -331,16 +331,6 @@ pub struct {0}<'a, T: Authenticator + 'a> {{
             writer.WriteLine('}');
         }
 
-        private static string ConvertParameterFuncName(RsType type) =>
-            type.Match(
-                raw => raw.Type == "bool" ? "bool_parameter"
-                    : raw.Type == "TweetMode" ? "tweet_mode_parameter"
-                    : "parameter",
-                str => "cow_str_parameter",
-                vec => "owned_str_parameter",
-                unit => { throw new ArgumentException(); }
-            );
-
         private void Execute(RsEndpoint endpoint)
         {
             writer.WriteLine();
@@ -356,15 +346,15 @@ pub struct {0}<'a, T: Authenticator + 'a> {{
             {
                 if (p.Name != endpoint.ReservedParameter)
                     writer.WriteLine(
-                        @"        params.push({1}(""{0}"", &self.{0}));",
-                        p.Name, ConvertParameterFuncName(p.Type));
+                        @"        params.push(self.{0}.to_parameter(""{0}""));",
+                        p.Name);
             }
 
             foreach (var p in endpoint.OptionalParameters)
             {
                 writer.WriteLine(
-                    @"        if let Some(ref x) = self.{0} {{ params.push({1}(""{0}"", x)) }}",
-                    p.Name, ConvertParameterFuncName(p.Type)
+                    @"        if let Some(ref x) = self.{0} {{ params.push(x.to_parameter(""{0}"")) }}",
+                    p.Name
                 );
             }
 
