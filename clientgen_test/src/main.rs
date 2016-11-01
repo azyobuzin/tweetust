@@ -1,5 +1,6 @@
 //! build.rs test
 
+extern crate inflector;
 #[macro_use] extern crate log;
 #[macro_use] #[no_link]
 extern crate matches;

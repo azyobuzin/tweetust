@@ -1,49 +1,49 @@
 mod internal;
 
 #[derive(Debug)]
-pub struct ApiTemplate<'a> {
-    pub namespace: &'a str,
-    pub description: Option<&'a str>,
-    pub endpoints: Vec<Endpoint<'a>>,
+pub struct ApiTemplate {
+    pub namespace: String,
+    pub description: Option<String>,
+    pub endpoints: Vec<Endpoint>,
 }
 
 #[derive(Debug)]
-pub struct Endpoint<'a> {
-    pub return_type: &'a str,
-    pub name: &'a str,
-    pub endpoint_type: EndpointType<'a>,
-    pub json_path: Option<&'a str>,
-    pub attributes: Vec<(&'a str, &'a str)>,
-    pub description: Option<&'a str>,
-    pub returns: Option<&'a str>,
-    pub params: Vec<Param<'a>>,
+pub struct Endpoint {
+    pub return_type: String,
+    pub name: String,
+    pub endpoint_type: EndpointType,
+    pub json_path: Option<String>,
+    pub attributes: Vec<(String, String)>,
+    pub description: Option<String>,
+    pub returns: Option<String>,
+    pub params: Vec<Param>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum EndpointType<'a> {
-    Get(&'a str),
-    Post(&'a str),
+pub enum EndpointType {
+    Get(String),
+    Post(String),
     Impl,
 }
 
 #[derive(Debug)]
-pub struct Param<'a> {
+pub struct Param {
     pub kind: ParamKind,
-    pub type_name_pairs: Vec<TypeNamePair<'a>>,
-    pub when: Option<&'a str>,
+    pub type_name_pairs: Vec<TypeNamePair>,
+    pub when: Option<String>,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ParamKind {
     Required,
     Either(u8),
     Optional,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct TypeNamePair<'a> {
-    pub param_type: &'a str,
-    pub name: &'a str,
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct TypeNamePair {
+    pub param_type: String,
+    pub name: String,
 }
 
 #[derive(Debug)]
@@ -61,7 +61,7 @@ pub fn parse(input: &str) -> Result<ApiTemplate, ParseErrorKind> {
     let namespace = {
         let ns = root.iter()
             .filter_map(|x| match *x {
-                internal::RootElement::Namespace(x) => Some(x),
+                internal::RootElement::Namespace(x) => Some(x.to_owned()),
                 _ => None
             })
             .nth(0);
@@ -71,7 +71,7 @@ pub fn parse(input: &str) -> Result<ApiTemplate, ParseErrorKind> {
 
     let description = root.iter()
         .filter_map(|x| match *x {
-            internal::RootElement::Description(x) => Some(x),
+            internal::RootElement::Description(x) => Some(x.to_owned()),
             _ => None
         })
         .nth(0);
@@ -79,57 +79,66 @@ pub fn parse(input: &str) -> Result<ApiTemplate, ParseErrorKind> {
     let mut endpoints = Vec::with_capacity(root.len() - (if description.is_some() { 2 } else { 1 }));
     for x in root.into_iter() {
         if let internal::RootElement::Endpoint { header: h, elements: e } = x {
-            let (json_path, attributes) = {
-                let with = e.iter()
-                    .filter_map(|x| match *x {
-                        internal::EndpointElement::With(ref x) => Some(x),
-                        _ => None
-                    })
-                    .nth(0);
-                let json_path = with.and_then(|with| with.iter()
-                    .filter_map(|x| match *x {
-                        internal::WithElement::JsonPath(x) => Some(x),
-                        _ => None
-                    })
-                    .nth(0)
-                );
-                let attributes = match with {
-                    Some(with) => with.iter()
-                        .filter_map(|x| match *x {
-                            internal::WithElement::Attribute(x, y) => Some((x, y)),
-                            _ => None
-                        })
-                        .collect(),
-                    None => Vec::new()
-                };
-                (json_path, attributes)
-            };
+            let with = e.iter()
+                .filter_map(|x| match *x {
+                    internal::EndpointElement::With(ref x) => Some(x),
+                    _ => None
+                })
+                .nth(0);
 
             endpoints.push(
                 Endpoint {
-                    return_type: h.return_type,
-                    name: h.name,
-                    endpoint_type: h.endpoint_type,
-                    json_path: json_path,
-                    attributes: attributes,
+                    return_type: h.return_type.to_owned(),
+                    name: h.name.to_owned(),
+                    endpoint_type: match h.endpoint_type {
+                        internal::EndpointType::Get(x) => EndpointType::Get(x.to_owned()),
+                        internal::EndpointType::Post(x) => EndpointType::Post(x.to_owned()),
+                        internal::EndpointType::Impl => EndpointType::Impl,
+                    },
+                    json_path: with.and_then(|with| with.iter()
+                        .filter_map(|x| match *x {
+                            internal::WithElement::JsonPath(x) => Some(x.to_owned()),
+                            _ => None
+                        })
+                        .nth(0)
+                    ),
+                    attributes: match with {
+                        Some(with) => with.iter()
+                            .filter_map(|x| match *x {
+                                internal::WithElement::Attribute(x, y) => Some((x.to_owned(), y.to_owned())),
+                                _ => None
+                            })
+                            .collect(),
+                        None => Vec::new()
+                    },
                     description: e.iter()
                         .filter_map(|x| match *x {
-                            internal::EndpointElement::Description(x) => Some(x),
+                            internal::EndpointElement::Description(x) => Some(x.to_owned()),
                             _ => None
                         })
                         .nth(0),
                     returns: e.iter()
                         .filter_map(|x| match *x {
-                            internal::EndpointElement::Returns(x) => Some(x),
+                            internal::EndpointElement::Returns(x) => Some(x.to_owned()),
                             _ => None
                         })
                         .nth(0),
-                    params: e.into_iter()
-                        .filter_map(|x| match x {
-                            internal::EndpointElement::Params(x) => Some(x),
+                    params: e.iter()
+                        .filter_map(|x| match *x {
+                            internal::EndpointElement::Params(ref x) => Some(x),
                             _ => None
                         })
                         .nth(0)
+                        .map(|params| params.iter()
+                            .map(|x| Param {
+                                kind: x.kind,
+                                type_name_pairs: x.type_name_pairs.iter()
+                                    .map(|x| TypeNamePair { param_type: x.param_type.to_owned(), name: x.name.to_owned() })
+                                    .collect(),
+                                when: x.when.map(|x| x.to_owned()),
+                            })
+                            .collect()
+                        )
                         .unwrap_or_else(Vec::new),
                 }
             );

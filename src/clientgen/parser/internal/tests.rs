@@ -1,5 +1,5 @@
 use super::*;
-use super::super::{EndpointType, Param, ParamKind, TypeNamePair};
+use super::super::ParamKind;
 use nom::*;
 
 #[test]

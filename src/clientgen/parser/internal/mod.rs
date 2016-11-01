@@ -1,4 +1,4 @@
-use super::{EndpointType, Param, ParamKind, TypeNamePair};
+use super::ParamKind;
 use std::str;
 use std::str::FromStr;
 use nom::*;
@@ -20,6 +20,13 @@ pub struct EndpointHeader<'a> {
     pub endpoint_type: EndpointType<'a>,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum EndpointType<'a> {
+    Get(&'a str),
+    Post(&'a str),
+    Impl,
+}
+
 #[derive(Debug)]
 pub enum EndpointElement<'a> {
     With(Vec<WithElement<'a>>),
@@ -34,6 +41,19 @@ pub enum WithElement<'a> {
     JsonPath(&'a str),
     OmitExcept(&'a str),
     Attribute(&'a str, &'a str),
+}
+
+#[derive(Debug)]
+pub struct Param<'a> {
+    pub kind: ParamKind,
+    pub type_name_pairs: Vec<TypeNamePair<'a>>,
+    pub when: Option<&'a str>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct TypeNamePair<'a> {
+    pub param_type: &'a str,
+    pub name: &'a str,
 }
 
 const ERR_MANY0_IGNORE: u32 = 1;
