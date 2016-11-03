@@ -31,8 +31,13 @@ impl<T: Authenticator> TwitterClient<T> {
     writer.write_all(&b"}\n"[..])
 }
 
-pub fn request_builders<W: Write>(writer: &mut W, input: parser::ApiTemplate) -> io::Result<()> {
-    unimplemented!() // TODO
+pub fn request_builders<W: Write>(writer: &mut W, input: &parser::ApiTemplate) -> io::Result<()> {
+    let endpoints: Vec<_> = input.endpoints.iter()
+        .filter_map(|x| create_endpoint(x, input))
+        .collect();
+
+    // TODO
+    Ok(())
 }
 
 fn document<W: Write>(writer: &mut W, content: &str, indent: u32) -> io::Result<()> {
@@ -50,7 +55,7 @@ fn document<W: Write>(writer: &mut W, content: &str, indent: u32) -> io::Result<
 struct Endpoint<'a> {
     pub namespace: &'a str,
     pub fn_name: String,
-    pub description: &'a str,
+    pub description: &'a Option<String>,
     pub method: &'a parser::EndpointType,
     pub return_type: Cow<'a, str>,
     pub reserved_parameter: Option<&'a str>,
@@ -190,14 +195,28 @@ fn create_param_type<'a>(tn: &'a parser::TypeNamePair, endpoint: &parser::Endpoi
     }
 }
 
-fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &parser::ApiTemplate) -> Option<Endpoint<'a>> {
+fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser::ApiTemplate) -> Option<Endpoint<'a>> {
+    if endpoint.endpoint_type == parser::EndpointType::Impl {
+        warn!("Requires custom execute function: {}.{}", api_template.namespace, endpoint.name);
+        return None;
+    }
+
+    if endpoint.json_path.is_some() {
+        info!("Has JSON path: {}.{}", api_template.namespace, endpoint.name);
+    }
+
+    let return_type = match create_return_type(endpoint, api_template) {
+        Some(x) => x,
+        None => return None,
+    };
+
     let mut required_parameters = Vec::new();
 
     for p in endpoint.params.iter() {
         if p.kind == parser::ParamKind::Required {
             for tn in p.type_name_pairs.iter() {
                 if let Some(x) = create_param_type(tn, endpoint, api_template) {
-                    required_parameters.push(x);
+                    required_parameters.push((tn.name.as_ref(), x));
                 } else {
                     return None;
                 }
@@ -205,37 +224,46 @@ fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &parser::Ap
         }
     }
 
-    // TODO: refactor 特にdistinctのVec要らなくね？感
-    let optional_parameters = {
+    let mut optional_parameters = Vec::new();
+
+    {
+        let mut set = std::collections::HashSet::new();
+
         let tns = endpoint.params.iter()
             .filter(|x| x.kind != parser::ParamKind::Required)
             .flat_map(|x| x.type_name_pairs.iter());
-        let mut v = Vec::new();
-        for tn in distinct(tns) {
+
+        for tn in tns {
+            if set.contains(tn) { continue; }
+
             if let Some(x) = create_param_type(tn, endpoint, api_template) {
-                v.push(x);
+                optional_parameters.push((tn.name.as_ref(), x));
             } else {
                 return None;
             }
+
+            set.insert(tn);
         }
-        v
     };
 
-    unimplemented!() // TODO
-}
-
-fn distinct<T, I>(iter: I) -> Vec<T>
-    where T: std::hash::Hash + Eq + Clone, I: Iterator<Item = T>
-{
-    let size_hint = iter.size_hint().0;
-    let mut v = Vec::with_capacity(size_hint);
-    let mut set = std::collections::HashSet::with_capacity(size_hint);
-
-    for x in iter {
-        if set.insert(x.clone()) {
-            v.push(x);
+    let reserved_parameter = match endpoint.endpoint_type {
+        parser::EndpointType::Get(ref x) | parser::EndpointType::Post(ref x) => {
+            x.find('{').and_then(|lb| {
+                let s = &x[lb + 1..];
+                s.find('}').map(|rb| &s[..rb])
+            })
         }
-    }
+        parser::EndpointType::Impl => None,
+    };
 
-    v
+    Some(Endpoint {
+        namespace: &api_template.namespace,
+        fn_name: endpoint.name.to_snake_case(),
+        description: &endpoint.description,
+        method: &endpoint.endpoint_type,
+        return_type: return_type,
+        reserved_parameter: reserved_parameter,
+        required_parameters: required_parameters,
+        optional_parameters: optional_parameters,
+    })
 }

@@ -15,6 +15,10 @@ pub fn generate_clients<W: Write, P: AsRef<Path>>(writer: &mut W, templates_dir:
 
     try!(generators::twitter_client(writer, &api_templates));
 
+    for x in api_templates {
+        try!(generators::request_builders(writer, &x));
+    }
+
     Ok(())
 }
 
