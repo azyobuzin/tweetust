@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["CursorUsers",""],["User",""]]});

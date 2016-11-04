@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Entities",""],["ExtendedEntities",""],["Medium",""],["Size",""],["Sizes",""],["Symbol",""],["Url",""],["UserEntities",""],["UserEntitiesField",""],["UserMention",""],["Variant",""],["VideoInfo",""]]});

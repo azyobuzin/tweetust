@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Parameter",""]],"fn":[["parse_json",""],["request_twitter",""],["send_request",""]],"mod":[["application_only_authenticator",""],["oauth_authenticator",""]],"trait":[["Authenticator",""]]});
