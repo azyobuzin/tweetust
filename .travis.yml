@@ -1,15 +1,9 @@
-language: csharp
-sudo: true
+language: rust
 
 notifications:
   email: false
 
-install:
-  - curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- -y
-
 script:
   - cargo test --manifest-path clientgen_test/Cargo.toml
-  - xbuild clientgen/clientgen.csproj /p:Configuration=Debug
-  - mono clientgen/bin/Debug/clientgen.exe
   - cargo build
   - cargo test

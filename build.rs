@@ -86,5 +86,5 @@ fn clients(out_dir: &OsString) {
     }).unwrap();
 
     let mut dst_file = fs::File::create(Path::new(out_dir).join("clients.rs")).unwrap();
-    clientgen::generate_clients(&mut dst_file, "./clientgen/CoreTweet/ApiTemplates").unwrap();
+    clientgen::generate_clients(&mut dst_file, "./CoreTweet/ApiTemplates").unwrap();
 }

@@ -220,7 +220,7 @@ fn endpoint_header_test() {
 #[test]
 fn root_test() {
     const APPLICATION_API: &'static str =
-        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../clientgen/CoreTweet/ApiTemplates/application.api"));
+        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../CoreTweet/ApiTemplates/application.api"));
 
     match root(APPLICATION_API) {
         IResult::Done("", re) => {

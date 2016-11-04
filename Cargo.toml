@@ -8,7 +8,7 @@ repository = "https://github.com/azyobuzin/tweetust"
 readme = "README.md"
 keywords = ["twitter", "tweet"]
 license = "MIT"
-exclude = ["clientgen/**/*", ".*"]
+include = ["**/*.rs", "Cargo.toml", "LICENSE.txt", "README.md", "CoreTweet/ApiTemplates/*.api"]
 build = "build.rs"
 
 [dependencies]

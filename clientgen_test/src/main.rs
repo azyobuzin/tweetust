@@ -19,7 +19,7 @@ fn main() {
     }).unwrap();
 
     let mut buf = Vec::new();
-    let ret = clientgen::generate_clients(&mut buf, "../clientgen/CoreTweet/ApiTemplates");
+    let ret = clientgen::generate_clients(&mut buf, "../CoreTweet/ApiTemplates");
 
     if let Err(x) = ret {
         write!(io::stderr(), "{}", x).unwrap();
