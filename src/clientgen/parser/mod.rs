@@ -133,7 +133,13 @@ pub fn parse(input: &str) -> Result<ApiTemplate, ParseErrorKind> {
                             .map(|x| Param {
                                 kind: x.kind,
                                 type_name_pairs: x.type_name_pairs.iter()
-                                    .map(|x| TypeNamePair { param_type: x.param_type.to_owned(), name: x.name.to_owned() })
+                                    .map(|x| {
+                                        let name = if x.name.starts_with('@') { &x.name[1..] } else { x.name };
+                                        TypeNamePair {
+                                            param_type: x.param_type.to_owned(),
+                                            name: name.to_owned()
+                                        }
+                                    })
                                     .collect(),
                                 when: x.when.map(|x| x.to_owned()),
                             })

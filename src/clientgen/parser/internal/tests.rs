@@ -23,7 +23,7 @@ fn neither_space_nor_comment_test() {
 fn namespace_test() {
     assert_matches!(
         namespace("#namespace RestTest\r\n"),
-        IResult::Done("\r\n", RootElement::Namespace(RestTest))
+        IResult::Done("\r\n", RootElement::Namespace("RestTest"))
     );
 }
 
@@ -135,11 +135,11 @@ fn param_test() {
 
 #[test]
 fn params_test() {
-    match params(r#"params
+    match params("params
     {
         required string id
         required IEnumerable<CollectionEntryChange> changes
-    } "#)
+    } ")
     {
         IResult::Done(" ", EndpointElement::Params(ref params)) => {
             assert_eq!(params.len(), 2);
@@ -159,12 +159,12 @@ fn params_test() {
 
     // root_test
     assert_matches!(
-        params(r#"params
+        params("params
     {
         either
         either string resources
         either IEnumerable<string> resources
-    } "#),
+    } "),
         IResult::Done(" ", EndpointElement::Params(_))
     );
 }
@@ -219,10 +219,10 @@ fn endpoint_header_test() {
 
 #[test]
 fn root_test() {
-    const application_api: &'static str =
+    const APPLICATION_API: &'static str =
         include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../clientgen/CoreTweet/ApiTemplates/application.api"));
 
-    match root(application_api) {
+    match root(APPLICATION_API) {
         IResult::Done("", re) => {
             assert_eq!(re.len(), 3);
             assert_matches!(re[0], RootElement::Namespace("Application"));

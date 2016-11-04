@@ -56,10 +56,10 @@ pub struct TypeNamePair<'a> {
     pub name: &'a str,
 }
 
-const ERR_MANY0_IGNORE: u32 = 1;
-const ERR_MANY1_IGNORE: u32 = 2;
-const ERR_TAKE_UNTIL_AND_CONSUME_S2: u32 = 3;
-const ERR_NEITHER_SPACE_NOR_COMMENT: u32 = 10;
+#[allow(dead_code)] pub const ERR_MANY0_IGNORE: u32 = 1;
+#[allow(dead_code)] pub const ERR_MANY1_IGNORE: u32 = 2;
+#[allow(dead_code)] pub const ERR_TAKE_UNTIL_AND_CONSUME_S2: u32 = 3;
+#[allow(dead_code)] pub const ERR_NEITHER_SPACE_NOR_COMMENT: u32 = 10;
 
 macro_rules! many0_ignore {
     ($i:expr, $submac:ident!( $($args:tt)* )) => ({

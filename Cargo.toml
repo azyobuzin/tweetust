@@ -20,4 +20,8 @@ serde_json = "0.8"
 url = "1.2"
 
 [build-dependencies]
+Inflector = "0.6"
+log = "0.3"
+matches = "0.1"
+nom = "1.2"
 serde_codegen = "0.8"

@@ -3,7 +3,6 @@ mod generators;
 mod parser;
 
 use self::errors::*;
-use std::io;
 use std::io::prelude::*;
 use std::fs;
 use std::path::Path;

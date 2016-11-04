@@ -14,7 +14,7 @@ Twitter API wrapper for Rust.
 - [x] Use Cow to store string
 - [x] Update oauthcli
 - [x] &mut builders
-- [ ] Change the way to generate code: be pure Rust
+- [x] Change the way to generate code: be pure Rust
 - [ ] Parse created_at and Tweet.source (in serde_json?)
 - [ ] Support new APIs
 - [ ] Streaming

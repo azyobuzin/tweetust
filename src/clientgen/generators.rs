@@ -28,7 +28,7 @@ impl<T: Authenticator> TwitterClient<T> {
         ));
     }
 
-    writer.write_all(&b"}\n"[..])
+    writer.write_all(b"}\n")
 }
 
 pub fn request_builders<W: Write>(writer: &mut W, input: &parser::ApiTemplate) -> io::Result<()> {
@@ -36,16 +36,23 @@ pub fn request_builders<W: Write>(writer: &mut W, input: &parser::ApiTemplate) -
         .filter_map(|x| create_endpoint(x, input))
         .collect();
 
-    // TODO
+    try!(client_struct(writer, input));
+    try!(client_impl(writer, input, &endpoints));
+
+    for x in endpoints {
+        try!(request_builder_struct(writer, &x, input));
+        try!(request_builder_impl(writer, &x, input));
+    }
+
     Ok(())
 }
 
-fn document<W: Write>(writer: &mut W, content: &str, indent: u32) -> io::Result<()> {
-    let mut indent_str = String::with_capacity(indent as usize);
+fn document<W: Write>(writer: &mut W, content: &str, indent: usize) -> io::Result<()> {
+    let mut indent_str = String::with_capacity(indent);
     for _ in 0..indent { indent_str.push(' '); }
 
     for line in content.trim().lines() {
-        try!(writeln!(writer, "{}/// {}", indent_str, line));
+        try!(writeln!(writer, "{}/// {}", indent_str, line.trim()));
     }
 
     Ok(())
@@ -53,8 +60,7 @@ fn document<W: Write>(writer: &mut W, content: &str, indent: u32) -> io::Result<
 
 #[derive(Debug)]
 struct Endpoint<'a> {
-    pub namespace: &'a str,
-    pub fn_name: String,
+    pub name: &'a str,
     pub description: &'a Option<String>,
     pub method: &'a parser::EndpointType,
     pub return_type: Cow<'a, str>,
@@ -180,18 +186,24 @@ fn create_return_type<'a>(endpoint: &'a parser::Endpoint, api_template: &parser:
 
 /// Returns None if the return type is not supported.
 fn create_param_type<'a>(tn: &'a parser::TypeNamePair, endpoint: &parser::Endpoint, api_template: &parser::ApiTemplate) -> Option<ParamType<'a>> {
+    fn core<'a>(ty: &'a str) -> Cow<'a, str> {
+        match ty {
+            "int" => Cow::Borrowed("i32"),
+            "long" => Cow::Borrowed("i64"),
+            "double" => Cow::Borrowed("f64"),
+            x => Cow::Borrowed(x),
+        }
+    }
+
     match tn.param_type.as_ref() {
         "string" => Some(ParamType::String),
-        "int" => Some(ParamType::Normal(Cow::Borrowed("i32"))),
-        "long" => Some(ParamType::Normal(Cow::Borrowed("i64"))),
-        "double" => Some(ParamType::Normal(Cow::Borrowed("f64"))),
         "Stream" => {
             warn!("Unsupported parameter type `Stream`: {}.{}", api_template.namespace, endpoint.name);
             None
         },
         "IEnumerable<string>" => Some(ParamType::StringList),
-        x if x.starts_with("IEnumerable<") => Some(ParamType::List(Cow::Borrowed(&x[12..x.len() - 1]))),
-        x => Some(ParamType::Normal(Cow::Borrowed(x))),
+        x if x.starts_with("IEnumerable<") => Some(ParamType::List(core(&x[12..x.len() - 1]))),
+        x => Some(ParamType::Normal(core(x))),
     }
 }
 
@@ -199,6 +211,13 @@ fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser:
     if endpoint.endpoint_type == parser::EndpointType::Impl {
         warn!("Requires custom execute function: {}.{}", api_template.namespace, endpoint.name);
         return None;
+    }
+
+    for &(ref attr_name, _) in endpoint.attributes.iter() {
+        if attr_name == "Obsolete" {
+            info!("Ignored obsolete member: {}.{}", api_template.namespace, endpoint.name);
+            return None;
+        }
     }
 
     if endpoint.json_path.is_some() {
@@ -257,8 +276,7 @@ fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser:
     };
 
     Some(Endpoint {
-        namespace: &api_template.namespace,
-        fn_name: endpoint.name.to_snake_case(),
+        name: &endpoint.name,
         description: &endpoint.description,
         method: &endpoint.endpoint_type,
         return_type: return_type,
@@ -266,4 +284,219 @@ fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser:
         required_parameters: required_parameters,
         optional_parameters: optional_parameters,
     })
+}
+
+fn client_struct<W: Write>(writer: &mut W, api_template: &parser::ApiTemplate) -> io::Result<()> {
+    try!(writer.write_all(b"\n"));
+
+    if let Some(ref x) = api_template.description {
+        try!(document(writer, &x, 0));
+    }
+
+    write!(
+        writer,
+        "#[derive(Clone, Debug)]
+pub struct {}Client<'a, T: Authenticator + 'a> {{ auth: &'a T }}
+",
+        api_template.namespace
+    )
+}
+
+fn client_impl<W: Write>(writer: &mut W, api_template: &parser::ApiTemplate, endpoints: &[Endpoint]) -> io::Result<()> {
+    try!(write!(
+        writer,
+        "\nimpl<'a, T: Authenticator> {0}Client<'a, T> {{",
+        api_template.namespace
+    ));
+
+    for x in endpoints {
+        try!(client_impl_fn(writer, x, api_template));
+    }
+
+    writer.write_all(b"}\n")
+}
+
+fn client_impl_fn<W: Write>(writer: &mut W, endpoint: &Endpoint, api_template: &parser::ApiTemplate) -> io::Result<()> {
+    let mut p = FnParametersGenerator::new();
+    for &(n, ref ty) in endpoint.required_parameters.iter() {
+        p.add_parameter(n, ty);
+    }
+
+    try!(writer.write_all(b"\n"));
+    if let &Some(ref x) = endpoint.description {
+        try!(document(writer, &x, 4));
+    }
+    try!(write!(
+        writer,
+        "    pub fn {}",
+        endpoint.name.to_snake_case()
+    ));
+    try!(p.write_type_parameters(writer));
+    try!(writer.write_all(b"(&self"));
+    try!(p.write_parameters(writer));
+    try!(writeln!(
+        writer,
+        ") -> {0}{1}RequestBuilder<'a, T> {{
+        {0}{1}RequestBuilder {{
+            _auth: self.auth,",
+        api_template.namespace,
+        endpoint.name
+    ));
+
+    for &(n, ref t) in endpoint.required_parameters.iter() {
+        try!(write!(writer, "            {}: ", n));
+        try!(match *t {
+            ParamType::String => writeln!(writer, "{}.into(),", n),
+            ParamType::List(_) => writeln!(writer, "collection_paramter({}),", n),
+            ParamType::StringList => writeln!(writer, "str_collection_parameter({}),", n),
+            _ => writeln!(writer, "{},", n),
+        });
+    }
+
+    for &(n, _) in endpoint.optional_parameters.iter() {
+        try!(writeln!(writer, "            {0}: None,", n));
+    }
+
+    writer.write_all(b"        }
+    }
+")
+}
+
+fn request_builder_struct<W: Write>(writer: &mut W, endpoint: &Endpoint, api_template: &parser::ApiTemplate) -> io::Result<()> {
+    fn field_type<'a>(pt: &'a ParamType<'a>) -> Cow<'a, str> {
+        match *pt {
+            ParamType::Normal(ref x) => Cow::Borrowed(x.as_ref()),
+            ParamType::String => Cow::Borrowed("Cow<'a, str>"),
+            ParamType::List(_) | ParamType::StringList => Cow::Borrowed("String"),
+        }
+    }
+
+    try!(write!(
+        writer,
+        "
+pub struct {}{}RequestBuilder<'a, T: Authenticator + 'a> {{
+    _auth: &'a T,
+",
+        api_template.namespace,
+        endpoint.name
+    ));
+
+    for &(n, ref t) in endpoint.required_parameters.iter() {
+        try!(writeln!(writer, "    {}: {},", n, field_type(t)));
+    }
+
+    for &(n, ref t) in endpoint.optional_parameters.iter() {
+        try!(writeln!(writer, "    {}: Option<{}>,", n, field_type(t)));
+    }
+
+    writer.write_all(b"}\n")
+}
+
+fn request_builder_impl<W: Write>(writer: &mut W, endpoint: &Endpoint, api_template: &parser::ApiTemplate) -> io::Result<()> {
+    try!(write!(
+        writer,
+        "\nimpl<'a, T: Authenticator> {}{}RequestBuilder<'a, T> {{",
+        api_template.namespace,
+        endpoint.name
+    ));
+
+    for &(n, ref t) in endpoint.optional_parameters.iter() {
+        try!(request_builder_setter(writer, n, t));
+    }
+
+    if endpoint.method == &parser::EndpointType::Impl {
+        unimplemented!();
+    } else {
+        try!(request_builder_execute(writer, endpoint));
+    }
+
+    writer.write_all(b"}\n")
+}
+
+fn request_builder_setter<W: Write>(writer: &mut W, name: &str, ty: &ParamType) -> io::Result<()> {
+    let mut p = FnParametersGenerator::new();
+    p.add_parameter("val", ty);
+
+    try!(write!(writer, "\n    pub fn {}", name));
+    try!(p.write_type_parameters(writer));
+    try!(writer.write_all(b"(&mut self"));
+    try!(p.write_parameters(writer));
+    write!(
+        writer,
+        ") -> &mut Self {{
+        self.{} = Some({});
+        self
+    }}
+",
+        name,
+        match *ty {
+            ParamType::String => "val.into()",
+            ParamType::List(_) => "collection_paramter(val)",
+            ParamType::StringList => "str_collection_parameter(val)",
+            _ => "val",
+        }
+    )
+}
+
+fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io::Result<()> {
+    let (method, url) = match *endpoint.method {
+        parser::EndpointType::Get(ref x) => ("Get", x),
+        parser::EndpointType::Post(ref x) => ("Post", x),
+        _ => unreachable!(),
+    };
+
+    try!(write!(
+        writer,
+         "
+    pub fn execute(&self) -> TwitterResult<{}> {{
+        ",
+        endpoint.return_type
+    ));
+
+    let capacity = endpoint.required_parameters.len() + endpoint.optional_parameters.len()
+        - if endpoint.reserved_parameter.is_some() { 1 } else { 0 };
+
+    if capacity > 0 { try!(writeln!(writer, "let mut params = Vec::with_capacity({});", capacity)) }
+    else { try!(writer.write_all(b"let params = Vec::<Parameter>::new();\n")) }
+
+    for &(p, _) in endpoint.required_parameters.iter() {
+        if endpoint.reserved_parameter == Some(p) { continue; }
+        try!(writeln!(
+            writer,
+            "        params.push(self.{0}.to_parameter(\"{0}\"));",
+            p
+        ));
+    }
+
+    for &(p, _) in endpoint.optional_parameters.iter() {
+        try!(writeln!(
+            writer,
+            "        if let Some(ref x) = self.{0} {{ params.push(x.to_parameter(\"{0}\")) }}",
+            p
+        ));
+    }
+
+    try!(writer.write_all(b"        let url = "));
+
+    if let Some(reserved) = endpoint.reserved_parameter {
+        try!(writeln!(
+            writer,
+            "format!(\"https://api.twitter.com/1.1/{}.json\", {1} = self.{1});",
+            url, reserved
+        ));
+    } else {
+        try!(writeln!(
+            writer,
+            "\"https://api.twitter.com/1.1/{}.json\";",
+            url
+        ));
+    }
+
+    write!(
+        writer,
+        "        execute_core(self._auth, {}, url, &params)
+    }}
+",
+        method
+    )
 }
