@@ -19,9 +19,18 @@ use models::*;
 pub mod application_only_authenticator;
 pub mod oauth_authenticator;
 
-pub enum Parameter<'a> {
-    Value(Cow<'a, str>, Cow<'a, str>),
-    File(Cow<'a, str>, &'a mut (Read + 'a))
+pub enum RequestContent<'a> {
+    KeyValuePairs(Cow<'a, [(Cow<'a, str>, )]>),
+    Stream(StreamContent<'a>),
+}
+
+pub enum ParameterValue<'a> {
+    Text(Cow<'a, str>),
+    File(&'a mut Read + 'a),
+}
+
+pub struct StreamContent<'a> {
+    // TODO: content_type, content_length, &'a mut Read + 'a
 }
 
 pub trait Authenticator {
