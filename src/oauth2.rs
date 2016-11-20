@@ -6,8 +6,7 @@ use hyper::Post;
 use hyper::header::Basic;
 use url::{percent_encoding, Url};
 use ::{ApplicationOnlyAuthenticator, TwitterResult};
-use conn::request_twitter;
-use conn::Parameter::Value;
+use conn::{ParameterValue, RequestContent, request_twitter};
 
 include!(concat!(env!("OUT_DIR"), "/oauth2_models.rs"));
 
@@ -34,7 +33,9 @@ impl<'a> TokenRequestBuilder<'a> {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/token").unwrap(),
-            &[Value(Cow::Borrowed("grant_type"), Cow::Borrowed(self.grant_type.as_ref()))],
+            RequestContent::KeyValuePairs(&[
+                (Cow::Borrowed("grant_type"), ParameterValue::Text(Cow::Borrowed(self.grant_type.as_ref())))
+            ]),
             Basic {
                 username: self.consumer_key.as_ref().to_owned(),
                 password: Some(self.consumer_secret.as_ref().to_owned())
@@ -67,10 +68,9 @@ impl<'a> InvalidateTokenRequestBuilder<'a> {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/invalidate_token").unwrap(),
-            &[Value(
-                Cow::Borrowed("access_token"),
-                access_token.decode_utf8_lossy()
-            )],
+            RequestContent::KeyValuePairs(&[
+                (Cow::Borrowed("access_token"), ParameterValue::Text(access_token.decode_utf8_lossy()))
+            ]),
             Basic {
                 username: self.consumer_key.as_ref().to_owned(),
                 password: Some(self.consumer_secret.as_ref().to_owned())

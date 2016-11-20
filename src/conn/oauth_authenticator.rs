@@ -4,7 +4,7 @@ use hyper::client::Response;
 use hyper::method::Method;
 use oauthcli::{OAuthAuthorizationHeaderBuilder, SignatureMethod};
 use url::Url;
-use super::{Authenticator, is_multipart, Parameter, send_request};
+use super::{Authenticator, is_multipart, ParameterValue, RequestContent, send_request};
 
 /// OAuth 1.0 wrapper
 #[derive(Clone, Debug)]
@@ -30,7 +30,7 @@ impl<'a> OAuthAuthenticator<'a> {
 }
 
 impl<'a> Authenticator for OAuthAuthenticator<'a> {
-    fn send_request(&self, method: Method, url: &str, params: &[Parameter]) -> hyper::Result<Response> {
+    fn send_request<'b>(&self, method: Method, url: &str, content: RequestContent<'b>) -> hyper::Result<Response> {
         match Url::parse(url) {
             Ok(ref u) => {
                 let authorization = {
@@ -43,17 +43,19 @@ impl<'a> Authenticator for OAuthAuthenticator<'a> {
                     );
                     builder.token(self.access_token.as_ref(), self.access_token_secret.as_ref());
 
-                    if !is_multipart(params) {
-                        builder.request_parameters(params.iter().map(|x| match x {
-                            &Parameter::Value(ref key, ref val) => (key.as_ref(), val.as_ref()),
-                            _ => unreachable!()
-                        }));
+                    if let RequestContent::KeyValuePairs(ref params) = content {
+                        if !is_multipart(params) {
+                            builder.request_parameters(params.iter().map(|x| match *x {
+                                (ref key, ParameterValue::Text(ref val)) => (key.as_ref(), val.as_ref()),
+                                _ => unreachable!()
+                            }));
+                        }
                     }
 
                     builder.finish_for_twitter()
                 };
 
-                send_request(method, u, params, authorization)
+                send_request(method, u, content, authorization)
             },
             Err(e) => Err(hyper::Error::Uri(e))
         }

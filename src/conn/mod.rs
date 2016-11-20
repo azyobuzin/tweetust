@@ -20,34 +20,36 @@ pub mod application_only_authenticator;
 pub mod oauth_authenticator;
 
 pub enum RequestContent<'a> {
-    KeyValuePairs(Cow<'a, [(Cow<'a, str>, )]>),
+    KeyValuePairs(&'a [(Cow<'a, str>, ParameterValue<'a>)]),
     Stream(StreamContent<'a>),
 }
 
 pub enum ParameterValue<'a> {
     Text(Cow<'a, str>),
-    File(&'a mut Read + 'a),
+    File(&'a mut Read),
 }
 
 pub struct StreamContent<'a> {
-    // TODO: content_type, content_length, &'a mut Read + 'a
+    pub content_type: hyper::mime::Mime,
+    pub content_length: Option<u64>,
+    pub content: &'a mut Read,
 }
 
 pub trait Authenticator {
-    fn send_request(&self, method: Method, url: &str, params: &[Parameter])
+    fn send_request<'a>(&self, method: Method, url: &str, content: RequestContent<'a>)
         -> hyper::Result<Response>;
 
-    fn request_twitter(&self, method: Method, url: &str, params: &[Parameter])
+    fn request_twitter<'a>(&self, method: Method, url: &str, content: RequestContent<'a>)
         -> TwitterResult<()>
     {
-        read_to_twitter_result(self.send_request(method, url, params))
+        read_to_twitter_result(self.send_request(method, url, content))
     }
 }
 
-fn is_multipart(params: &[Parameter]) -> bool {
+fn is_multipart<'a>(params: &[(Cow<'a, str>, ParameterValue<'a>)]) -> bool {
     params.iter().any(|x| match *x {
-        Parameter::Value(..) => false,
-        Parameter::File(..) => true
+        (_, ParameterValue::Text(..)) => false,
+        (_, ParameterValue::File(..)) => true
     })
 }
 
@@ -70,11 +72,9 @@ fn create_query<'a, I>(pairs: I) -> String
     s
 }
 
-pub fn send_request<S>(method: Method, url: &Url, params: &[Parameter], authorization: S) -> hyper::Result<Response>
+pub fn send_request<'a, S>(method: Method, url: &Url, content: RequestContent<'a>, authorization: S) -> hyper::Result<Response>
     where S: header::Scheme + Any
 {
-    // TODO: refactor
-
     let mut request_url = url.clone();
 
     let has_body = match method {
@@ -82,12 +82,12 @@ pub fn send_request<S>(method: Method, url: &Url, params: &[Parameter], authoriz
         _ => true
     };
 
-    if !has_body {
+    if let (false, &RequestContent::KeyValuePairs(ref params)) = (has_body, &content) {
         let query = create_query(
             url.query_pairs().chain(
-                params.iter().map(|x| match x {
-                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
-                    _ => panic!("the request whose method is GET, DELETE or HEAD has Parameter::File")
+                params.iter().map(|x| match *x {
+                    (ref key, ParameterValue::Text(ref val)) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
+                    _ => panic!("the request whose method is GET, DELETE or HEAD has ParameterValue::File")
                 })
             )
         );
@@ -99,21 +99,35 @@ pub fn send_request<S>(method: Method, url: &Url, params: &[Parameter], authoriz
     let mut req = client.request(method, request_url);
 
     if has_body {
-        if is_multipart(params) {
-            unimplemented!();
-        } else {
-            body = create_query(
-                params.iter().map(|x| match x {
-                    &Parameter::Value(ref key, ref val) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
-                    _ => unreachable!()
-                })
-            );
-            req = req.body(&body[..])
-                .header(header::ContentType(mime::Mime(
-                    mime::TopLevel::Application,
-                    mime::SubLevel::WwwFormUrlEncoded,
-                    Vec::new()
-                )));
+        match content {
+            RequestContent::KeyValuePairs(ref params) => {
+                if is_multipart(params) {
+                    unimplemented!();
+                } else {
+                    body = create_query(
+                        params.iter().map(|x| match *x {
+                            (ref key, ParameterValue::Text(ref val)) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
+                            _ => unreachable!()
+                        })
+                    );
+                    req = req.body(&body[..])
+                        .header(header::ContentType(mime::Mime(
+                            mime::TopLevel::Application,
+                            mime::SubLevel::WwwFormUrlEncoded,
+                            Vec::new()
+                        )));
+                }
+            },
+            RequestContent::Stream(s) => {
+                req =
+                    req.body(
+                        match s.content_length {
+                            Some(len) => hyper::client::Body::SizedBody(s.content, len),
+                            None => hyper::client::Body::ChunkedBody(s.content)
+                        }
+                    )
+                    .header(header::ContentType(s.content_type));
+            }
         }
     }
 
@@ -168,10 +182,10 @@ fn read_to_twitter_result(source: hyper::Result<Response>) -> TwitterResult<()> 
     }
 }
 
-pub fn request_twitter<S>(method: Method, url: Url, params: &[Parameter], authorization: S) -> TwitterResult<()>
+pub fn request_twitter<'a, S>(method: Method, url: Url, content: RequestContent<'a>, authorization: S) -> TwitterResult<()>
     where S: header::Scheme + Any
 {
-    read_to_twitter_result(send_request(method, &url, params, authorization))
+    read_to_twitter_result(send_request(method, &url, content, authorization))
 }
 
 pub fn parse_json<T: serde::de::Deserialize>(s: &str) -> serde_json::Result<T> {

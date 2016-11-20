@@ -1,6 +1,6 @@
 [package]
 name = "tweetust"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "The Twitter API wrapper"
 documentation = "https://docs.rs/tweetust/0.3.0/tweetust/"

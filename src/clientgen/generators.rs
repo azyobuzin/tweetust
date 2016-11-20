@@ -457,13 +457,13 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
         - if endpoint.reserved_parameter.is_some() { 1 } else { 0 };
 
     if capacity > 0 { try!(writeln!(writer, "let mut params = Vec::with_capacity({});", capacity)) }
-    else { try!(writer.write_all(b"let params = Vec::<Parameter>::new();\n")) }
+    else { try!(writer.write_all(b"let params = Vec::<(Cow<str>, ParameterValue)>::new();\n")) }
 
     for &(p, _) in endpoint.required_parameters.iter() {
         if endpoint.reserved_parameter == Some(p) { continue; }
         try!(writeln!(
             writer,
-            "        params.push(self.{0}.to_parameter(\"{0}\"));",
+            "        params.push((Cow::Borrowed(\"{0}\"), self.{0}.to_parameter_value()));",
             p
         ));
     }
@@ -471,7 +471,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
     for &(p, _) in endpoint.optional_parameters.iter() {
         try!(writeln!(
             writer,
-            "        if let Some(ref x) = self.{0} {{ params.push(x.to_parameter(\"{0}\")) }}",
+            "        if let Some(ref x) = self.{0} {{ params.push((Cow::Borrowed(\"{0}\"), x.to_parameter_value())) }}",
             p
         ));
     }
