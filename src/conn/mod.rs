@@ -35,6 +35,55 @@ pub struct StreamContent<'a> {
     pub content: &'a mut Read,
 }
 
+// TODO: Request オブジェクト, Authenticator を Authorization ヘッダーを作る責務に特化
+// TODO: HTTP通信を行う層を別trait化（hyper依存をなくすのはさすがに難しそう）
+
+pub struct Request<'a> {
+    method: Method,
+    url: Url,
+    content: Option<RequestContent<'a>>,
+}
+
+impl<'a> Request<'a> {
+    pub fn new(method: Method, url: &str, mut content: Option<RequestContent<'a>>) -> Result<Request<'a>, TwitterError> {
+        let mut request_url = try!(Url::parse(url));
+
+        match method  {
+            Get | Delete | Head => {
+                if let Some(RequestContent::KeyValuePairs(params)) = content {
+                    let mut query =  request_url.query_pairs_mut();
+                    for &(ref key, ref val) in params {
+                        match *val {
+                            ParameterValue::Text(ref val) => { query.append_pair(key.as_ref(), val.as_ref()); }
+                            _ => return Err(TwitterError::InvalidRequest)
+                        }
+                    }
+                    content = None;
+                }
+            }
+            _ => ()
+        }
+
+        Ok(Request { method: method, url: request_url, content: content })
+    }
+
+    pub fn method_and_url(self) -> (Method, Url) {
+        (self.method, self.url)
+    }
+
+    pub fn method_ref(&self) -> &Method {
+        &self.method
+    }
+
+    pub fn url_ref(&self) -> &Url {
+        &self.url
+    }
+
+    pub fn content(&self) -> Option<&RequestContent<'a>> {
+        self.content.as_ref()
+    }
+}
+
 pub trait Authenticator {
     fn send_request<'a>(&self, method: Method, url: &str, content: RequestContent<'a>)
         -> hyper::Result<Response>;

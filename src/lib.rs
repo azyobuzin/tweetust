@@ -58,6 +58,8 @@ pub mod oauth2;
 #[derive(Debug)]
 pub enum TwitterError {
     ErrorResponse(ErrorResponse),
+    UrlError(url::ParseError),
+    InvalidRequest,
     HttpError(hyper::Error),
     JsonError(serde_json::Error, TwitterResponse<()>),
     ParseError(TwitterResponse<()>)
@@ -71,9 +73,10 @@ impl Error for TwitterError {
     fn cause(&self) -> Option<&Error> {
         match *self {
             TwitterError::ErrorResponse(ref e) => Some(e),
+            TwitterError::UrlError(ref e) => Some(e),
             TwitterError::HttpError(ref e) => Some(e),
             TwitterError::JsonError(ref e, _) => Some(e),
-            TwitterError::ParseError(_) => None
+            TwitterError::InvalidRequest | TwitterError::ParseError(_) => None,
         }
     }
 }
@@ -82,9 +85,11 @@ impl fmt::Display for TwitterError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             TwitterError::ErrorResponse(ref e) => fmt::Display::fmt(e, f),
+            TwitterError::UrlError(ref e) => fmt::Display::fmt(e, f),
             TwitterError::HttpError(ref e) => fmt::Display::fmt(e, f),
-            TwitterError::JsonError(..) => fmt::Debug::fmt(self, f),
-            TwitterError::ParseError(ref e) => write!(f, "ParseError: {:?}", e)
+            TwitterError::JsonError(ref e, _) => fmt::Display::fmt(e, f),
+            TwitterError::InvalidRequest => f.write_str("invalid request"),
+            TwitterError::ParseError(ref e) => write!(f, "ParseError: {:?}", e),
         }
     }
 }
@@ -98,6 +103,12 @@ impl From<ErrorResponse> for TwitterError {
 impl From<hyper::Error> for TwitterError {
     fn from(err: hyper::Error) -> TwitterError {
         TwitterError::HttpError(err)
+    }
+}
+
+impl From<url::ParseError> for TwitterError {
+    fn from(err: url::ParseError) -> TwitterError {
+        TwitterError::UrlError(err)
     }
 }
 
