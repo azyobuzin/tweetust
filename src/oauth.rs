@@ -49,7 +49,7 @@ impl<'a> RequestTokenRequestBuilder<'a> {
         let request_token_url = Url::parse("https://api.twitter.com/oauth/request_token").unwrap();
         let mut params = Vec::new();
         if let Some(ref x) = self.x_auth_access_type {
-            params.push((Cow::Borrowed("x_auth_access_type"), ParameterValue::Text(Cow::Borrowed(&x))))
+            params.push((Cow::Borrowed("x_auth_access_type"), Cow::Borrowed(x.as_ref())))
         }
 
         let authorization =
@@ -61,14 +61,12 @@ impl<'a> RequestTokenRequestBuilder<'a> {
                 SignatureMethod::HmacSha1
             )
             .callback(self.oauth_callback.as_ref())
-            .request_parameters(params.iter().map(|x| match *x {
-                (ref key, ParameterValue::Text(ref val)) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
-                _ => unreachable!()
-            }))
+            .request_parameters(params.iter()
+                .map(|&(ref key, ref val)| (key.as_ref(), val.as_ref())))
             .finish_for_twitter();
 
         let res = try!(request_twitter(
-            Post, request_token_url, RequestContent::KeyValuePairs(&params), authorization));
+            Post, request_token_url, RequestContent::WwwForm(Cow::Owned(params)), authorization));
 
         let (oauth_token, oauth_token_secret, oauth_callback_confirmed) = {
             let v = form_urlencoded::parse(res.raw_response.as_bytes()).collect::<Vec<_>>();
@@ -155,7 +153,7 @@ impl<'a> AccessTokenRequestBuilder<'a> {
             .finish_for_twitter();
 
         let res = try!(request_twitter(
-            Post, access_token_url, RequestContent::KeyValuePairs(&[]), authorization));
+            Post, access_token_url, RequestContent::None, authorization));
 
         let t = {
             let v = form_urlencoded::parse(res.raw_response.as_bytes()).collect::<Vec<_>>();

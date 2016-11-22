@@ -44,7 +44,7 @@ pub fn str_collection_parameter<I, S>(values: I) -> String
 pub fn execute_core<'a, A, U, R>(auth: &A, method: Method, url: U, params: &'a [(Cow<'a, str>, ParameterValue<'a>)]) -> TwitterResult<R>
     where A: Authenticator, U: AsRef<str>, R: ::serde::de::Deserialize
 {
-    auth.request_twitter(method, url.as_ref(), RequestContent::KeyValuePairs(params))
+    auth.request_twitter(method, url.as_ref(), RequestContent::from_name_value_pairs(params))
         .and_then(|x| x.parse_to_object())
 }
 

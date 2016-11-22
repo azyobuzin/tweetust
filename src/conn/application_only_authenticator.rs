@@ -4,7 +4,7 @@ use hyper::client::Response;
 use hyper::header::Bearer;
 use hyper::method::Method;
 use url::Url;
-use super::{Authenticator, RequestContent, send_request};
+use super::{Authenticator, Request, RequestContent, send_request};
 
 #[derive(Clone, Debug)]
 pub struct ApplicationOnlyAuthenticator<'a> {
@@ -18,10 +18,16 @@ impl<'a> ApplicationOnlyAuthenticator<'a> {
 }
 
 impl<'a> Authenticator for ApplicationOnlyAuthenticator<'a> {
+    type Scheme = Bearer;
+
     fn send_request<'b>(&self, method: Method, url: &str, content: RequestContent<'b>) -> hyper::Result<Response> {
         match Url::parse(url) {
             Ok(ref u) => send_request(method, u, content, Bearer { token: self.access_token.as_ref().to_owned() }),
             Err(e) => Err(hyper::Error::Uri(e))
         }
+    }
+
+    fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
+        Some(Bearer { token: self.access_token.as_ref().to_owned() })
     }
 }

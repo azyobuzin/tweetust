@@ -33,9 +33,9 @@ impl<'a> TokenRequestBuilder<'a> {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/token").unwrap(),
-            RequestContent::KeyValuePairs(&[
-                (Cow::Borrowed("grant_type"), ParameterValue::Text(Cow::Borrowed(self.grant_type.as_ref())))
-            ]),
+            RequestContent::WwwForm(Cow::Borrowed(&[
+                (Cow::Borrowed("grant_type"), Cow::Borrowed(self.grant_type.as_ref()))
+            ])),
             Basic {
                 username: self.consumer_key.as_ref().to_owned(),
                 password: Some(self.consumer_secret.as_ref().to_owned())
@@ -68,9 +68,9 @@ impl<'a> InvalidateTokenRequestBuilder<'a> {
         let res = try!(request_twitter(
             Post,
             Url::parse("https://api.twitter.com/oauth2/invalidate_token").unwrap(),
-            RequestContent::KeyValuePairs(&[
-                (Cow::Borrowed("access_token"), ParameterValue::Text(access_token.decode_utf8_lossy()))
-            ]),
+            RequestContent::WwwForm(Cow::Borrowed(&[
+                (Cow::Borrowed("access_token"), access_token.decode_utf8_lossy())
+            ])),
             Basic {
                 username: self.consumer_key.as_ref().to_owned(),
                 password: Some(self.consumer_secret.as_ref().to_owned())

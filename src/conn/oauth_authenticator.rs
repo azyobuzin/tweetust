@@ -2,9 +2,9 @@ use std::borrow::Cow;
 use hyper;
 use hyper::client::Response;
 use hyper::method::Method;
-use oauthcli::{OAuthAuthorizationHeaderBuilder, SignatureMethod};
+use oauthcli::{OAuthAuthorizationHeader, OAuthAuthorizationHeaderBuilder, SignatureMethod};
 use url::Url;
-use super::{Authenticator, is_multipart, ParameterValue, RequestContent, send_request};
+use super::{Authenticator, is_multipart, Request, RequestContent, send_request};
 
 /// OAuth 1.0 wrapper
 #[derive(Clone, Debug)]
@@ -30,6 +30,8 @@ impl<'a> OAuthAuthenticator<'a> {
 }
 
 impl<'a> Authenticator for OAuthAuthenticator<'a> {
+    type Scheme = OAuthAuthorizationHeader;
+
     fn send_request<'b>(&self, method: Method, url: &str, content: RequestContent<'b>) -> hyper::Result<Response> {
         match Url::parse(url) {
             Ok(ref u) => {
@@ -43,13 +45,11 @@ impl<'a> Authenticator for OAuthAuthenticator<'a> {
                     );
                     builder.token(self.access_token.as_ref(), self.access_token_secret.as_ref());
 
-                    if let RequestContent::KeyValuePairs(ref params) = content {
-                        if !is_multipart(params) {
-                            builder.request_parameters(params.iter().map(|x| match *x {
-                                (ref key, ParameterValue::Text(ref val)) => (key.as_ref(), val.as_ref()),
-                                _ => unreachable!()
-                            }));
-                        }
+                    if let RequestContent::WwwForm(ref params) = content {
+                        builder.request_parameters(
+                            params.as_ref().iter()
+                                .map(|&(ref key, ref val)| (key.as_ref(), val.as_ref()))
+                        );
                     }
 
                     builder.finish_for_twitter()
@@ -59,5 +59,25 @@ impl<'a> Authenticator for OAuthAuthenticator<'a> {
             },
             Err(e) => Err(hyper::Error::Uri(e))
         }
+    }
+
+    fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
+        let mut builder = OAuthAuthorizationHeaderBuilder::new(
+            request.method.as_ref(),
+            &request.url,
+            self.consumer_key.as_ref(),
+            self.consumer_secret.as_ref(),
+            SignatureMethod::HmacSha1
+        );
+        builder.token(self.access_token.as_ref(), self.access_token_secret.as_ref());
+
+        if let RequestContent::WwwForm(ref params) = request.content {
+            builder.request_parameters(
+                params.as_ref().iter()
+                    .map(|&(ref key, ref val)| (key.as_ref(), val.as_ref()))
+            );
+        }
+
+        Some(builder.finish_for_twitter())
     }
 }
