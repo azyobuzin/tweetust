@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use hyper::{Get, Post};
 use ::TwitterResult;
-use conn::{Authenticator, ParameterValue};
+use conn::*;
 use models::*;
 use self::helper::*;
 

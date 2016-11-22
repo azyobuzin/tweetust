@@ -1,10 +1,6 @@
 use std::borrow::Cow;
-use hyper;
-use hyper::client::Response;
-use hyper::method::Method;
 use oauthcli::{OAuthAuthorizationHeader, OAuthAuthorizationHeaderBuilder, SignatureMethod};
-use url::Url;
-use super::{Authenticator, is_multipart, Request, RequestContent, send_request};
+use super::*;
 
 /// OAuth 1.0 wrapper
 #[derive(Clone, Debug)]
@@ -31,35 +27,6 @@ impl<'a> OAuthAuthenticator<'a> {
 
 impl<'a> Authenticator for OAuthAuthenticator<'a> {
     type Scheme = OAuthAuthorizationHeader;
-
-    fn send_request<'b>(&self, method: Method, url: &str, content: RequestContent<'b>) -> hyper::Result<Response> {
-        match Url::parse(url) {
-            Ok(ref u) => {
-                let authorization = {
-                    let mut builder = OAuthAuthorizationHeaderBuilder::new(
-                        method.as_ref(),
-                        u,
-                        self.consumer_key.as_ref(),
-                        self.consumer_secret.as_ref(),
-                        SignatureMethod::HmacSha1
-                    );
-                    builder.token(self.access_token.as_ref(), self.access_token_secret.as_ref());
-
-                    if let RequestContent::WwwForm(ref params) = content {
-                        builder.request_parameters(
-                            params.as_ref().iter()
-                                .map(|&(ref key, ref val)| (key.as_ref(), val.as_ref()))
-                        );
-                    }
-
-                    builder.finish_for_twitter()
-                };
-
-                send_request(method, u, content, authorization)
-            },
-            Err(e) => Err(hyper::Error::Uri(e))
-        }
-    }
 
     fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
         let mut builder = OAuthAuthorizationHeaderBuilder::new(

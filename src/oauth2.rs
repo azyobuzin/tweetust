@@ -4,15 +4,40 @@
 use std::borrow::Cow;
 use hyper::Post;
 use hyper::header::Basic;
-use url::{percent_encoding, Url};
+use url::percent_encoding;
 use ::{ApplicationOnlyAuthenticator, TwitterResult};
-use conn::{ParameterValue, RequestContent, request_twitter};
+use conn::*;
 
 include!(concat!(env!("OUT_DIR"), "/oauth2_models.rs"));
 
 impl TokenResponse {
     pub fn to_authenticator<'a>(self) -> ApplicationOnlyAuthenticator<'a> {
         ApplicationOnlyAuthenticator::new(self.access_token)
+    }
+}
+
+struct CkCsBasicAuthenticator<'a> {
+    consumer_key: &'a str,
+    consumer_secret: &'a str,
+}
+
+impl<'a> CkCsBasicAuthenticator<'a> {
+    fn new(consumer_key: &'a str, consumer_secret: &'a str) -> CkCsBasicAuthenticator<'a> {
+        CkCsBasicAuthenticator {
+            consumer_key: consumer_key,
+            consumer_secret: consumer_secret,
+        }
+    }
+}
+
+impl<'a> Authenticator for CkCsBasicAuthenticator<'a> {
+    type Scheme = Basic;
+
+    fn create_authorization_header(&self, _: &Request) -> Option<Self::Scheme> {
+        Some(Basic {
+            username: self.consumer_key.to_owned(),
+            password: Some(self.consumer_secret.to_owned())
+        })
     }
 }
 
@@ -29,19 +54,23 @@ impl<'a> TokenRequestBuilder<'a> {
         self
     }
 
-    pub fn execute(&self) -> TwitterResult<TokenResponse> {
-        let res = try!(request_twitter(
+    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<TokenResponse> {
+        let params = [(Cow::Borrowed("grant_type"), Cow::Borrowed(self.grant_type.as_ref()))];
+
+        let req = try!(Request::new(
             Post,
-            Url::parse("https://api.twitter.com/oauth2/token").unwrap(),
-            RequestContent::WwwForm(Cow::Borrowed(&[
-                (Cow::Borrowed("grant_type"), Cow::Borrowed(self.grant_type.as_ref()))
-            ])),
-            Basic {
-                username: self.consumer_key.as_ref().to_owned(),
-                password: Some(self.consumer_secret.as_ref().to_owned())
-            }
+            "https://api.twitter.com/oauth2/token",
+            RequestContent::WwwForm(Cow::Borrowed(&params))
         ));
-        res.parse_to_object()
+
+        try!(handler.send_request(
+            req,
+            &CkCsBasicAuthenticator::new(&self.consumer_key, &self.consumer_secret)
+        )).parse_to_object()
+    }
+
+    pub fn execute(&self) -> TwitterResult<TokenResponse> {
+        self.execute_with_handler(&DefaultHttpHandler::new())
     }
 }
 
@@ -63,20 +92,24 @@ pub struct InvalidateTokenRequestBuilder<'a> {
 }
 
 impl<'a> InvalidateTokenRequestBuilder<'a> {
-    pub fn execute(&self) -> TwitterResult<InvalidateTokenResponse> {
+    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<InvalidateTokenResponse> {
         let access_token = percent_encoding::percent_decode(self.access_token.as_ref().as_bytes());
-        let res = try!(request_twitter(
+        let params = [(Cow::Borrowed("access_token"), access_token.decode_utf8_lossy())];
+
+        let req = try!(Request::new(
             Post,
-            Url::parse("https://api.twitter.com/oauth2/invalidate_token").unwrap(),
-            RequestContent::WwwForm(Cow::Borrowed(&[
-                (Cow::Borrowed("access_token"), access_token.decode_utf8_lossy())
-            ])),
-            Basic {
-                username: self.consumer_key.as_ref().to_owned(),
-                password: Some(self.consumer_secret.as_ref().to_owned())
-            }
+            "https://api.twitter.com/oauth2/invalidate_token",
+            RequestContent::WwwForm(Cow::Borrowed(&params))
         ));
-        res.parse_to_object()
+
+        try!(handler.send_request(
+            req,
+            &CkCsBasicAuthenticator::new(&self.consumer_key, &self.consumer_secret)
+        )).parse_to_object()
+    }
+
+    pub fn execute(&self) -> TwitterResult<InvalidateTokenResponse> {
+        self.execute_with_handler(&DefaultHttpHandler::new())
     }
 }
 

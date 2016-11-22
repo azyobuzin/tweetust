@@ -3,11 +3,11 @@
 //! [PIN-based OAuth](https://dev.twitter.com/oauth/pin-based).
 
 use std::borrow::Cow;
-use hyper::{Post, Url};
-use oauthcli::{OAuthAuthorizationHeaderBuilder, SignatureMethod};
+use hyper::Post;
+use oauthcli::{OAuthAuthorizationHeader, OAuthAuthorizationHeaderBuilder, SignatureMethod};
 use url::form_urlencoded;
 use ::{OAuthAuthenticator, TwitterError, TwitterResult};
-use conn::{ParameterValue, RequestContent, request_twitter};
+use conn::*;
 use models::TwitterResponse;
 
 #[derive(Clone, Debug)]
@@ -45,28 +45,38 @@ impl<'a> RequestTokenRequestBuilder<'a> {
         self
     }
 
-    pub fn execute(&self) -> TwitterResult<RequestTokenResponse> {
-        let request_token_url = Url::parse("https://api.twitter.com/oauth/request_token").unwrap();
+    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<RequestTokenResponse> {
+        struct RequestTokenAuthenticator<'a> { b: &'a RequestTokenRequestBuilder<'a> }
+        impl<'a> Authenticator for RequestTokenAuthenticator<'a> {
+            type Scheme = OAuthAuthorizationHeader;
+
+            fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
+                let mut builder = OAuthAuthorizationHeaderBuilder::new(
+                    request.method.as_ref(),
+                    &request.url,
+                    self.b.consumer_key.as_ref(),
+                    self.b.consumer_secret.as_ref(),
+                    SignatureMethod::HmacSha1
+                );
+
+                if let RequestContent::WwwForm(ref params) = request.content {
+                    builder.request_parameters(
+                        params.as_ref().iter()
+                            .map(|&(ref key, ref val)| (key.as_ref(), val.as_ref()))
+                    );
+                }
+
+                Some(builder.callback(self.b.oauth_callback.as_ref()).finish_for_twitter())
+            }
+        }
+
         let mut params = Vec::new();
         if let Some(ref x) = self.x_auth_access_type {
             params.push((Cow::Borrowed("x_auth_access_type"), Cow::Borrowed(x.as_ref())))
         }
 
-        let authorization =
-            OAuthAuthorizationHeaderBuilder::new(
-                "POST",
-                &request_token_url,
-                self.consumer_key.as_ref(),
-                self.consumer_secret.as_ref(),
-                SignatureMethod::HmacSha1
-            )
-            .callback(self.oauth_callback.as_ref())
-            .request_parameters(params.iter()
-                .map(|&(ref key, ref val)| (key.as_ref(), val.as_ref())))
-            .finish_for_twitter();
-
-        let res = try!(request_twitter(
-            Post, request_token_url, RequestContent::WwwForm(Cow::Owned(params)), authorization));
+        let req = try!(Request::new(Post, "https://api.twitter.com/oauth/request_token", RequestContent::WwwForm(Cow::Owned(params))));
+        let res = try!(handler.send_request(req, &RequestTokenAuthenticator{ b: self }));
 
         let (oauth_token, oauth_token_secret, oauth_callback_confirmed) = {
             let v = form_urlencoded::parse(res.raw_response.as_bytes()).collect::<Vec<_>>();
@@ -92,6 +102,10 @@ impl<'a> RequestTokenRequestBuilder<'a> {
                 }),
             _ => Err(TwitterError::ParseError(res))
         }
+    }
+
+    pub fn execute(&self) -> TwitterResult<RequestTokenResponse> {
+        self.execute_with_handler(&DefaultHttpHandler::new())
     }
 }
 
@@ -137,23 +151,37 @@ pub struct AccessTokenRequestBuilder<'a> {
 }
 
 impl<'a> AccessTokenRequestBuilder<'a> {
-    pub fn execute(&self) -> TwitterResult<AccessTokenResponse> {
-        let access_token_url = Url::parse("https://api.twitter.com/oauth/access_token").unwrap();
+    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<AccessTokenResponse> {
+        struct AccessTokenAuthenticator<'a> { b: &'a AccessTokenRequestBuilder<'a> }
+        impl<'a> Authenticator for AccessTokenAuthenticator<'a> {
+            type Scheme = OAuthAuthorizationHeader;
 
-        let authorization =
-            OAuthAuthorizationHeaderBuilder::new(
-                "POST",
-                &access_token_url,
-                self.consumer_key.as_ref(),
-                self.consumer_secret.as_ref(),
-                SignatureMethod::HmacSha1
-            )
-            .token(self.oauth_token.as_ref(), self.oauth_token_secret.as_ref())
-            .verifier(self.oauth_verifier.as_ref())
-            .finish_for_twitter();
+            fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
+                let mut builder = OAuthAuthorizationHeaderBuilder::new(
+                    request.method.as_ref(),
+                    &request.url,
+                    self.b.consumer_key.as_ref(),
+                    self.b.consumer_secret.as_ref(),
+                    SignatureMethod::HmacSha1
+                );
 
-        let res = try!(request_twitter(
-            Post, access_token_url, RequestContent::None, authorization));
+                if let RequestContent::WwwForm(ref params) = request.content {
+                    builder.request_parameters(
+                        params.as_ref().iter()
+                            .map(|&(ref key, ref val)| (key.as_ref(), val.as_ref()))
+                    );
+                }
+
+                Some(builder
+                    .token(self.b.oauth_token.as_ref(), self.b.oauth_token_secret.as_ref())
+                    .verifier(self.b.oauth_verifier.as_ref())
+                    .finish_for_twitter()
+                )
+            }
+        }
+
+        let req = try!(Request::new(Post, "https://api.twitter.com/oauth/access_token", RequestContent::None));
+        let res = try!(handler.send_request(req, &AccessTokenAuthenticator{ b: self }));
 
         let t = {
             let v = form_urlencoded::parse(res.raw_response.as_bytes()).collect::<Vec<_>>();
@@ -181,6 +209,10 @@ impl<'a> AccessTokenRequestBuilder<'a> {
                 }),
             _ => Err(TwitterError::ParseError(res))
         }
+    }
+
+    pub fn execute(&self) -> TwitterResult<AccessTokenResponse> {
+        self.execute_with_handler(&DefaultHttpHandler::new())
     }
 }
 

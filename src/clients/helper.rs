@@ -3,7 +3,7 @@ use std::fmt;
 use std::fmt::Write;
 use hyper::method::Method;
 use ::TwitterResult;
-use conn::{Authenticator, ParameterValue, RequestContent};
+use conn::*;
 use models::TweetMode;
 
 pub fn collection_paramter<I, D>(values: I) -> String
@@ -41,11 +41,12 @@ pub fn str_collection_parameter<I, S>(values: I) -> String
     dest
 }
 
-pub fn execute_core<'a, A, U, R>(auth: &A, method: Method, url: U, params: &'a [(Cow<'a, str>, ParameterValue<'a>)]) -> TwitterResult<R>
-    where A: Authenticator, U: AsRef<str>, R: ::serde::de::Deserialize
+pub fn execute_core<'a, A, H, U, R>(client: &super::TwitterClient<A, H>, method: Method,
+    url: U, params: &'a [(Cow<'a, str>, ParameterValue<'a>)]) -> TwitterResult<R>
+    where A: Authenticator, H: HttpHandler, U: AsRef<str>, R: ::serde::de::Deserialize
 {
-    auth.request_twitter(method, url.as_ref(), RequestContent::from_name_value_pairs(params))
-        .and_then(|x| x.parse_to_object())
+    let req = try!(Request::new(method, url.as_ref(), RequestContent::from_name_value_pairs(params)));
+    try!(client.handler.send_request(req, &client.auth)).parse_to_object()
 }
 
 pub trait ToParameterValue<'a> {

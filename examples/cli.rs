@@ -8,7 +8,7 @@ use std::io;
 use std::io::prelude::*;
 use tweetust::*;
 
-type Client<'a> = TwitterClient<OAuthAuthenticator<'a>>;
+type Client<'a> = TwitterClient<OAuthAuthenticator<'a>, conn::DefaultHttpHandler>;
 
 macro_rules! cmds_map {
     ($(($name:expr, $cmd:expr),)*) => {{

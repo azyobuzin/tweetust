@@ -8,11 +8,26 @@ use inflector::Inflector;
 pub fn twitter_client<W: Write>(writer: &mut W, input: &[parser::ApiTemplate]) -> io::Result<()> {
     try!(writer.write_all(b"\
 #[derive(Clone, Debug)]
-pub struct TwitterClient<T: Authenticator> { auth: T }
+pub struct TwitterClient<A: Authenticator, H: HttpHandler> {
+    auth: A,
+    handler: H,
+}
 
-impl<T: Authenticator> TwitterClient<T> {
-    pub fn new(authenticator: T) -> TwitterClient<T> {
-        TwitterClient { auth: authenticator }
+impl<A: Authenticator> TwitterClient<A, DefaultHttpHandler> {
+    pub fn new(authenticator: A) -> TwitterClient<A, DefaultHttpHandler> {
+        TwitterClient {
+            auth: authenticator,
+            handler: DefaultHttpHandler::new(),
+        }
+    }
+}
+
+impl<A: Authenticator, H: HttpHandler> TwitterClient<A, H> {
+    pub fn with_http_handler(authenticator: A, http_handler: H) -> TwitterClient<A, H> {
+        TwitterClient {
+            auth: authenticator,
+            handler: http_handler,
+        }
     }
 "));
 
@@ -20,8 +35,8 @@ impl<T: Authenticator> TwitterClient<T> {
         try!(writeln!(
             writer,
             "
-    pub fn {}(&self) -> {}Client<T> {{
-        {1}Client {{ auth: &self.auth }}
+    pub fn {}(&self) -> {}Client<A, H> {{
+        {1}Client {{ client: self }}
     }}",
             api.namespace.to_snake_case(),
             api.namespace
@@ -296,7 +311,9 @@ fn client_struct<W: Write>(writer: &mut W, api_template: &parser::ApiTemplate) -
     write!(
         writer,
         "#[derive(Clone, Debug)]
-pub struct {}Client<'a, T: Authenticator + 'a> {{ auth: &'a T }}
+pub struct {}Client<'a, A: 'a + Authenticator, H: 'a + HttpHandler> {{
+    client: &'a TwitterClient<A, H>
+}}
 ",
         api_template.namespace
     )
@@ -305,7 +322,7 @@ pub struct {}Client<'a, T: Authenticator + 'a> {{ auth: &'a T }}
 fn client_impl<W: Write>(writer: &mut W, api_template: &parser::ApiTemplate, endpoints: &[Endpoint]) -> io::Result<()> {
     try!(write!(
         writer,
-        "\nimpl<'a, T: Authenticator> {0}Client<'a, T> {{",
+        "\nimpl<'a, A: Authenticator, H: HttpHandler> {0}Client<'a, A, H> {{",
         api_template.namespace
     ));
 
@@ -336,9 +353,9 @@ fn client_impl_fn<W: Write>(writer: &mut W, endpoint: &Endpoint, api_template: &
     try!(p.write_parameters(writer));
     try!(writeln!(
         writer,
-        ") -> {0}{1}RequestBuilder<'a, T> {{
+        ") -> {0}{1}RequestBuilder<'a, A, H> {{
         {0}{1}RequestBuilder {{
-            _auth: self.auth,",
+            _client: self.client,",
         api_template.namespace,
         endpoint.name
     ));
@@ -374,8 +391,8 @@ fn request_builder_struct<W: Write>(writer: &mut W, endpoint: &Endpoint, api_tem
     try!(write!(
         writer,
         "
-pub struct {}{}RequestBuilder<'a, T: Authenticator + 'a> {{
-    _auth: &'a T,
+pub struct {}{}RequestBuilder<'a, A: 'a + Authenticator, H: 'a + HttpHandler> {{
+    _client: &'a TwitterClient<A, H>,
 ",
         api_template.namespace,
         endpoint.name
@@ -395,7 +412,7 @@ pub struct {}{}RequestBuilder<'a, T: Authenticator + 'a> {{
 fn request_builder_impl<W: Write>(writer: &mut W, endpoint: &Endpoint, api_template: &parser::ApiTemplate) -> io::Result<()> {
     try!(write!(
         writer,
-        "\nimpl<'a, T: Authenticator> {}{}RequestBuilder<'a, T> {{",
+        "\nimpl<'a, A: Authenticator, H: HttpHandler> {}{}RequestBuilder<'a, A, H> {{",
         api_template.namespace,
         endpoint.name
     ));
@@ -494,7 +511,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
 
     write!(
         writer,
-        "        execute_core(self._auth, {}, url, &params)
+        "        execute_core(self._client, {}, url, &params)
     }}
 ",
         method

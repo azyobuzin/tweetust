@@ -93,18 +93,6 @@ impl<'a> Request<'a> {
 
 pub trait Authenticator {
     type Scheme: header::Scheme + Any;
-
-    // TODO: remove
-    fn send_request<'a>(&self, method: Method, url: &str, content: RequestContent<'a>)
-        -> hyper::Result<Response>;
-
-    // TODO: remove
-    fn request_twitter<'a>(&self, method: Method, url: &str, content: RequestContent<'a>)
-        -> TwitterResult<()>
-    {
-        read_to_twitter_result(try!(self.send_request(method, url, content)))
-    }
-
     fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme>;
 }
 
@@ -164,14 +152,6 @@ impl HttpHandler for DefaultHttpHandler {
     }
 }
 
-// TODO: remove
-fn is_multipart<'a>(params: &[(Cow<'a, str>, ParameterValue<'a>)]) -> bool {
-    params.iter().any(|x| match *x {
-        (_, ParameterValue::Text(..)) => false,
-        (_, ParameterValue::File(..)) => true
-    })
-}
-
 fn create_query<'a, I>(pairs: I) -> String
     where I: Iterator<Item=(Cow<'a, str>, Cow<'a, str>)>
 {
@@ -189,46 +169,6 @@ fn create_query<'a, I>(pairs: I) -> String
         ).unwrap();
     }
     s
-}
-
-// TODO: remove
-pub fn send_request<'a, S>(method: Method, url: &Url, content: RequestContent<'a>, authorization: S) -> hyper::Result<Response>
-    where S: header::Scheme + Any
-{
-    let mut request_url = url.clone();
-
-    let client = hyper::Client::new();
-    let body;
-    let mut req = client.request(method, request_url);
-
-    match content {
-        RequestContent::None => (),
-        RequestContent::WwwForm(ref params) => {
-            body = create_query(
-                params.as_ref().iter()
-                    .map(|&(ref key, ref val)| (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())))
-            );
-            req = req.body(&body[..])
-                .header(header::ContentType(mime::Mime(
-                    mime::TopLevel::Application,
-                    mime::SubLevel::WwwFormUrlEncoded,
-                    Vec::new()
-                )));
-        }
-        RequestContent::MultipartFormData(_) => unimplemented!(),
-        RequestContent::Stream(s) => {
-            req =
-                req.body(
-                    match s.content_length {
-                        Some(len) => hyper::client::Body::SizedBody(s.content, len),
-                        None => hyper::client::Body::ChunkedBody(s.content)
-                    }
-                )
-                .header(header::ContentType(s.content_type));
-        }
-    }
-
-    req.header(header::Authorization(authorization)).send()
 }
 
 include!(concat!(env!("OUT_DIR"), "/conn/internal_error_response.rs"));
@@ -273,13 +213,6 @@ pub fn read_to_twitter_result(mut res: Response) -> TwitterResult<()> {
         },
         Err(e) => Err(TwitterError::HttpError(hyper::Error::Io(e)))
     }
-}
-
-// TODO: remove
-pub fn request_twitter<'a, S>(method: Method, url: Url, content: RequestContent<'a>, authorization: S) -> TwitterResult<()>
-    where S: header::Scheme + Any
-{
-    read_to_twitter_result(try!(send_request(method, &url, content, authorization)))
 }
 
 pub fn parse_json<T: serde::de::Deserialize>(s: &str) -> serde_json::Result<T> {

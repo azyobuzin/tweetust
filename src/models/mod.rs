@@ -41,12 +41,12 @@ impl TwitterResponse<()> {
 }
 
 // https://serde.rs/enum-str.html
-// TODO: 任意の文字列を受け付けるようにするべき？
 macro_rules! enum_str {
     ($name:ident { $($variant:ident($str:expr), )* }) => {
-        #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+        #[derive(Clone, Debug, Eq, PartialEq, Hash)]
         pub enum $name {
             $($variant,)*
+            Other(String)
         }
 
         impl ::serde::Serialize for $name {
@@ -56,6 +56,7 @@ macro_rules! enum_str {
                 // Serialize the enum as a string.
                 serializer.serialize_str(match *self {
                     $( $name::$variant => $str, )*
+                    $name::Other(ref x) => x.as_ref(),
                 })
             }
         }
@@ -74,9 +75,7 @@ macro_rules! enum_str {
                     {
                         match value {
                             $( $str => Ok($name::$variant), )*
-                            _ => Err(E::invalid_value(
-                                &format!("unknown {} variant: {}",
-                                stringify!($name), value))),
+                            x => Ok($name::Other(x.to_owned())),
                         }
                     }
                 }
