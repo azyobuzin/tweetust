@@ -109,8 +109,8 @@ pub struct VideoVariant {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UrlEntity {
-    pub display_url: String,
-    pub expanded_url: String,
+    pub display_url: Option<String>,
+    pub expanded_url: Option<String>,
     pub indices: TextRange,
     pub url: String
 }

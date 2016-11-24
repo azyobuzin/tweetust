@@ -22,6 +22,7 @@ fn main() {
     let client = create_client();
 
     let cmds = cmds_map! {
+        ("account", CmdAccount::new()),
         ("statuses", CmdStatuses::new()),
         ("quit", CmdQuit),
     };
@@ -164,6 +165,42 @@ fn handle<O, E, F>(result: Result<O, E>, action: F)
     match result {
         Ok(x) => action(x),
         Err(x) => println!("Error\n{:?}", x)
+    }
+}
+
+struct CmdAccount { cmds: CommandMap }
+impl CmdAccount {
+    fn new() -> CmdAccount {
+        CmdAccount {
+            cmds: cmds_map! {
+                ("profileimage", CmdAccountProfileImage),
+            }
+        }
+    }
+}
+impl Command for CmdAccount {
+    fn run(&self, reader: InputReader, client: &Client) {
+        self.cmds.run(reader, client);
+    }
+}
+
+struct CmdAccountProfileImage;
+impl Command for CmdAccountProfileImage {
+    fn run(&self, mut reader: InputReader, client: &Client) {
+        if let Some(file_name) = reader.next() {
+            handle(
+                fs::File::open(file_name),
+                |mut f| handle(
+                    client.account()
+                        .update_profile_image(&mut f)
+                        .tweet_mode(models::TweetMode::Extended)
+                        .execute(),
+                    |x| println!("{:?}", x)
+                )
+            );
+        } else {
+            println!("Usage: account profileimage \"file path\"");
+        }
     }
 }
 
