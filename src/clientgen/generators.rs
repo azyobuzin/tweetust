@@ -511,7 +511,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
 
     write!(
         writer,
-        "        execute_core(self._client, {}, url, &params)
+        "        execute_core(self._client, {}, url, params)
     }}
 ",
         method

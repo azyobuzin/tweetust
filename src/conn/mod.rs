@@ -11,8 +11,6 @@ use hyper::status::StatusClass;
 use multipart::client::Multipart;
 use oauthcli;
 use url::{percent_encoding, Url};
-use serde;
-use serde_json;
 use ::{parse_json, TwitterError, TwitterResult};
 use models::*;
 
@@ -22,12 +20,12 @@ pub mod oauth_authenticator;
 pub enum RequestContent<'a> {
     None,
     WwwForm(Cow<'a, [(Cow<'a, str>, Cow<'a, str>)]>),
-    MultipartFormData(&'a [(Cow<'a, str>, ParameterValue<'a>)]),
+    MultipartFormData(Vec<(Cow<'a, str>, ParameterValue<'a>)>),
     Stream(StreamContent<'a>),
 }
 
 impl<'a> RequestContent<'a> {
-    pub fn from_name_value_pairs(pairs: &'a [(Cow<'a, str>, ParameterValue<'a>)]) -> RequestContent<'a> {
+    pub fn from_name_value_pairs(pairs: Vec<(Cow<'a, str>, ParameterValue<'a>)>) -> RequestContent<'a> {
         if pairs.is_empty() {
              RequestContent::None
         } else if pairs.iter()
@@ -39,9 +37,9 @@ impl<'a> RequestContent<'a> {
             RequestContent::MultipartFormData(pairs)
         } else {
             RequestContent::WwwForm(Cow::Owned(
-                pairs.iter()
-                    .map(|&(ref key, ref val)| match *val {
-                        ParameterValue::Text(ref val) => (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())),
+                pairs.into_iter()
+                    .map(|(key, val)| match val {
+                        ParameterValue::Text(val) => (key, val),
                         ParameterValue::File(_) => unreachable!(),
                     })
                     .collect()
@@ -52,7 +50,7 @@ impl<'a> RequestContent<'a> {
 
 pub enum ParameterValue<'a> {
     Text(Cow<'a, str>),
-    File(&'a mut Box<Read>),
+    File(Box<Read>),
 }
 
 pub struct StreamContent<'a> {
@@ -152,10 +150,10 @@ impl HttpHandler for DefaultHttpHandler {
             }
             RequestContent::MultipartFormData(params) => {
                 let mut multipart = try!(Multipart::from_request(req));
-                for &(ref key, ref val) in params {
-                    try!(match *val {
-                        ParameterValue::Text(ref x) => multipart.write_text(key, x),
-                        ParameterValue::File(ref x) => multipart.write_stream(key, &mut *x, Some("file"), None),
+                for (key, val) in params {
+                    try!(match val {
+                        ParameterValue::Text(x) => multipart.write_text(key, x),
+                        ParameterValue::File(mut x) => multipart.write_stream(key, &mut x, Some("file"), None),
                     });
                 }
                 multipart.send()

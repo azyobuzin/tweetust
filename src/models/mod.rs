@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use chrono;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-use ::{conn, parse_json, TwitterError, TwitterResult};
+use ::{parse_json, TwitterError, TwitterResult};
 
 #[derive(Clone, Copy, Debug)]
 pub struct RateLimitStatus {
