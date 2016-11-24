@@ -3,6 +3,7 @@ use std;
 use std::borrow::Cow;
 use std::io;
 use std::io::prelude::*;
+use std::mem;
 use inflector::Inflector;
 
 pub fn twitter_client<W: Write>(writer: &mut W, input: &[parser::ApiTemplate]) -> io::Result<()> {
@@ -90,6 +91,14 @@ enum ParamType<'a> {
     String,
     List(Cow<'a, str>),
     StringList,
+    Stream,
+}
+
+#[derive(Debug)]
+#[allow(dead_code)]
+enum ParamTypeError {
+    Ignore,
+    Unsupported,
 }
 
 #[derive(Debug)]
@@ -139,6 +148,10 @@ impl FnParametersGenerator {
                 let as_ref_index = self.add_type_parameter("AsRef<str>");
                 let into_iter_index = self.add_type_parameter(format!("IntoIterator<Item = T{}>", as_ref_index));
                 self.write_type_param(into_iter_index);
+            }
+            ParamType::Stream => {
+                let t = self.add_type_parameter("Into<Box<Read>>");
+                self.write_type_param(t);
             }
         }
     }
@@ -200,7 +213,7 @@ fn create_return_type<'a>(endpoint: &'a parser::Endpoint, api_template: &parser:
 }
 
 /// Returns None if the return type is not supported.
-fn create_param_type<'a>(tn: &'a parser::TypeNamePair, endpoint: &parser::Endpoint, api_template: &parser::ApiTemplate) -> Option<ParamType<'a>> {
+fn create_param_type<'a>(tn: &'a parser::TypeNamePair, endpoint: &parser::Endpoint, api_template: &parser::ApiTemplate) -> Result<ParamType<'a>, ParamTypeError> {
     fn core<'a>(ty: &'a str) -> Cow<'a, str> {
         match ty {
             "int" => Cow::Borrowed("i32"),
@@ -211,28 +224,29 @@ fn create_param_type<'a>(tn: &'a parser::TypeNamePair, endpoint: &parser::Endpoi
     }
 
     match tn.param_type.as_ref() {
-        "string" => Some(ParamType::String),
-        "Stream" => {
-            warn!("Unsupported parameter type `Stream`: {}.{}", api_template.namespace, endpoint.name);
-            None
-        },
-        "IEnumerable<string>" => Some(ParamType::StringList),
-        x if x.starts_with("IEnumerable<") => Some(ParamType::List(core(&x[12..x.len() - 1]))),
-        x => Some(ParamType::Normal(core(x))),
+        "string" => Ok(ParamType::String),
+        "Stream" => Ok(ParamType::Stream),
+        "IEnumerable<byte>" => {
+            info!("Ignore `IEnumerable<byte>` parameter: {}.{}", api_template.namespace, endpoint.name);
+            Err(ParamTypeError::Ignore)
+        }
+        "IEnumerable<string>" => Ok(ParamType::StringList),
+        x if x.starts_with("IEnumerable<") => Ok(ParamType::List(core(&x[12..x.len() - 1]))),
+        x => Ok(ParamType::Normal(core(x))),
     }
 }
 
 fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser::ApiTemplate) -> Option<Endpoint<'a>> {
-    if endpoint.endpoint_type == parser::EndpointType::Impl {
-        warn!("Requires custom execute function: {}.{}", api_template.namespace, endpoint.name);
-        return None;
-    }
-
     for &(ref attr_name, _) in endpoint.attributes.iter() {
         if attr_name == "Obsolete" {
             info!("Ignored obsolete member: {}.{}", api_template.namespace, endpoint.name);
             return None;
         }
+    }
+
+    if endpoint.endpoint_type == parser::EndpointType::Impl {
+        warn!("Requires custom execute function: {}.{}", api_template.namespace, endpoint.name);
+        return None;
     }
 
     if endpoint.json_path.is_some() {
@@ -245,40 +259,48 @@ fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser:
     };
 
     let mut required_parameters = Vec::new();
+    let mut either_parameters = Vec::new();
+    let mut optional_parameters = Vec::new();
+    let mut empty_either_exists = false;
+    let mut set = std::collections::HashSet::new();
 
-    for p in endpoint.params.iter() {
-        if p.kind == parser::ParamKind::Required {
-            for tn in p.type_name_pairs.iter() {
-                if let Some(x) = create_param_type(tn, endpoint, api_template) {
-                    required_parameters.push((tn.name.as_ref(), x));
-                } else {
+    for p in endpoint.params.iter().filter(|x| x.when == None) {
+        if p.type_name_pairs.len() == 0 {
+            // "either" represents that all parameters are optional.
+            empty_either_exists = true;
+            continue;
+        }
+
+        for tn in p.type_name_pairs.iter() {
+            if set.contains(tn) { continue; }
+
+            match create_param_type(tn, endpoint, api_template) {
+                Ok(x) => {
+                    let t = (tn.name.as_ref(), x);
+                    match p.kind {
+                        parser::ParamKind::Required => required_parameters.push(t),
+                        parser::ParamKind::Either(_) => either_parameters.push(t),
+                        parser::ParamKind::Optional => optional_parameters.push(t),
+                    }
+                    set.insert(tn);
+                }
+                Err(ParamTypeError::Ignore) => (),
+                Err(ParamTypeError::Unsupported) => {
+                    warn!("Unsupported parameter type `{}`: {}.{}", tn.param_type, api_template.namespace, endpoint.name);
                     return None;
                 }
             }
         }
     }
 
-    let mut optional_parameters = Vec::new();
-
-    {
-        let mut set = std::collections::HashSet::new();
-
-        let tns = endpoint.params.iter()
-            .filter(|x| x.kind != parser::ParamKind::Required)
-            .flat_map(|x| x.type_name_pairs.iter());
-
-        for tn in tns {
-            if set.contains(tn) { continue; }
-
-            if let Some(x) = create_param_type(tn, endpoint, api_template) {
-                optional_parameters.push((tn.name.as_ref(), x));
-            } else {
-                return None;
-            }
-
-            set.insert(tn);
+    match either_parameters.len() {
+        0 => (),
+        1 if !empty_either_exists => required_parameters.append(&mut either_parameters),
+        _ => {
+            either_parameters.append(&mut optional_parameters);
+            mem::swap(&mut either_parameters, &mut optional_parameters);
         }
-    };
+    }
 
     let reserved_parameter = match endpoint.endpoint_type {
         parser::EndpointType::Get(ref x) | parser::EndpointType::Post(ref x) => {
@@ -363,7 +385,7 @@ fn client_impl_fn<W: Write>(writer: &mut W, endpoint: &Endpoint, api_template: &
     for &(n, ref t) in endpoint.required_parameters.iter() {
         try!(write!(writer, "            {}: ", n));
         try!(match *t {
-            ParamType::String => writeln!(writer, "{}.into(),", n),
+            ParamType::String | ParamType::Stream => writeln!(writer, "{}.into(),", n),
             ParamType::List(_) => writeln!(writer, "collection_paramter({}),", n),
             ParamType::StringList => writeln!(writer, "str_collection_parameter({}),", n),
             _ => writeln!(writer, "{},", n),
@@ -385,6 +407,7 @@ fn request_builder_struct<W: Write>(writer: &mut W, endpoint: &Endpoint, api_tem
             ParamType::Normal(ref x) => Cow::Borrowed(x.as_ref()),
             ParamType::String => Cow::Borrowed("Cow<'a, str>"),
             ParamType::List(_) | ParamType::StringList => Cow::Borrowed("String"),
+            ParamType::Stream => Cow::Borrowed("Box<Read>")
         }
     }
 
@@ -447,7 +470,7 @@ fn request_builder_setter<W: Write>(writer: &mut W, name: &str, ty: &ParamType) 
 ",
         name,
         match *ty {
-            ParamType::String => "val.into()",
+            ParamType::String | ParamType::Stream => "val.into()",
             ParamType::List(_) => "collection_paramter(val)",
             ParamType::StringList => "str_collection_parameter(val)",
             _ => "val",
@@ -465,7 +488,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
     try!(write!(
         writer,
          "
-    pub fn execute(&self) -> TwitterResult<{}> {{
+    pub fn execute(self) -> TwitterResult<{}> {{
         ",
         endpoint.return_type
     ));
@@ -480,7 +503,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
         if endpoint.reserved_parameter == Some(p) { continue; }
         try!(writeln!(
             writer,
-            "        params.push((Cow::Borrowed(\"{0}\"), self.{0}.to_parameter_value()));",
+            "        params.push((Cow::Borrowed(\"{0}\"), self.{0}.into_parameter_value()));",
             p
         ));
     }
@@ -488,7 +511,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
     for &(p, _) in endpoint.optional_parameters.iter() {
         try!(writeln!(
             writer,
-            "        if let Some(ref x) = self.{0} {{ params.push((Cow::Borrowed(\"{0}\"), x.to_parameter_value())) }}",
+            "        if let Some(x) = self.{0} {{ params.push((Cow::Borrowed(\"{0}\"), x.into_parameter_value())) }}",
             p
         ));
     }

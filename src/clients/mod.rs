@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::io::Read;
 use hyper::{Get, Post};
 use ::TwitterResult;
 use conn::*;
