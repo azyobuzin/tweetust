@@ -100,7 +100,7 @@ impl<'a> RequestTokenRequestBuilder<'a> {
                     raw_response: res.raw_response,
                     rate_limit: res.rate_limit
                 }),
-            _ => Err(TwitterError::ParseError(res))
+            _ => Err(TwitterError::ParseResponse(None, res))
         }
     }
 
@@ -207,7 +207,7 @@ impl<'a> AccessTokenRequestBuilder<'a> {
                     raw_response: res.raw_response,
                     rate_limit: res.rate_limit
                 }),
-            _ => Err(TwitterError::ParseError(res))
+            _ => Err(TwitterError::ParseResponse(None, res))
         }
     }
 

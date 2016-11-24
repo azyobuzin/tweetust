@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use chrono;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-use ::{conn, TwitterError, TwitterResult};
+use ::{conn, parse_json, TwitterError, TwitterResult};
 
 #[derive(Clone, Copy, Debug)]
 pub struct RateLimitStatus {
@@ -29,13 +29,13 @@ pub struct TwitterResponse<T> {
 
 impl TwitterResponse<()> {
     pub fn parse_to_object<T: ::serde::de::Deserialize>(self) -> TwitterResult<T> {
-        match conn::parse_json(&self.raw_response) {
+        match parse_json(&self.raw_response) {
             Ok(x) => Ok(TwitterResponse {
                 object: x,
                 raw_response: self.raw_response,
                 rate_limit: self.rate_limit
             }),
-            Err(x) => Err(TwitterError::JsonError(x, self))
+            Err(x) => Err(TwitterError::ParseResponse(Some(x), self))
         }
     }
 }

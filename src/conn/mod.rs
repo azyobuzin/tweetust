@@ -3,17 +3,17 @@
 
 use std::any::Any;
 use std::borrow::Cow;
-use std::fmt::Write;
-use std::io::Read;
+use std::io::{copy, Read};
 use hyper::{self, header, mime, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
 use hyper::status::StatusClass;
+use multipart::client::Multipart;
 use oauthcli;
 use url::{percent_encoding, Url};
 use serde;
 use serde_json;
-use ::{TwitterError, TwitterResult};
+use ::{parse_json, TwitterError, TwitterResult};
 use models::*;
 
 pub mod application_only_authenticator;
@@ -52,7 +52,7 @@ impl<'a> RequestContent<'a> {
 
 pub enum ParameterValue<'a> {
     Text(Cow<'a, str>),
-    File(&'a mut Read),
+    File(&'a mut Box<Read>),
 }
 
 pub struct StreamContent<'a> {
@@ -100,61 +100,89 @@ pub trait HttpHandler {
     fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> TwitterResult<()>;
 }
 
-#[derive(Debug, Default)]
 pub struct DefaultHttpHandler {
-    http_client: hyper::Client,
+    pool: hyper::client::Pool<hyper::net::DefaultConnector>,
 }
 
 impl DefaultHttpHandler {
     pub fn new() -> DefaultHttpHandler {
-        Default::default()
+        DefaultHttpHandler {
+            pool: hyper::client::Pool::new(Default::default()),
+        }
+    }
+}
+
+impl Default for DefaultHttpHandler {
+    fn default() -> Self {
+        DefaultHttpHandler::new()
     }
 }
 
 impl HttpHandler for DefaultHttpHandler {
     fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> TwitterResult<()> {
+        use std::io::Write;
+
         let scheme = auth.create_authorization_header(&request);
         let body;
-        let mut req = self.http_client.request(request.method, request.url);
+        let mut req = try!(hyper::client::Request::with_connector(request.method, request.url, &self.pool));
 
         if let Some(s) = scheme {
-            req = req.header(header::Authorization(s));
+            req.headers_mut().set(header::Authorization(s));
         }
 
-        match request.content {
-            RequestContent::None => (),
+        let res = match request.content {
+            RequestContent::None => try!(req.start()).send(),
             RequestContent::WwwForm(ref params) => {
                 body = create_query(
                     params.as_ref().iter()
                         .map(|&(ref key, ref val)| (Cow::Borrowed(key.as_ref()), Cow::Borrowed(val.as_ref())))
                 );
-                req = req.body(&body[..])
-                    .header(header::ContentType(mime::Mime(
+                {
+                    let mut headers = req.headers_mut();
+                    headers.set(header::ContentLength(body.len() as u64));
+                    headers.set(header::ContentType(mime::Mime(
                         mime::TopLevel::Application,
                         mime::SubLevel::WwwFormUrlEncoded,
                         Vec::new()
                     )));
+                }
+                let mut req = try!(req.start());
+                try!(req.write_all(body.as_bytes()));
+                req.send()
             }
-            RequestContent::MultipartFormData(_) => unimplemented!(),
+            RequestContent::MultipartFormData(params) => {
+                let mut multipart = try!(Multipart::from_request(req));
+                for &(ref key, ref val) in params {
+                    try!(match *val {
+                        ParameterValue::Text(ref x) => multipart.write_text(key, x),
+                        ParameterValue::File(ref x) => multipart.write_stream(key, &mut *x, Some("file"), None),
+                    });
+                }
+                multipart.send()
+            }
             RequestContent::Stream(s) => {
-                req =
-                    req.body(
-                        match s.content_length {
-                            Some(len) => hyper::client::Body::SizedBody(s.content, len),
-                            None => hyper::client::Body::ChunkedBody(s.content)
-                        }
-                    )
-                    .header(header::ContentType(s.content_type));
+                {
+                    let mut headers = req.headers_mut();
+                    headers.set(header::ContentType(s.content_type));
+                    if let Some(len) = s.content_length {
+                        headers.set(header::ContentLength(len));
+                    }
+                }
+                let mut req = try!(req.start());
+                try!(copy(s.content, &mut req));
+                req.send()
             }
-        }
+        };
 
-        read_to_twitter_result(try!(req.send()))
+        read_to_twitter_result(try!(res))
     }
 }
 
 fn create_query<'a, I>(pairs: I) -> String
     where I: Iterator<Item=(Cow<'a, str>, Cow<'a, str>)>
 {
+    use std::fmt::Write;
+
     let es = oauthcli::OAUTH_ENCODE_SET;
     let mut s = String::new();
     for (key, val) in pairs {
@@ -193,28 +221,23 @@ pub fn read_to_twitter_result(mut res: Response) -> TwitterResult<()> {
         });
 
     let mut body = String::new();
-    match res.read_to_string(&mut body) {
-        Ok(_) => match res.status.class() {
-            // 2xx
-            StatusClass::Success => Ok(TwitterResponse {
-                object: (), raw_response: body, rate_limit: rate_limit
-            }),
-            _ => {
-                // Error response
-                let dec = parse_json::<InternalErrorResponse>(&body);
-                let errors = dec.ok().and_then(|x| x.errors.or(x.error));
-                Err(TwitterError::ErrorResponse(ErrorResponse {
-                    status: res.status,
-                    errors: errors,
-                    raw_response: body,
-                    rate_limit: rate_limit
-                }))
-            }
-        },
-        Err(e) => Err(TwitterError::HttpError(hyper::Error::Io(e)))
-    }
-}
+    try!(res.read_to_string(&mut body));
 
-pub fn parse_json<T: serde::de::Deserialize>(s: &str) -> serde_json::Result<T> {
-    serde_json::from_str(s)
+    match res.status.class() {
+        // 2xx
+        StatusClass::Success => Ok(TwitterResponse {
+            object: (), raw_response: body, rate_limit: rate_limit
+        }),
+        _ => {
+            // Error response
+            let dec = parse_json::<InternalErrorResponse>(&body);
+            let errors = dec.ok().and_then(|x| x.errors.or(x.error));
+            Err(TwitterError::ErrorResponse(ErrorResponse {
+                status: res.status,
+                errors: errors,
+                raw_response: body,
+                rate_limit: rate_limit
+            }))
+        }
+    }
 }

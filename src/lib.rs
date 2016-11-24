@@ -35,6 +35,7 @@
 
 extern crate chrono;
 extern crate hyper;
+extern crate multipart;
 extern crate oauthcli;
 extern crate serde;
 extern crate serde_json;
@@ -42,6 +43,7 @@ extern crate url;
 
 use std::error::Error;
 use std::fmt;
+use std::io;
 use models::TwitterResponse;
 use models::ErrorResponse;
 
@@ -58,11 +60,11 @@ pub mod oauth2;
 #[derive(Debug)]
 pub enum TwitterError {
     ErrorResponse(ErrorResponse),
-    UrlError(url::ParseError),
+    Url(url::ParseError),
     InvalidRequest,
-    HttpError(hyper::Error),
-    JsonError(serde_json::Error, TwitterResponse<()>),
-    ParseError(TwitterResponse<()>)
+    Io(io::Error),
+    Http(hyper::Error),
+    ParseResponse(Option<serde_json::Error>, TwitterResponse<()>),
 }
 
 impl Error for TwitterError {
@@ -73,10 +75,12 @@ impl Error for TwitterError {
     fn cause(&self) -> Option<&Error> {
         match *self {
             TwitterError::ErrorResponse(ref e) => Some(e),
-            TwitterError::UrlError(ref e) => Some(e),
-            TwitterError::HttpError(ref e) => Some(e),
-            TwitterError::JsonError(ref e, _) => Some(e),
-            TwitterError::InvalidRequest | TwitterError::ParseError(_) => None,
+            TwitterError::Url(ref e) => Some(e),
+            TwitterError::InvalidRequest => None,
+            TwitterError::Io(ref e) => Some(e),
+            TwitterError::Http(ref e) => Some(e),
+            TwitterError::ParseResponse(Some(ref e), _) => Some(e),
+            TwitterError::ParseResponse(None, _) => None,
         }
     }
 }
@@ -85,11 +89,11 @@ impl fmt::Display for TwitterError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             TwitterError::ErrorResponse(ref e) => fmt::Display::fmt(e, f),
-            TwitterError::UrlError(ref e) => fmt::Display::fmt(e, f),
-            TwitterError::HttpError(ref e) => fmt::Display::fmt(e, f),
-            TwitterError::JsonError(ref e, _) => fmt::Display::fmt(e, f),
+            TwitterError::Url(ref e) => fmt::Display::fmt(e, f),
             TwitterError::InvalidRequest => f.write_str("invalid request"),
-            TwitterError::ParseError(ref e) => write!(f, "ParseError: {:?}", e),
+            TwitterError::Io(ref e) => fmt::Display::fmt(e, f),
+            TwitterError::Http(ref e) => fmt::Display::fmt(e, f),
+            TwitterError::ParseResponse(_, ref res) => write!(f, "invalid response body: {}", res.raw_response),
         }
     }
 }
@@ -102,14 +106,24 @@ impl From<ErrorResponse> for TwitterError {
 
 impl From<hyper::Error> for TwitterError {
     fn from(err: hyper::Error) -> TwitterError {
-        TwitterError::HttpError(err)
+        TwitterError::Http(err)
     }
 }
 
 impl From<url::ParseError> for TwitterError {
     fn from(err: url::ParseError) -> TwitterError {
-        TwitterError::UrlError(err)
+        TwitterError::Url(err)
+    }
+}
+
+impl From<io::Error> for TwitterError {
+    fn from(err: io::Error) -> TwitterError {
+        TwitterError::Io(err)
     }
 }
 
 pub type TwitterResult<T> = Result<TwitterResponse<T>, TwitterError>;
+
+fn parse_json<T: serde::de::Deserialize>(s: &str) -> serde_json::Result<T> {
+    serde_json::from_str(s)
+}
