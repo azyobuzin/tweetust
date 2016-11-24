@@ -5,5 +5,4 @@ notifications:
 
 script:
   - cargo test --manifest-path clientgen_test/Cargo.toml
-  - cargo build
   - cargo test

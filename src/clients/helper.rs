@@ -50,41 +50,41 @@ pub fn execute_core<'a, A, H, U, R>(client: &super::TwitterClient<A, H>, method:
     try!(client.handler.send_request(req, &client.auth)).parse_to_object()
 }
 
-pub trait IntoParameterValue<'a> {
-    fn into_parameter_value(self) -> ParameterValue<'a>;
+pub trait ToParameterValue<'a> {
+    fn to_parameter_value(self) -> ParameterValue<'a>;
 }
 
-impl<'a> IntoParameterValue<'a> for bool {
-    fn into_parameter_value(self) -> ParameterValue<'a> {
-        ParameterValue::Text(Cow::Borrowed(if self { "true" } else { "false" }))
+impl<'a> ToParameterValue<'a> for &'a bool {
+    fn to_parameter_value(self) -> ParameterValue<'a> {
+        ParameterValue::Text(Cow::Borrowed(if *self { "true" } else { "false" }))
     }
 }
 
-impl<'a> IntoParameterValue<'a> for TweetMode {
-    fn into_parameter_value(self) -> ParameterValue<'a> {
-        ParameterValue::Text(Cow::Borrowed(match self {
+impl<'a> ToParameterValue<'a> for &'a TweetMode {
+    fn to_parameter_value(self) -> ParameterValue<'a> {
+        ParameterValue::Text(Cow::Borrowed(match *self {
             TweetMode::Compat => "compat",
             TweetMode::Extended => "extended"
         }))
     }
 }
 
-impl<'a> IntoParameterValue<'a> for String {
-    fn into_parameter_value(self) -> ParameterValue<'a> {
-        ParameterValue::Text(Cow::Owned(self))
+impl<'a> ToParameterValue<'a> for &'a str {
+    fn to_parameter_value(self) -> ParameterValue<'a> {
+        ParameterValue::Text(Cow::Borrowed(self))
     }
 }
 
-impl<'a> IntoParameterValue<'a> for Cow<'a, str> {
-    fn into_parameter_value(self) -> ParameterValue<'a> {
-        ParameterValue::Text(self)
+impl<'a> ToParameterValue<'a> for &'a Cow<'a, str> {
+    fn to_parameter_value(self) -> ParameterValue<'a> {
+        ParameterValue::Text(Cow::Borrowed(self.as_ref()))
     }
 }
 
 macro_rules! to_string_parameter {
     ($t:ty) => (
-        impl<'a> IntoParameterValue<'a> for $t {
-            fn into_parameter_value(self) -> ParameterValue<'a> {
+        impl<'a> ToParameterValue<'a> for &'a $t {
+            fn to_parameter_value(self) -> ParameterValue<'a> {
                 ParameterValue::Text(Cow::Owned(self.to_string()))
             }
         }
@@ -98,8 +98,8 @@ to_string_parameter!(u64);
 to_string_parameter!(f32);
 to_string_parameter!(f64);
 
-impl<'a> IntoParameterValue<'a> for Box<io::Read> {
-    fn into_parameter_value(self) -> ParameterValue<'a> {
+impl<'a> ToParameterValue<'a> for &'a mut io::Read {
+    fn to_parameter_value(self) -> ParameterValue<'a> {
         ParameterValue::File(self)
     }
 }

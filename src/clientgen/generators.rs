@@ -91,7 +91,6 @@ enum ParamType<'a> {
     String,
     List(Cow<'a, str>),
     StringList,
-    Stream,
 }
 
 #[derive(Debug)]
@@ -148,10 +147,6 @@ impl FnParametersGenerator {
                 let as_ref_index = self.add_type_parameter("AsRef<str>");
                 let into_iter_index = self.add_type_parameter(format!("IntoIterator<Item = T{}>", as_ref_index));
                 self.write_type_param(into_iter_index);
-            }
-            ParamType::Stream => {
-                let t = self.add_type_parameter("Into<Box<Read>>");
-                self.write_type_param(t);
             }
         }
     }
@@ -225,7 +220,7 @@ fn create_param_type<'a>(tn: &'a parser::TypeNamePair, endpoint: &parser::Endpoi
 
     match tn.param_type.as_ref() {
         "string" => Ok(ParamType::String),
-        "Stream" => Ok(ParamType::Stream),
+        "Stream" => Ok(ParamType::Normal(Cow::Borrowed("&'a mut Read"))),
         "IEnumerable<byte>" => {
             info!("Ignore `IEnumerable<byte>` parameter: {}.{}", api_template.namespace, endpoint.name);
             Err(ParamTypeError::Ignore)
@@ -385,7 +380,7 @@ fn client_impl_fn<W: Write>(writer: &mut W, endpoint: &Endpoint, api_template: &
     for &(n, ref t) in endpoint.required_parameters.iter() {
         try!(write!(writer, "            {}: ", n));
         try!(match *t {
-            ParamType::String | ParamType::Stream => writeln!(writer, "{}.into(),", n),
+            ParamType::String => writeln!(writer, "{}.into(),", n),
             ParamType::List(_) => writeln!(writer, "collection_paramter({}),", n),
             ParamType::StringList => writeln!(writer, "str_collection_parameter({}),", n),
             _ => writeln!(writer, "{},", n),
@@ -407,7 +402,6 @@ fn request_builder_struct<W: Write>(writer: &mut W, endpoint: &Endpoint, api_tem
             ParamType::Normal(ref x) => Cow::Borrowed(x.as_ref()),
             ParamType::String => Cow::Borrowed("Cow<'a, str>"),
             ParamType::List(_) | ParamType::StringList => Cow::Borrowed("String"),
-            ParamType::Stream => Cow::Borrowed("Box<Read>")
         }
     }
 
@@ -459,18 +453,18 @@ fn request_builder_setter<W: Write>(writer: &mut W, name: &str, ty: &ParamType) 
 
     try!(write!(writer, "\n    pub fn {}", name));
     try!(p.write_type_parameters(writer));
-    try!(writer.write_all(b"(&mut self"));
+    try!(writer.write_all(b"(&'a mut self"));
     try!(p.write_parameters(writer));
     write!(
         writer,
-        ") -> &mut Self {{
+        ") -> &'a mut Self {{
         self.{} = Some({});
         self
     }}
 ",
         name,
         match *ty {
-            ParamType::String | ParamType::Stream => "val.into()",
+            ParamType::String => "val.into()",
             ParamType::List(_) => "collection_paramter(val)",
             ParamType::StringList => "str_collection_parameter(val)",
             _ => "val",
@@ -488,7 +482,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
     try!(write!(
         writer,
          "
-    pub fn execute(self) -> TwitterResult<{}> {{
+    pub fn execute(&'a mut self) -> TwitterResult<{}> {{
         ",
         endpoint.return_type
     ));
@@ -503,7 +497,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
         if endpoint.reserved_parameter == Some(p) { continue; }
         try!(writeln!(
             writer,
-            "        params.push((Cow::Borrowed(\"{0}\"), self.{0}.into_parameter_value()));",
+            "        params.push((Cow::Borrowed(\"{0}\"), self.{0}.to_parameter_value()));",
             p
         ));
     }
@@ -511,7 +505,7 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
     for &(p, _) in endpoint.optional_parameters.iter() {
         try!(writeln!(
             writer,
-            "        if let Some(x) = self.{0} {{ params.push((Cow::Borrowed(\"{0}\"), x.into_parameter_value())) }}",
+            "        if let Some(ref mut x) = self.{0} {{ params.push((Cow::Borrowed(\"{0}\"), x.to_parameter_value())) }}",
             p
         ));
     }

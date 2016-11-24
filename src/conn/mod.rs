@@ -50,7 +50,7 @@ impl<'a> RequestContent<'a> {
 
 pub enum ParameterValue<'a> {
     Text(Cow<'a, str>),
-    File(Box<Read>),
+    File(&'a mut Read),
 }
 
 pub struct StreamContent<'a> {
