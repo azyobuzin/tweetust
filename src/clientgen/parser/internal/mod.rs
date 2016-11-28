@@ -41,6 +41,7 @@ pub enum WithElement<'a> {
     JsonPath(&'a str),
     OmitExcept(&'a str),
     Attribute(&'a str, &'a str),
+    Ignore,
 }
 
 #[derive(Debug)]
@@ -241,13 +242,19 @@ named!(pub attribute<&str, WithElement>, chain!(
     || WithElement::Attribute(name.trim(), value.trim())
 ));
 
+named!(ignore<&str, WithElement>, chain!(
+    complete!(tag_s!("Ignore")) ~
+    take_until_line_ending,
+    || WithElement::Ignore
+));
+
 named!(with<&str, EndpointElement>, chain!(
     complete!(tag_s!("with")) ~
     space_or_comment0 ~
     tag_s!("{") ~
     space_or_comment0 ~
     x: many0!(terminated!(
-        alt!(json_path | omit_except | attribute),
+        alt!(json_path | omit_except | attribute | ignore),
         space_or_comment0
     )) ~
     tag_s!("}"),

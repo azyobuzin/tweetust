@@ -14,6 +14,7 @@ pub struct Endpoint {
     pub endpoint_type: EndpointType,
     pub json_path: Option<String>,
     pub attributes: Vec<(String, String)>,
+    pub ignore: bool,
     pub description: Option<String>,
     pub returns: Option<String>,
     pub params: Vec<Param>,
@@ -110,6 +111,10 @@ pub fn parse(input: &str) -> Result<ApiTemplate, ParseErrorKind> {
                             })
                             .collect(),
                         None => Vec::new()
+                    },
+                    ignore: match with {
+                        Some(with) => with.iter().any(|x| x == &internal::WithElement::Ignore),
+                        None => false,
                     },
                     description: e.iter()
                         .filter_map(|x| match *x {

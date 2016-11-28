@@ -9,8 +9,34 @@ use std::path::Path;
 
 pub type ClientgenResult<T> = Result<T, ClientgenError>;
 
-pub fn generate_clients<W: Write, P: AsRef<Path>>(writer: &mut W, templates_dir: P) -> ClientgenResult<()> {
-    let api_templates = try!(load_templates(templates_dir));
+pub fn generate_clients<W, T, O>(writer: &mut W, templates_dir: T, override_dir: O) -> ClientgenResult<()>
+    where W: Write, T: AsRef<Path>, O: AsRef<Path>
+{
+    let mut api_templates = try!(load_templates(templates_dir));
+    let overrides = try!(load_templates(override_dir));
+
+    for o in overrides {
+        if let Some(t) = api_templates.iter_mut().find(|x| x.namespace == o.namespace) {
+            for oe in o.endpoints {
+                if oe.ignore {
+                    // Remove ignored endpoint
+                    t.endpoints.retain(|x| x.name != oe.name);
+                    continue;
+                }
+
+                if let Some(e) = t.endpoints.iter_mut().find(|x| x.name == oe.name) {
+                    *e = oe;
+                    continue;
+                }
+                
+                t.endpoints.push(oe);
+            }
+
+            continue;
+        }
+
+        api_templates.push(o);
+    }
 
     try!(generators::twitter_client(writer, &api_templates));
 
