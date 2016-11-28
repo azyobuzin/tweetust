@@ -76,6 +76,7 @@ fn document<W: Write>(writer: &mut W, content: &str, indent: usize) -> io::Resul
 
 #[derive(Debug)]
 struct Endpoint<'a> {
+    pub namespace: &'a str,
     pub name: &'a str,
     pub description: &'a Option<String>,
     pub method: &'a parser::EndpointType,
@@ -239,11 +240,6 @@ fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser:
         }
     }
 
-    if endpoint.endpoint_type == parser::EndpointType::Impl {
-        warn!("Requires custom execute function: {}.{}", api_template.namespace, endpoint.name);
-        return None;
-    }
-
     if endpoint.json_path.is_some() {
         info!("Has JSON path: {}.{}", api_template.namespace, endpoint.name);
     }
@@ -308,6 +304,7 @@ fn create_endpoint<'a>(endpoint: &'a parser::Endpoint, api_template: &'a parser:
     };
 
     Some(Endpoint {
+        namespace: &api_template.namespace,
         name: &endpoint.name,
         description: &endpoint.description,
         method: &endpoint.endpoint_type,
@@ -438,11 +435,7 @@ fn request_builder_impl<W: Write>(writer: &mut W, endpoint: &Endpoint, api_templ
         try!(request_builder_setter(writer, n, t));
     }
 
-    if endpoint.method == &parser::EndpointType::Impl {
-        unimplemented!();
-    } else {
-        try!(request_builder_execute(writer, endpoint));
-    }
+    try!(request_builder_execute(writer, endpoint));
 
     writer.write_all(b"}\n")
 }
@@ -473,12 +466,6 @@ fn request_builder_setter<W: Write>(writer: &mut W, name: &str, ty: &ParamType) 
 }
 
 fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io::Result<()> {
-    let (method, url) = match *endpoint.method {
-        parser::EndpointType::Get(ref x) => ("Get", x),
-        parser::EndpointType::Post(ref x) => ("Post", x),
-        _ => unreachable!(),
-    };
-
     try!(write!(
         writer,
          "
@@ -510,27 +497,42 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
         ));
     }
 
-    try!(writer.write_all(b"        let url = "));
-
-    if let Some(reserved) = endpoint.reserved_parameter {
+    if let &parser::EndpointType::Impl = endpoint.method {
         try!(writeln!(
             writer,
-            "format!(\"https://api.twitter.com/1.1/{}.json\", {1} = self.{1});",
-            url, reserved
+            "        impls::{}_{}(self._client, params)",
+            endpoint.namespace.to_snake_case(),
+            endpoint.name.to_snake_case()
         ));
     } else {
+        let (method, url) = match *endpoint.method {
+            parser::EndpointType::Get(ref x) => ("Get", x),
+            parser::EndpointType::Post(ref x) => ("Post", x),
+            _ => unreachable!(),
+        };
+
+        try!(writer.write_all(b"        let url = "));
+
+        if let Some(reserved) = endpoint.reserved_parameter {
+            try!(writeln!(
+                writer,
+                "format!(\"https://api.twitter.com/1.1/{}.json\", {1} = self.{1});",
+                url, reserved
+            ));
+        } else {
+            try!(writeln!(
+                writer,
+                "\"https://api.twitter.com/1.1/{}.json\";",
+                url
+            ));
+        }
+
         try!(writeln!(
             writer,
-            "\"https://api.twitter.com/1.1/{}.json\";",
-            url
+            "        execute_core(self._client, {}, url, params)",
+            method
         ));
     }
 
-    write!(
-        writer,
-        "        execute_core(self._client, {}, url, params)
-    }}
-",
-        method
-    )
+    writer.write_all(b"    }\n")
 }

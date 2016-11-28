@@ -16,10 +16,6 @@ Twitter API wrapper for Rust.
 - [ ] Streaming
 
 # メモ
-## execute の処理内容
-通常の API → 今まで通り
-Impl API → params: Vec<_> の作成までやって、実際の実装をたたく
-
 ## API定義オーバーライド
 - 同じ名前のがあったらマージしていく的な方向でやっていきたい
 - マージするのはブロック単位（description とか params とか）で良い？

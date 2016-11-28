@@ -7,5 +7,6 @@ use models::*;
 use self::helper::*;
 
 mod helper;
+mod impls;
 
 include!(concat!(env!("OUT_DIR"), "/clients.rs"));
