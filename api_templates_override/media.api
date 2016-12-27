@@ -1,0 +1,33 @@
+#namespace Media
+
+endpoint UploadInitCommandResult UploadInitCommand : Impl
+{
+    with
+    {
+        Ignore
+    }
+}
+
+endpoint void UploadAppendCommand : Impl
+{
+    with
+    {
+        Ignore
+    }
+}
+
+endpoint UploadFinalizeCommandResult UploadFinalizeCommand : Impl
+{
+    with
+    {
+        Ignore
+    }
+}
+
+endpoint UploadFinalizeCommandResult UploadStatusCommand : Impl
+{
+    with
+    {
+        Ignore
+    }
+}

@@ -189,8 +189,15 @@ fn create_return_type<'a>(endpoint: &'a parser::Endpoint, api_template: &parser:
             "Category" => sb!("UserCategory"),
             "Relationship" => sb!("FriendshipResponse"),
             "GeoResult" => sb!("GeoResponse"),
+            "MediaUploadResult" => sb!("MediaUploadResponse"),
+            "UploadInitCommandResult" => sb!("UploadInitCommandResponse"),
+            "UploadFinalizeCommandResult" => sb!("UploadFinalizeCommandResponse"),
             x => Some(Cow::Borrowed(x)),
         }
+    }
+
+    if endpoint.name == "RateLimitStatus" {
+        return sb!("RateLimitStatusResponse");
     }
 
     match endpoint.return_type.as_ref() {

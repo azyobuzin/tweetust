@@ -24,6 +24,7 @@ fn main() {
     let cmds = cmds_map! {
         ("account", CmdAccount::new()),
         ("statuses", CmdStatuses::new()),
+        ("rate_limit_status", CmdRateLimitStatus),
         ("quit", CmdQuit),
     };
 
@@ -252,5 +253,15 @@ impl Command for CmdStatusesShow {
         } else {
             println!("Usage: statuses show id");
         }
+    }
+}
+
+struct CmdRateLimitStatus;
+impl Command for CmdRateLimitStatus {
+    fn run(&self, _: InputReader, client: &Client) {
+        handle(
+            client.application().rate_limit_status().execute(),
+            |x| println!("{:?}", x)
+        );
     }
 }

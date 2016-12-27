@@ -6,20 +6,6 @@ use chrono;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use ::{parse_json, TwitterError, TwitterResult};
 
-#[derive(Clone, Copy, Debug)]
-pub struct RateLimitStatus {
-    pub limit: i32,
-    pub remaining: i32,
-    pub reset: i64,
-}
-
-impl RateLimitStatus {
-    pub fn reset_date_time(&self) -> chrono::DateTime<chrono::UTC> {
-        use chrono::TimeZone;
-        chrono::UTC.timestamp(self.reset, 0)
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct TwitterResponse<T> {
     pub object: T,

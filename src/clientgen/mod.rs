@@ -73,7 +73,7 @@ fn load_templates<P: AsRef<Path>>(template_dir: P) -> ClientgenResult<Vec<parser
         (line, column)
     }
 
-    const EXCLUDE: [&'static str; 3] = ["test.api", "collections.api", "media.api"];
+    const EXCLUDE: [&'static str; 2] = ["test.api", "collections.api"];
 
     let mut v = Vec::new();
     let mut buf = String::new();
@@ -82,6 +82,8 @@ fn load_templates<P: AsRef<Path>>(template_dir: P) -> ClientgenResult<Vec<parser
         let entry = try!(entry);
         
         let file_name = entry.file_name();
+        let file_name = file_name.to_string_lossy();
+        if !file_name.as_ref().ends_with(".api") { continue; }
         if EXCLUDE.iter().any(|&x| x == &file_name) { continue; }
 
         if let Ok(file_type) = entry.file_type() {
@@ -109,7 +111,7 @@ fn load_templates<P: AsRef<Path>>(template_dir: P) -> ClientgenResult<Vec<parser
                 };
 
                 return Err(ClientgenError::ParsingTemplate(ParseError {
-                    file_name: file_name.to_string_lossy().into_owned(),
+                    file_name: file_name.into_owned(),
                     position: position,
                     message: message,
                 }));
