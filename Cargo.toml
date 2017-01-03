@@ -1,14 +1,14 @@
 [package]
 name = "tweetust"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "The Twitter API wrapper"
-documentation = "https://docs.rs/tweetust/0.4.0/tweetust/"
+documentation = "https://docs.rs/tweetust/0.4.1/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 readme = "README.md"
 keywords = ["twitter", "tweet"]
 license = "MIT"
-include = ["**/*.rs", "Cargo.toml", "LICENSE.txt", "README.md", "CoreTweet/ApiTemplates/*.api"]
+include = ["**/*.rs", "Cargo.toml", "LICENSE.txt", "README.md", "CoreTweet/ApiTemplates/*.api", "api_templates_override/*.api"]
 build = "build.rs"
 
 [dependencies]
