@@ -71,13 +71,15 @@ impl<'a> Request<'a> {
 
         match method  {
             Get | Delete | Head => {
-                if let RequestContent::WwwForm(ref params) = content {
-                    let mut query =  request_url.query_pairs_mut();
-                    for &(ref key, ref val) in params.as_ref() {
-                        query.append_pair(key.as_ref(), val.as_ref());
+                match content {
+                    RequestContent::WwwForm(ref params) => {
+                        let mut query =  request_url.query_pairs_mut();
+                        for &(ref key, ref val) in params.as_ref() {
+                            query.append_pair(key.as_ref(), val.as_ref());
+                        }
                     }
-                } else {
-                    return Err(TwitterError::InvalidRequest);
+                    RequestContent::None => (),
+                    _ => return Err(TwitterError::InvalidRequest)
                 }
 
                 content = RequestContent::None;
