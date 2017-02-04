@@ -11,6 +11,10 @@ Twitter API wrapper for Rust.
 - [x] &mut builders
 - [x] Change the way to generate code: be pure Rust
 - [ ] Parse Tweet.source (in serde_json?)
-- [ ] media API
+- [x] media API
+    - [ ] media/metadata/create
 - [ ] collections API
 - [ ] Streaming
+
+# TODO
+- [ ] 戻り値を取らない API が実行時エラー `EOFWhileParsingValue` になる

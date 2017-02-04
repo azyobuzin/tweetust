@@ -1,5 +1,8 @@
 //! The test Twitter client app
 
+#![feature(alloc)]
+
+extern crate alloc;
 extern crate tweetust;
 
 use std::fmt;
@@ -24,6 +27,7 @@ fn main() {
     let cmds = cmds_map! {
         ("account", CmdAccount::new()),
         ("statuses", CmdStatuses::new()),
+        ("upload_video", CmdUploadVideo),
         ("rate_limit_status", CmdRateLimitStatus),
         ("quit", CmdQuit),
     };
@@ -263,5 +267,69 @@ impl Command for CmdRateLimitStatus {
             client.application().rate_limit_status().execute(),
             |x| println!("{:?}", x)
         );
+    }
+}
+
+struct CmdUploadVideo;
+impl Command for CmdUploadVideo {
+    fn run(&self, _: InputReader, client: &Client) {
+        fn core(client: &Client) -> Result<(), Box<std::error::Error>> {
+            write_and_flush(format_args!("File: "));            
+
+            let mut video_file = {
+                let mut file_name = String::new();
+                io::stdin().read_line(&mut file_name).unwrap();
+                fs::File::open(file_name.trim())?
+            };
+
+            let file_len = video_file.metadata()?.len();
+
+            let init_res = client.media().upload_init_command(file_len, "video/mp4")
+                .media_category("tweet_video")
+                .execute()?;
+
+            print!("\n{:?}\n\n", init_res);
+
+            {
+                const BUF_SIZE: usize = 5 * 1000 * 1000; // 5MB
+                let mut buf = unsafe { alloc::raw_vec::RawVec::with_capacity(BUF_SIZE).into_box() };
+
+                for segment_index in 0.. {
+                    let read_bytes = video_file.read(&mut buf)?;
+                    if read_bytes == 0 { break; }
+                    let mut buf_reader = io::Cursor::new(&buf[..read_bytes]);
+                    println!("Uploading {} bytes", read_bytes);
+                    client.media().upload_append_command(init_res.object.media_id, segment_index)
+                        .media(&mut buf_reader)
+                        .execute()?;
+                }
+            }
+
+            let mut finalize_res = client.media().upload_finalize_command(init_res.object.media_id).execute()?;
+            println!("\n{:?}", finalize_res);
+
+            while let Some(models::ProcessingInfo { check_after_secs: Some(x), .. }) = finalize_res.object.processing_info {
+                std::thread::sleep(std::time::Duration::from_secs(x as u64));
+
+                finalize_res = client.media().upload_status_command(init_res.object.media_id).execute()?;
+                println!("\n{:?}", finalize_res);
+            }
+
+            write_and_flush(format_args!("\nTweet: "));
+            let mut status = String::new();
+            io::stdin().read_line(&mut status).unwrap();
+
+            println!(
+                "\n{:?}",
+                client.statuses()
+                    .update(status)
+                    .media_ids(Some(finalize_res.object.media_id))
+                    .execute()?
+            );
+
+            Ok(())
+        }
+
+        handle(core(client), |_| ());
     }
 }
