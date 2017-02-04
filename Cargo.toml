@@ -13,20 +13,23 @@ build = "build.rs"
 
 [dependencies]
 chrono = { version = "0.2", features = ["serde"] }
-hyper = "0.9.12"
-oauthcli = { version = "1.0.2", features = ["hyper"] }
+hyper = "0.9"
+oauthcli = { version = "=1.0.2", features = ["hyper"] }
 serde = "0.8"
 serde_json = "0.8"
 url = "1.2"
 
 [dependencies.multipart]
-version = "0.8.1"
+version = "0.9"
 default-features = false
 features = ["hyper", "client"]
 
 [build-dependencies]
-Inflector = "0.6"
+Inflector = "0.7"
 log = "0.3"
 matches = "0.1"
 nom = "1.2"
 serde_codegen = "0.8"
+
+[workspace]
+members = ["clientgen_test"]

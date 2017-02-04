@@ -2,32 +2,19 @@
 
 endpoint UploadInitCommandResult UploadInitCommand : Impl
 {
-    with
+    description
     {
-        Ignore
+        Initialize an upload.
     }
-}
-
-endpoint void UploadAppendCommand : Impl
-{
-    with
+    params
     {
-        Ignore
+        required u64 total_bytes
+        required string media_type
+        optional IEnumerable<long> additional_owners
+        optional string media_category
     }
-}
-
-endpoint UploadFinalizeCommandResult UploadFinalizeCommand : Impl
-{
-    with
+    returns
     {
-        Ignore
-    }
-}
-
-endpoint UploadFinalizeCommandResult UploadStatusCommand : Impl
-{
-    with
-    {
-        Ignore
+        The result of INIT command.
     }
 }

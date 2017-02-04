@@ -1,6 +1,5 @@
 use super::*;
 use super::super::ParamKind;
-use nom::*;
 
 #[test]
 fn comment_test() {

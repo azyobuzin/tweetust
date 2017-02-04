@@ -5,7 +5,7 @@ authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 publish = false
 
 [dependencies]
-Inflector = "0.6"
+Inflector = "0.7"
 log = "0.3"
 matches = "0.1"
 nom = "1.2"
