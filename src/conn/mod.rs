@@ -11,7 +11,7 @@ use hyper::status::StatusClass;
 use multipart::client::Multipart;
 use oauthcli;
 use url::{percent_encoding, Url};
-use ::{parse_json, TwitterError, TwitterResult};
+use ::{parse_json, TwitterError};
 use models::*;
 
 pub mod application_only_authenticator;
@@ -97,7 +97,7 @@ pub trait Authenticator {
 }
 
 pub trait HttpHandler {
-    fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> TwitterResult<()>;
+    fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> Result<RawResponse, TwitterError>;
 }
 
 pub struct DefaultHttpHandler {
@@ -119,7 +119,7 @@ impl Default for DefaultHttpHandler {
 }
 
 impl HttpHandler for DefaultHttpHandler {
-    fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> TwitterResult<()> {
+    fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> Result<RawResponse, TwitterError> {
         use std::io::Write;
 
         let scheme = auth.create_authorization_header(&request);
@@ -201,8 +201,8 @@ fn create_query<'a, I>(pairs: I) -> String
 
 include!(concat!(env!("OUT_DIR"), "/conn/internal_error_response.rs"));
 
-/// Parses the rate limit headers and returns TwitterResult.
-pub fn read_to_twitter_result(mut res: Response) -> TwitterResult<()> {
+/// Parses the rate limit headers and returns.
+pub fn read_to_twitter_result(mut res: Response) -> Result<RawResponse, TwitterError> {
     // Parse headers
     let limit = res.headers.get_raw("X-Rate-Limit-Limit")
         .and_then(|x| x.first())
@@ -225,8 +225,9 @@ pub fn read_to_twitter_result(mut res: Response) -> TwitterResult<()> {
 
     match res.status.class() {
         // 2xx
-        StatusClass::Success => Ok(TwitterResponse {
-            object: (), raw_response: body, rate_limit: rate_limit
+        StatusClass::Success => Ok(RawResponse {
+            raw_response: body,
+            rate_limit: rate_limit,
         }),
         _ => {
             // Error response
@@ -236,7 +237,7 @@ pub fn read_to_twitter_result(mut res: Response) -> TwitterResult<()> {
                 status: res.status,
                 errors: errors,
                 raw_response: body,
-                rate_limit: rate_limit
+                rate_limit: rate_limit,
             }))
         }
     }

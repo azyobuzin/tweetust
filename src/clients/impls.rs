@@ -34,7 +34,7 @@ pub fn media_upload_append_command<'a, A, H>(client: &TwitterClient<A, H>, mut p
     where A: Authenticator, H: HttpHandler
 {
     params.push((Cow::Borrowed("command"), ParameterValue::Text(Cow::Borrowed("APPEND"))));
-    execute_core(client, Post, MEDIA_UPLOAD_URL, params)
+    execute_core_unit(client, Post, MEDIA_UPLOAD_URL, params)
 }
 
 pub fn media_upload_finalize_command<'a, A, H>(client: &TwitterClient<A, H>, mut params: Params<'a>) -> TwitterResult<UploadFinalizeCommandResponse>

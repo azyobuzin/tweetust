@@ -15,6 +15,3 @@ Twitter API wrapper for Rust.
     - [ ] media/metadata/create
 - [ ] collections API
 - [ ] Streaming
-
-# TODO
-- [ ] 戻り値を取らない API が実行時エラー `EOFWhileParsingValue` になる

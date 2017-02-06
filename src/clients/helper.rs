@@ -46,8 +46,16 @@ pub fn execute_core<'a, A, H, U, R>(client: &super::TwitterClient<A, H>, method:
     url: U, params: Vec<(Cow<'a, str>, ParameterValue<'a>)>) -> TwitterResult<R>
     where A: Authenticator, H: HttpHandler, U: AsRef<str>, R: ::serde::de::Deserialize
 {
-    let req = try!(Request::new(method, url.as_ref(), RequestContent::from_name_value_pairs(params)));
-    try!(client.handler.send_request(req, &client.auth)).parse_to_object()
+    let req = Request::new(method, url.as_ref(), RequestContent::from_name_value_pairs(params))?;
+    client.handler.send_request(req, &client.auth)?.parse_to_object()
+}
+
+pub fn execute_core_unit<'a, A, H, U>(client: &super::TwitterClient<A, H>, method: Method,
+    url: U, params: Vec<(Cow<'a, str>, ParameterValue<'a>)>) -> TwitterResult<()>
+    where A: Authenticator, H: HttpHandler, U: AsRef<str>
+{
+    let req = Request::new(method, url.as_ref(), RequestContent::from_name_value_pairs(params))?;
+    Ok(client.handler.send_request(req, &client.auth)?.into_twitter_response())
 }
 
 pub trait ToParameterValue<'a> {

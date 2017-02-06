@@ -534,11 +534,19 @@ fn request_builder_execute<W: Write>(writer: &mut W, endpoint: &Endpoint) -> io:
             ));
         }
 
-        try!(writeln!(
-            writer,
-            "        execute_core(self._client, {}, url, params)",
-            method
-        ));
+        if &endpoint.return_type == "()" {
+            writeln!(
+                writer,
+                "        execute_core_unit(self._client, {}, url, params)",
+                method
+            )?;
+        } else {
+            writeln!(
+                writer,
+                "       execute_core(self._client, {}, url, params)",
+                method
+            )?;
+        }
     }
 
     writer.write_all(b"    }\n")

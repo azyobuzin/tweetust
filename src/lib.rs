@@ -33,8 +33,8 @@
 
 #![warn(unused_import_braces)]
 
-extern crate chrono;
-extern crate hyper;
+pub extern crate chrono;
+pub extern crate hyper;
 extern crate multipart;
 extern crate oauthcli;
 extern crate serde;
@@ -44,7 +44,7 @@ extern crate url;
 use std::error::Error;
 use std::fmt;
 use std::io;
-use models::TwitterResponse;
+use models::{RawResponse, TwitterResponse};
 use models::ErrorResponse;
 
 pub use clients::TwitterClient;
@@ -64,7 +64,7 @@ pub enum TwitterError {
     InvalidRequest,
     Io(io::Error),
     Http(hyper::Error),
-    ParseResponse(Option<serde_json::Error>, TwitterResponse<()>),
+    ParseResponse(Option<serde_json::Error>, RawResponse),
 }
 
 impl Error for TwitterError {

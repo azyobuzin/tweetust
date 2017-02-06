@@ -10,18 +10,32 @@ use ::{parse_json, TwitterError, TwitterResult};
 pub struct TwitterResponse<T> {
     pub object: T,
     pub raw_response: String,
-    pub rate_limit: Option<RateLimitStatus>
+    pub rate_limit: Option<RateLimitStatus>,
 }
 
-impl TwitterResponse<()> {
-    pub fn parse_to_object<T: ::serde::de::Deserialize>(self) -> TwitterResult<T> {
+#[derive(Clone, Debug)]
+pub struct RawResponse {
+    pub raw_response: String,
+    pub rate_limit: Option<RateLimitStatus>,
+}
+
+impl RawResponse {
+    pub fn parse_to_object<T: de::Deserialize>(self) -> TwitterResult<T> {
         match parse_json(&self.raw_response) {
             Ok(x) => Ok(TwitterResponse {
                 object: x,
                 raw_response: self.raw_response,
-                rate_limit: self.rate_limit
+                rate_limit: self.rate_limit,
             }),
-            Err(x) => Err(TwitterError::ParseResponse(Some(x), self))
+            Err(x) => Err(TwitterError::ParseResponse(Some(x), self)),
+        }
+    }
+
+    pub fn into_twitter_response(self) -> TwitterResponse<()> {
+        TwitterResponse {
+            object: (),
+            raw_response: self.raw_response,
+            rate_limit: self.rate_limit,
         }
     }
 }
