@@ -196,15 +196,19 @@ fn create_return_type<'a>(endpoint: &'a parser::Endpoint, api_template: &parser:
         }
     }
 
-    if endpoint.name == "RateLimitStatus" {
-        return sb!("RateLimitStatusResponse");
-    }
-
     match endpoint.return_type.as_ref() {
         "void" => sb!("()"),
         "StringResponse" => Some(Cow::Owned(format!("{}Response", endpoint.name))),
         "CategoryResponse" => sb!("SuggestedUsers"),
         "Cursored<long>" => sb!("CursorIds"),
+        "UploadFinalizeCommandResult" => {
+            if endpoint.name == "UploadStatusCommand" {
+                sb!("UploadStatusCommandResponse")
+            } else {
+                sb!("UploadFinalizeCommandResponse")
+            }
+        }
+        "RateLimitStatusResponse" => sb!("RateLimitStatusResponse"),
         x if x.starts_with("Cursored<") => Some(Cow::Owned(format!("Cursor{}s", &x[9..x.len() - 1]))),
         x if x.starts_with("Listed<") => core(&x[7..x.len() - 1]).map(|x| Cow::Owned(format!("Vec<{}>", x))),
         x if x.starts_with("Dictionary<") => {

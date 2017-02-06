@@ -305,14 +305,18 @@ impl Command for CmdUploadVideo {
                 }
             }
 
-            let mut finalize_res = client.media().upload_finalize_command(init_res.object.media_id).execute()?;
+            let finalize_res = client.media().upload_finalize_command(init_res.object.media_id).execute()?;
             println!("\n{:?}", finalize_res);
 
-            while let Some(models::ProcessingInfo { check_after_secs: Some(x), .. }) = finalize_res.object.processing_info {
-                std::thread::sleep(std::time::Duration::from_secs(x as u64));
+            if let Some(models::ProcessingInfo { mut check_after_secs, .. }) = finalize_res.object.processing_info {
+                while let Some(x) = check_after_secs {
+                    std::thread::sleep(std::time::Duration::from_secs(x as u64));
 
-                finalize_res = client.media().upload_status_command(init_res.object.media_id).execute()?;
-                println!("\n{:?}", finalize_res);
+                    let status_res = client.media().upload_status_command(init_res.object.media_id).execute()?;
+                    println!("\n{:?}", status_res);
+
+                    check_after_secs = status_res.object.processing_info.check_after_secs;
+                }
             }
 
             write_and_flush(format_args!("\nTweet: "));
@@ -323,7 +327,7 @@ impl Command for CmdUploadVideo {
                 "\n{:?}",
                 client.statuses()
                     .update(status)
-                    .media_ids(Some(finalize_res.object.media_id))
+                    .media_ids(Some(init_res.object.media_id))
                     .execute()?
             );
 

@@ -44,7 +44,7 @@ pub fn media_upload_finalize_command<'a, A, H>(client: &TwitterClient<A, H>, mut
     execute_core(client, Post, MEDIA_UPLOAD_URL, params)
 }
 
-pub fn media_upload_status_command<'a, A, H>(client: &TwitterClient<A, H>, mut params: Params<'a>) -> TwitterResult<UploadFinalizeCommandResponse>
+pub fn media_upload_status_command<'a, A, H>(client: &TwitterClient<A, H>, mut params: Params<'a>) -> TwitterResult<UploadStatusCommandResponse>
     where A: Authenticator, H: HttpHandler
 {
     params.push((Cow::Borrowed("command"), ParameterValue::Text(Cow::Borrowed("STATUS"))));

@@ -49,3 +49,9 @@ pub struct UploadFinalizeCommandResponse {
     pub size: u64,
     pub video: Option<UploadedVideo>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UploadStatusCommandResponse {
+    pub media_id: i64,
+    pub processing_info: ProcessingInfo,
+}
