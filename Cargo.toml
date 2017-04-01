@@ -13,7 +13,8 @@ build = "build.rs"
 
 [dependencies]
 chrono = { version = "0.2", features = ["serde"] }
-hyper = "0.9"
+hyper = { version = "0.9", default-features = false }
+hyper-native-tls = "0.1"
 oauthcli = { version = "1", features = ["hyper"] }
 serde = "0.8"
 serde_json = "0.8"

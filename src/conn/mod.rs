@@ -7,7 +7,9 @@ use std::io::{copy, Read};
 use hyper::{self, header, mime, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
+use hyper::net::HttpsConnector;
 use hyper::status::StatusClass;
+use hyper_native_tls::NativeTlsClient;
 use multipart::client::Multipart;
 use oauthcli;
 use url::{percent_encoding, Url};
@@ -101,13 +103,16 @@ pub trait HttpHandler {
 }
 
 pub struct DefaultHttpHandler {
-    pool: hyper::client::Pool<hyper::net::DefaultConnector>,
+    pool: hyper::client::Pool<HttpsConnector<NativeTlsClient>>,
 }
 
 impl DefaultHttpHandler {
     pub fn new() -> DefaultHttpHandler {
+        let tls = NativeTlsClient::new().unwrap();
+        let conn = HttpsConnector::new(tls);
+
         DefaultHttpHandler {
-            pool: hyper::client::Pool::new(Default::default()),
+            pool: hyper::client::Pool::with_connector(Default::default(), conn),
         }
     }
 }
