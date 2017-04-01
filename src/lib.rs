@@ -35,6 +35,7 @@
 
 pub extern crate chrono;
 pub extern crate hyper;
+extern crate hyper_native_tls;
 extern crate multipart;
 extern crate oauthcli;
 extern crate serde;
