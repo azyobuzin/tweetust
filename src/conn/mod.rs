@@ -3,12 +3,11 @@
 
 use std::any::Any;
 use std::borrow::Cow;
-use std::io::{copy, Read};
+use std::io::{self, Read};
 use hyper::{self, header, mime, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
 use hyper::status::StatusClass;
-use multipart::client::Multipart;
 use oauthcli;
 use url::{percent_encoding, Url};
 use ::{parse_json, TwitterError};
@@ -16,6 +15,7 @@ use models::*;
 
 pub mod application_only_authenticator;
 pub mod oauth_authenticator;
+mod hyper_multipart;
 
 pub enum RequestContent<'a> {
     None,
@@ -124,14 +124,14 @@ impl HttpHandler for DefaultHttpHandler {
 
         let scheme = auth.create_authorization_header(&request);
         let body;
-        let mut req = try!(hyper::client::Request::with_connector(request.method, request.url, &self.pool));
+        let mut req = hyper::client::Request::with_connector(request.method, request.url, &self.pool)?;
 
         if let Some(s) = scheme {
             req.headers_mut().set(header::Authorization(s));
         }
 
         let res = match request.content {
-            RequestContent::None => try!(req.start()).send(),
+            RequestContent::None => req.start()?.send(),
             RequestContent::WwwForm(ref params) => {
                 body = create_query(
                     params.as_ref().iter()
@@ -146,17 +146,17 @@ impl HttpHandler for DefaultHttpHandler {
                         Vec::new()
                     )));
                 }
-                let mut req = try!(req.start());
-                try!(req.write_all(body.as_bytes()));
+                let mut req = req.start()?;
+                req.write_all(body.as_bytes())?;
                 req.send()
             }
             RequestContent::MultipartFormData(params) => {
-                let mut multipart = try!(Multipart::from_request(req));
+                let mut multipart = hyper_multipart::create_multipart_client(req)?;
                 for (key, val) in params {
-                    try!(match val {
+                    match val {
                         ParameterValue::Text(x) => multipart.write_text(key, x),
                         ParameterValue::File(mut x) => multipart.write_stream(key, &mut x, Some("file"), None),
-                    });
+                    }?;
                 }
                 multipart.send()
             }
@@ -168,13 +168,13 @@ impl HttpHandler for DefaultHttpHandler {
                         headers.set(header::ContentLength(len));
                     }
                 }
-                let mut req = try!(req.start());
-                try!(copy(s.content, &mut req));
+                let mut req = req.start()?;
+                io::copy(s.content, &mut req)?;
                 req.send()
             }
         };
 
-        read_to_twitter_result(try!(res))
+        read_to_twitter_result(res?)
     }
 }
 

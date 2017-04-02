@@ -4,10 +4,11 @@
 
 use std::borrow::Cow;
 use hyper::Post;
-use oauthcli::{OAuthAuthorizationHeader, OAuthAuthorizationHeaderBuilder, SignatureMethod};
+use oauthcli::{OAuthAuthorizationHeaderBuilder, SignatureMethod};
 use url::form_urlencoded;
 use ::{OAuthAuthenticator, TwitterError, TwitterResult};
 use conn::*;
+use conn::oauth_authenticator::OAuthAuthorizationScheme;
 use models::TwitterResponse;
 
 #[derive(Clone, Debug)]
@@ -48,7 +49,7 @@ impl<'a> RequestTokenRequestBuilder<'a> {
     pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<RequestTokenResponse> {
         struct RequestTokenAuthenticator<'a> { b: &'a RequestTokenRequestBuilder<'a> }
         impl<'a> Authenticator for RequestTokenAuthenticator<'a> {
-            type Scheme = OAuthAuthorizationHeader;
+            type Scheme = OAuthAuthorizationScheme;
 
             fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
                 let mut builder = OAuthAuthorizationHeaderBuilder::new(
@@ -66,7 +67,8 @@ impl<'a> RequestTokenRequestBuilder<'a> {
                     );
                 }
 
-                Some(builder.callback(self.b.oauth_callback.as_ref()).finish_for_twitter())
+                let h = builder.callback(self.b.oauth_callback.as_ref()).finish_for_twitter();
+                Some(OAuthAuthorizationScheme(h))
             }
         }
 
@@ -154,7 +156,7 @@ impl<'a> AccessTokenRequestBuilder<'a> {
     pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<AccessTokenResponse> {
         struct AccessTokenAuthenticator<'a> { b: &'a AccessTokenRequestBuilder<'a> }
         impl<'a> Authenticator for AccessTokenAuthenticator<'a> {
-            type Scheme = OAuthAuthorizationHeader;
+            type Scheme = OAuthAuthorizationScheme;
 
             fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
                 let mut builder = OAuthAuthorizationHeaderBuilder::new(
@@ -172,11 +174,11 @@ impl<'a> AccessTokenRequestBuilder<'a> {
                     );
                 }
 
-                Some(builder
+                let h = builder
                     .token(self.b.oauth_token.as_ref(), self.b.oauth_token_secret.as_ref())
                     .verifier(self.b.oauth_verifier.as_ref())
-                    .finish_for_twitter()
-                )
+                    .finish_for_twitter();
+                Some(OAuthAuthorizationScheme(h))
             }
         }
 

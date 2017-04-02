@@ -1,5 +1,8 @@
 use std::borrow::Cow;
-use oauthcli::{OAuthAuthorizationHeader, OAuthAuthorizationHeaderBuilder, SignatureMethod};
+use std::fmt;
+use std::str::FromStr;
+use hyper::header;
+use oauthcli::{OAuthAuthorizationHeader, OAuthAuthorizationHeaderBuilder, ParseOAuthAuthorizationHeaderError, SignatureMethod};
 use super::*;
 
 /// OAuth 1.0 wrapper
@@ -26,7 +29,7 @@ impl<'a> OAuthAuthenticator<'a> {
 }
 
 impl<'a> Authenticator for OAuthAuthenticator<'a> {
-    type Scheme = OAuthAuthorizationHeader;
+    type Scheme = OAuthAuthorizationScheme;
 
     fn create_authorization_header(&self, request: &Request) -> Option<Self::Scheme> {
         let mut builder = OAuthAuthorizationHeaderBuilder::new(
@@ -45,6 +48,30 @@ impl<'a> Authenticator for OAuthAuthenticator<'a> {
             );
         }
 
-        Some(builder.finish_for_twitter())
+        let h = builder.finish_for_twitter();
+        Some(OAuthAuthorizationScheme(h))
+    }
+}
+
+/// hyper's Authorization header implementation
+#[derive(Debug, Clone)]
+pub struct OAuthAuthorizationScheme(pub OAuthAuthorizationHeader);
+
+impl header::Scheme for OAuthAuthorizationScheme {
+    fn scheme() -> Option<&'static str> {
+        Some("OAuth")
+    }
+
+    fn fmt_scheme(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(self.0.auth_param())
+    }
+}
+
+impl FromStr for OAuthAuthorizationScheme {
+    type Err = ParseOAuthAuthorizationHeaderError;
+
+    fn from_str(s: &str) -> Result<OAuthAuthorizationScheme, ParseOAuthAuthorizationHeaderError> {
+        OAuthAuthorizationHeader::from_str(s)
+            .map(OAuthAuthorizationScheme)
     }
 }
