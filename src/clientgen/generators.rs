@@ -14,17 +14,8 @@ pub struct TwitterClient<A: Authenticator, H: HttpHandler> {
     handler: H,
 }
 
-impl<A: Authenticator> TwitterClient<A, DefaultHttpHandler> {
-    pub fn new(authenticator: A) -> TwitterClient<A, DefaultHttpHandler> {
-        TwitterClient {
-            auth: authenticator,
-            handler: DefaultHttpHandler::new(),
-        }
-    }
-}
-
 impl<A: Authenticator, H: HttpHandler> TwitterClient<A, H> {
-    pub fn with_http_handler(authenticator: A, http_handler: H) -> TwitterClient<A, H> {
+    pub fn new(authenticator: A, http_handler: H) -> TwitterClient<A, H> {
         TwitterClient {
             auth: authenticator,
             handler: http_handler,

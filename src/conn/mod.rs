@@ -13,6 +13,11 @@ use url::{percent_encoding, Url};
 use ::{parse_json, TwitterError};
 use models::*;
 
+#[cfg(feature = "hyper-native-tls")]
+use hyper_native_tls::NativeTlsClient;
+#[cfg(feature = "hyper-native-tls")]
+use hyper_native_tls::native_tls;
+
 pub mod application_only_authenticator;
 pub mod oauth_authenticator;
 mod hyper_multipart;
@@ -97,34 +102,50 @@ pub trait Authenticator {
 }
 
 pub trait HttpHandler {
+    /// Sends a request and parses the response.
     fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> Result<RawResponse, TwitterError>;
 }
 
-pub struct DefaultHttpHandler {
-    pool: hyper::client::Pool<hyper::net::DefaultConnector>,
+impl<'a, H: HttpHandler + ?Sized> HttpHandler for &'a H {
+    fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> Result<RawResponse, TwitterError> {
+        (**self).send_request(request, auth)
+    }
 }
 
-impl DefaultHttpHandler {
-    pub fn new() -> DefaultHttpHandler {
+pub type DefaultHttpsConnector = hyper::client::Pool<hyper::net::HttpsConnector<NativeTlsClient>>;
+
+pub struct DefaultHttpHandler<C: hyper::net::NetworkConnector> {
+    connector: C,
+}
+
+impl<C: hyper::net::NetworkConnector> DefaultHttpHandler<C> {
+    pub fn new(connector: C) -> DefaultHttpHandler<C> {
         DefaultHttpHandler {
-            pool: hyper::client::Pool::new(Default::default()),
+            connector: connector,
         }
     }
 }
 
-impl Default for DefaultHttpHandler {
-    fn default() -> Self {
-        DefaultHttpHandler::new()
+#[cfg(feature = "hyper-native-tls")]
+impl DefaultHttpHandler<DefaultHttpsConnector> {
+    pub fn with_https_connector() -> native_tls::Result<Self> {
+        NativeTlsClient::new()
+            .map(|x| DefaultHttpHandler::new(
+                hyper::client::Pool::with_connector(
+                    Default::default(),
+                    hyper::net::HttpsConnector::new(x)
+                )
+            ))
     }
 }
 
-impl HttpHandler for DefaultHttpHandler {
+impl<C: hyper::net::NetworkConnector> HttpHandler for DefaultHttpHandler<C> {
     fn send_request<A: Authenticator>(&self, request: Request, auth: &A) -> Result<RawResponse, TwitterError> {
         use std::io::Write;
 
         let scheme = auth.create_authorization_header(&request);
         let body;
-        let mut req = hyper::client::Request::with_connector(request.method, request.url, &self.pool)?;
+        let mut req = hyper::client::Request::with_connector(request.method, request.url, &self.connector)?;
 
         if let Some(s) = scheme {
             req.headers_mut().set(header::Authorization(s));

@@ -46,7 +46,7 @@ impl<'a> RequestTokenRequestBuilder<'a> {
         self
     }
 
-    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<RequestTokenResponse> {
+    pub fn execute<H: HttpHandler>(&self, handler: &H) -> TwitterResult<RequestTokenResponse> {
         struct RequestTokenAuthenticator<'a> { b: &'a RequestTokenRequestBuilder<'a> }
         impl<'a> Authenticator for RequestTokenAuthenticator<'a> {
             type Scheme = OAuthAuthorizationScheme;
@@ -105,10 +105,6 @@ impl<'a> RequestTokenRequestBuilder<'a> {
             _ => Err(TwitterError::ParseResponse(None, res))
         }
     }
-
-    pub fn execute(&self) -> TwitterResult<RequestTokenResponse> {
-        self.execute_with_handler(&DefaultHttpHandler::new())
-    }
 }
 
 pub fn request_token<'a, CK, CS, CB>(consumer_key: CK, consumer_secret: CS, oauth_callback: CB) -> RequestTokenRequestBuilder<'a>
@@ -153,7 +149,7 @@ pub struct AccessTokenRequestBuilder<'a> {
 }
 
 impl<'a> AccessTokenRequestBuilder<'a> {
-    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<AccessTokenResponse> {
+    pub fn execute<H: HttpHandler>(&self, handler: &H) -> TwitterResult<AccessTokenResponse> {
         struct AccessTokenAuthenticator<'a> { b: &'a AccessTokenRequestBuilder<'a> }
         impl<'a> Authenticator for AccessTokenAuthenticator<'a> {
             type Scheme = OAuthAuthorizationScheme;
@@ -211,10 +207,6 @@ impl<'a> AccessTokenRequestBuilder<'a> {
                 }),
             _ => Err(TwitterError::ParseResponse(None, res))
         }
-    }
-
-    pub fn execute(&self) -> TwitterResult<AccessTokenResponse> {
-        self.execute_with_handler(&DefaultHttpHandler::new())
     }
 }
 

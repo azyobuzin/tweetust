@@ -11,7 +11,7 @@ use std::io;
 use std::io::prelude::*;
 use tweetust::*;
 
-type Client<'a> = TwitterClient<OAuthAuthenticator<'a>, conn::DefaultHttpHandler>;
+type Client<'a> = TwitterClient<OAuthAuthenticator<'a>, DefaultHttpHandler<conn::DefaultHttpsConnector>>;
 
 macro_rules! cmds_map {
     ($(($name:expr, $cmd:expr),)*) => {{
@@ -30,6 +30,7 @@ fn main() {
         ("upload_video", CmdUploadVideo),
         ("rate_limit_status", CmdRateLimitStatus),
         ("quit", CmdQuit),
+        ("exit", CmdQuit),
     };
 
     let mut buf = String::new();
@@ -50,9 +51,9 @@ fn write_and_flush(fmt: std::fmt::Arguments) {
     handle.flush().unwrap();
 }
 
-static CONFIG_FILE: &'static str = "test_client_config.txt";
-static CONSUMER_KEY: &'static str = "wDvwfgeq3mJO6GKTNXnOQvIf3";
-static CONSUMER_SECRET: &'static str = "om5lZdHf9dbyQUEIdwtiz0HqeC83O5JQUV3Dc9Amk0HO7FB7Rs";
+const CONFIG_FILE: &'static str = "test_client_config.txt";
+const CONSUMER_KEY: &'static str = "wDvwfgeq3mJO6GKTNXnOQvIf3";
+const CONSUMER_SECRET: &'static str = "om5lZdHf9dbyQUEIdwtiz0HqeC83O5JQUV3Dc9Amk0HO7FB7Rs";
 
 fn create_client<'a>() -> Client<'a> {
     load_config_file().unwrap_or_else(|_| authorize())
@@ -68,25 +69,31 @@ fn load_config_file<'a>() -> io::Result<Client<'a>> {
     let token = try!(read());
     let token_secret = try!(read());
 
-    Ok(TwitterClient::new(OAuthAuthenticator::new(CONSUMER_KEY, CONSUMER_SECRET, token, token_secret)))
+    Ok(TwitterClient::new(
+        OAuthAuthenticator::new(CONSUMER_KEY, CONSUMER_SECRET, token, token_secret),
+        DefaultHttpHandler::with_https_connector().unwrap()
+    ))
 }
 
 fn authorize<'a>() -> Client<'a> {
-    let req_token = oauth::request_token(CONSUMER_KEY, CONSUMER_SECRET, "oob").execute().unwrap().object;
+    let handler = DefaultHttpHandler::with_https_connector().unwrap();
+    let req_token = oauth::request_token(CONSUMER_KEY, CONSUMER_SECRET, "oob")
+        .execute(&handler).unwrap().object;
 
     write_and_flush(format_args!("Go to https://api.twitter.com/oauth/authorize?oauth_token={}\nPut PIN: ", req_token.oauth_token));
 
     let mut pin = String::with_capacity(7);
     io::stdin().read_line(&mut pin).unwrap();
 
-    let access_token = req_token.access_token(pin.trim()).execute().unwrap().object;
+    let access_token = req_token.access_token(pin.trim())
+        .execute(&handler).unwrap().object;
 
     {
         let mut file = fs::File::create(CONFIG_FILE).unwrap();
         write!(file, "{}\n{}\n", access_token.oauth_token, access_token.oauth_token_secret).unwrap();
     }
 
-    TwitterClient::new(access_token.to_authenticator())
+    TwitterClient::new(access_token.to_authenticator(), handler)
 }
 
 struct InputReader<'a> {

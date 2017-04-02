@@ -54,7 +54,7 @@ impl<'a> TokenRequestBuilder<'a> {
         self
     }
 
-    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<TokenResponse> {
+    pub fn execute<H: HttpHandler>(&self, handler: &H) -> TwitterResult<TokenResponse> {
         let params = [(Cow::Borrowed("grant_type"), Cow::Borrowed(self.grant_type.as_ref()))];
 
         let req = try!(Request::new(
@@ -67,10 +67,6 @@ impl<'a> TokenRequestBuilder<'a> {
             req,
             &CkCsBasicAuthenticator::new(&self.consumer_key, &self.consumer_secret)
         )).parse_to_object()
-    }
-
-    pub fn execute(&self) -> TwitterResult<TokenResponse> {
-        self.execute_with_handler(&DefaultHttpHandler::new())
     }
 }
 
@@ -92,7 +88,7 @@ pub struct InvalidateTokenRequestBuilder<'a> {
 }
 
 impl<'a> InvalidateTokenRequestBuilder<'a> {
-    pub fn execute_with_handler<H: HttpHandler>(&self, handler: &H) -> TwitterResult<InvalidateTokenResponse> {
+    pub fn execute<H: HttpHandler>(&self, handler: &H) -> TwitterResult<InvalidateTokenResponse> {
         let access_token = percent_encoding::percent_decode(self.access_token.as_ref().as_bytes());
         let params = [(Cow::Borrowed("access_token"), access_token.decode_utf8_lossy())];
 
@@ -106,10 +102,6 @@ impl<'a> InvalidateTokenRequestBuilder<'a> {
             req,
             &CkCsBasicAuthenticator::new(&self.consumer_key, &self.consumer_secret)
         )).parse_to_object()
-    }
-
-    pub fn execute(&self) -> TwitterResult<InvalidateTokenResponse> {
-        self.execute_with_handler(&DefaultHttpHandler::new())
     }
 }
 

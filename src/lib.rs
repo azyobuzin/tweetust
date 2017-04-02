@@ -20,10 +20,11 @@
 //! ```no_run
 //! use tweetust::*;
 //!
+//! let handler = DefaultHttpHandler::with_https_connector().unwrap();
 //! let auth = OAuthAuthenticator::new("API Key", "API Secret", "Access Token", "Access Token Secret");
 //!
 //! let your_tweet =
-//!   TwitterClient::new(auth)
+//!   TwitterClient::new(auth, handler)
 //!     .statuses()
 //!     .update("My First Tweet!")
 //!     .execute();
@@ -41,6 +42,9 @@ extern crate serde;
 extern crate serde_json;
 extern crate url;
 
+#[cfg(feature = "hyper-native-tls")]
+pub extern crate hyper_native_tls;
+
 use std::error::Error;
 use std::fmt;
 use std::io;
@@ -48,6 +52,7 @@ use models::{RawResponse, TwitterResponse};
 use models::ErrorResponse;
 
 pub use clients::TwitterClient;
+pub use conn::DefaultHttpHandler;
 pub use conn::application_only_authenticator::ApplicationOnlyAuthenticator;
 pub use conn::oauth_authenticator::OAuthAuthenticator;
 
