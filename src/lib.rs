@@ -39,6 +39,7 @@ pub extern crate hyper;
 extern crate multipart;
 extern crate oauthcli;
 extern crate serde;
+#[macro_use] extern crate serde_derive;
 extern crate serde_json;
 extern crate url;
 
@@ -129,6 +130,6 @@ impl From<io::Error> for TwitterError {
 
 pub type TwitterResult<T> = Result<TwitterResponse<T>, TwitterError>;
 
-fn parse_json<T: serde::de::Deserialize>(s: &str) -> serde_json::Result<T> {
+fn parse_json<T: serde::de::DeserializeOwned>(s: &str) -> serde_json::Result<T> {
     serde_json::from_str(s)
 }

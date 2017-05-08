@@ -220,7 +220,11 @@ fn create_query<'a, I>(pairs: I) -> String
     s
 }
 
-include!(concat!(env!("OUT_DIR"), "/conn/internal_error_response.rs"));
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct InternalErrorResponse {
+    errors: Option<Vec<Error>>,
+    error: Option<Vec<Error>>
+}
 
 /// Parses the rate limit headers and returns.
 pub fn read_to_twitter_result(mut res: Response) -> Result<RawResponse, TwitterError> {

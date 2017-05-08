@@ -30,28 +30,32 @@ pub struct TextRange {
 }
 
 impl Serialize for TextRange {
-    fn serialize<S: Serializer>(&self, serializer: &mut S) -> Result<(), S::Error> {
-        let mut state = try!(serializer.serialize_seq(Some(2)));
-        try!(serializer.serialize_seq_elt(&mut state, self.start));
-        try!(serializer.serialize_seq_elt(&mut state, self.end));
-        serializer.serialize_seq_end(state)
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut tup = try!(serializer.serialize_tuple(2));
+        try!(tup.serialize_element(&self.start));
+        try!(tup.serialize_element(&self.end));
+        tup.end()
     }
 }
 
-impl Deserialize for TextRange {
-    fn deserialize<D: Deserializer>(deserializer: &mut D) -> Result<Self, D::Error> {
+impl<'x> Deserialize<'x> for TextRange {
+    fn deserialize<D: Deserializer<'x>>(deserializer: D) -> Result<Self, D::Error> {
         struct Visitor;
-        impl de::Visitor for Visitor {
+        impl<'x> de::Visitor<'x> for Visitor {
             type Value = TextRange;
-            fn visit_seq<V: de::SeqVisitor>(&mut self, mut visitor: V) -> Result<Self::Value, V::Error> {
-                let start: i32 = try!(visitor.visit().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(0))));
-                let end: i32 = try!(visitor.visit().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(1))));
-                try!(visitor.end());
+
+            fn visit_seq<A: de::SeqAccess<'x>>(self, mut access: A) -> Result<Self::Value, A::Error> {
+                let start: i32 = try!(access.next_element().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(0, &self))));
+                let end: i32 = try!(access.next_element().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(1, &self))));
                 Ok(TextRange { start: start, end: end })
+            }
+
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "an array of two integers")
             }
         }
 
-        deserializer.deserialize_seq_fixed_size(2, Visitor)
+        deserializer.deserialize_tuple(2, Visitor)
     }
 }
 

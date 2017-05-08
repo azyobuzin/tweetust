@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use chrono;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
+use serde::ser::SerializeTuple;
 use ::{parse_json, TwitterError, TwitterResult};
 
 #[derive(Clone, Debug)]
@@ -20,7 +21,7 @@ pub struct RawResponse {
 }
 
 impl RawResponse {
-    pub fn parse_to_object<T: de::Deserialize>(self) -> TwitterResult<T> {
+    pub fn parse_to_object<T: de::DeserializeOwned>(self) -> TwitterResult<T> {
         match parse_json(&self.raw_response) {
             Ok(x) => Ok(TwitterResponse {
                 object: x,
@@ -50,7 +51,7 @@ macro_rules! enum_str {
         }
 
         impl ::serde::Serialize for $name {
-            fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error>
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
                 where S: ::serde::Serializer,
             {
                 // Serialize the enum as a string.
@@ -61,22 +62,26 @@ macro_rules! enum_str {
             }
         }
 
-        impl ::serde::Deserialize for $name {
-            fn deserialize<D>(deserializer: &mut D) -> Result<Self, D::Error>
-                where D: ::serde::Deserializer,
+        impl<'x> ::serde::Deserialize<'x> for $name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+                where D: ::serde::Deserializer<'x>,
             {
                 struct Visitor;
 
-                impl ::serde::de::Visitor for Visitor {
+                impl<'x> ::serde::de::Visitor<'x> for Visitor {
                     type Value = $name;
 
-                    fn visit_str<E>(&mut self, value: &str) -> Result<$name, E>
+                    fn visit_str<E>(self, value: &str) -> Result<$name, E>
                         where E: ::serde::de::Error,
                     {
                         match value {
                             $( $str => Ok($name::$variant), )*
                             x => Ok($name::Other(x.to_owned())),
                         }
+                    }
+
+                    fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                        write!(f, "a string")
                     }
                 }
 
@@ -87,7 +92,21 @@ macro_rules! enum_str {
     }
 }
 
-include!(concat!(env!("OUT_DIR"), "/models/_models_list.rs"));
+include!("cursor.rs");
+include!("direct_messages.rs");
+include!("entities.rs");
+include!("error.rs");
+include!("friendships.rs");
+include!("geo.rs");
+include!("helps.rs");
+include!("lists.rs");
+include!("media.rs");
+include!("places.rs");
+include!("rate_limit.rs");
+include!("search.rs");
+include!("settings.rs");
+include!("tweets.rs");
+include!("users.rs");
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub enum TweetMode {
@@ -117,21 +136,27 @@ impl fmt::Display for CreatedAt {
 }
 
 impl Serialize for CreatedAt {
-    fn serialize<S: Serializer>(&self, serializer: &mut S) -> Result<(), S::Error> {
-        serializer.serialize_str(&self.to_string())
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.collect_str(self)
     }
 }
 
-impl Deserialize for CreatedAt {
-    fn deserialize<D: Deserializer>(deserializer: &mut D) -> Result<Self, D::Error> {
+impl<'x> Deserialize<'x> for CreatedAt {
+    fn deserialize<D: Deserializer<'x>>(deserializer: D) -> Result<Self, D::Error> {
         struct Visitor;
-        impl de::Visitor for Visitor {
+
+        impl<'x> de::Visitor<'x> for Visitor {
             type Value = CreatedAt;
-            fn visit_str<E: de::Error>(&mut self, v: &str) -> Result<Self::Value, E> {
+
+            fn visit_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
                 match chrono::DateTime::parse_from_str(v, CREATED_AT_FORMAT) {
                     Ok(x) => Ok(CreatedAt(x)),
-                    Err(x) => Err(E::invalid_value(&x.to_string()))
+                    Err(_) => Err(E::invalid_value(de::Unexpected::Str(v), &self))
                 }
+            }
+
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "a date/time string")
             }
         }
 

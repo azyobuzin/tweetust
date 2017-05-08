@@ -8,7 +8,17 @@ use url::percent_encoding;
 use ::{ApplicationOnlyAuthenticator, TwitterResult};
 use conn::*;
 
-include!(concat!(env!("OUT_DIR"), "/oauth2_models.rs"));
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct TokenResponse {
+    pub token_type: String,
+    pub access_token: String
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct InvalidateTokenResponse {
+    pub access_token: String
+}
+
 
 impl TokenResponse {
     pub fn to_authenticator<'a>(self) -> ApplicationOnlyAuthenticator<'a> {

@@ -37,28 +37,32 @@ pub struct Coordinates {
 }
 
 impl Serialize for Coordinates {
-    fn serialize<S: Serializer>(&self, serializer: &mut S) -> Result<(), S::Error> {
-        let mut state = try!(serializer.serialize_seq(Some(2)));
-        try!(serializer.serialize_seq_elt(&mut state, self.longitude));
-        try!(serializer.serialize_seq_elt(&mut state, self.latitude));
-        serializer.serialize_seq_end(state)
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut tup = try!(serializer.serialize_tuple(2));
+        try!(tup.serialize_element(&self.longitude));
+        try!(tup.serialize_element(&self.latitude));
+        tup.end()
     }
 }
 
-impl Deserialize for Coordinates {
-    fn deserialize<D: Deserializer>(deserializer: &mut D) -> Result<Self, D::Error> {
+impl<'x> Deserialize<'x> for Coordinates {
+    fn deserialize<D: Deserializer<'x>>(deserializer: D) -> Result<Self, D::Error> {
         struct Visitor;
-        impl de::Visitor for Visitor {
+        impl<'x> de::Visitor<'x> for Visitor {
             type Value = Coordinates;
-            fn visit_seq<V: de::SeqVisitor>(&mut self, mut visitor: V) -> Result<Self::Value, V::Error> {
-                let longitude: f64 = try!(visitor.visit().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(0))));
-                let latitude: f64 = try!(visitor.visit().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(1))));
-                try!(visitor.end());
+
+            fn visit_seq<A: de::SeqAccess<'x>>(self, mut access: A) -> Result<Self::Value, A::Error> {
+                let longitude: f64 = try!(access.next_element().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(0, &self))));
+                let latitude: f64 = try!(access.next_element().and_then(|x| x.ok_or_else(|| de::Error::invalid_length(1, &self))));
                 Ok(Coordinates { longitude: longitude, latitude: latitude })
+            }
+
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "an array of two integers")
             }
         }
 
-        deserializer.deserialize_seq_fixed_size(2, Visitor)
+        deserializer.deserialize_tuple(2, Visitor)
     }
 }
 
