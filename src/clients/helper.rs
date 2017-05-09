@@ -44,7 +44,7 @@ pub fn str_collection_parameter<I, S>(values: I) -> String
 
 pub fn execute_core<'a, A, H, U, R>(client: &super::TwitterClient<A, H>, method: Method,
     url: U, params: Vec<(Cow<'a, str>, ParameterValue<'a>)>) -> TwitterResult<R>
-    where A: Authenticator, H: HttpHandler, U: AsRef<str>, R: ::serde::de::Deserialize
+    where A: Authenticator, H: HttpHandler, U: AsRef<str>, R: ::serde::de::DeserializeOwned
 {
     let req = Request::new(method, url.as_ref(), RequestContent::from_name_value_pairs(params))?;
     client.handler.send_request(req, &client.auth)?.parse_to_object()
