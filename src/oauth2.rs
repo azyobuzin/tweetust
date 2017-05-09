@@ -19,7 +19,6 @@ pub struct InvalidateTokenResponse {
     pub access_token: String
 }
 
-
 impl TokenResponse {
     pub fn to_authenticator<'a>(self) -> ApplicationOnlyAuthenticator<'a> {
         ApplicationOnlyAuthenticator::new(self.access_token)

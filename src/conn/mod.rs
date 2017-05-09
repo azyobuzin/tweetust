@@ -8,6 +8,7 @@ use hyper::{self, header, mime, Get, Delete, Head};
 use hyper::client::Response;
 use hyper::method::Method;
 use hyper::status::StatusClass;
+use multipart::client::Multipart;
 use oauthcli;
 use url::{percent_encoding, Url};
 use ::{parse_json, TwitterError};
@@ -20,7 +21,6 @@ use hyper_native_tls::native_tls;
 
 pub mod application_only_authenticator;
 pub mod oauth_authenticator;
-mod hyper_multipart;
 
 pub enum RequestContent<'a> {
     None,
@@ -172,7 +172,7 @@ impl<C: hyper::net::NetworkConnector> HttpHandler for DefaultHttpHandler<C> {
                 req.send()
             }
             RequestContent::MultipartFormData(params) => {
-                let mut multipart = hyper_multipart::create_multipart_client(req)?;
+                let mut multipart = Multipart::from_request(req)?;
                 for (key, val) in params {
                     match val {
                         ParameterValue::Text(x) => multipart.write_text(key, x),
