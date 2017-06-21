@@ -99,8 +99,8 @@ pub struct PlaceType {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TrendsResult {
-    pub as_of: chrono::DateTime<chrono::UTC>,
-    pub created_at: chrono::DateTime<chrono::UTC>,
+    pub as_of: chrono::DateTime<chrono::Utc>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
     pub locations: Vec<TrendLocation>,
     pub trends: Vec<Trend>,
 }
