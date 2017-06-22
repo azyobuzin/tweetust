@@ -6,9 +6,9 @@ pub struct RateLimitStatus {
 }
 
 impl RateLimitStatus {
-    pub fn reset_date_time(&self) -> chrono::DateTime<chrono::UTC> {
+    pub fn reset_date_time(&self) -> chrono::DateTime<chrono::Utc> {
         use chrono::TimeZone;
-        chrono::UTC.timestamp(self.reset, 0)
+        chrono::Utc.timestamp(self.reset, 0)
     }
 }
 
