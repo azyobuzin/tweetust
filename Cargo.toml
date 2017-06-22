@@ -1,9 +1,9 @@
 [package]
 name = "tweetust"
-version = "0.7.0"
+version = "0.8.0"
 authors = ["azyobuzin <azyobuzin@users.sourceforge.jp>"]
 description = "The Twitter API wrapper"
-documentation = "https://docs.rs/tweetust/0.7.0/tweetust/"
+documentation = "https://docs.rs/tweetust/0.8.0/tweetust/"
 repository = "https://github.com/azyobuzin/tweetust"
 readme = "README.md"
 keywords = ["twitter", "tweet"]
@@ -22,7 +22,7 @@ serde_json = "1"
 url = "1"
 
 [dependencies.multipart]
-version = "0.12"
+version = "0.12" # 0.13.0 can't be compiled without `server` feature
 default-features = false
 features = ["client", "hyper"]
 

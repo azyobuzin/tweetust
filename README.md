@@ -12,3 +12,4 @@ Twitter API wrapper for Rust.
 - [ ] Streaming
 - [ ] `jsonmap` element in API definition files
     - direct_messages/events
+- [ ] Support hyper 0.11 (I wonder it is very hard...)

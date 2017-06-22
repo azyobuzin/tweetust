@@ -57,47 +57,9 @@ pub struct TypeNamePair<'a> {
     pub name: &'a str,
 }
 
-#[allow(dead_code)] pub const ERR_MANY0_IGNORE: u32 = 1;
 #[allow(dead_code)] pub const ERR_MANY1_IGNORE: u32 = 2;
 #[allow(dead_code)] pub const ERR_TAKE_UNTIL_AND_CONSUME_S2: u32 = 3;
 #[allow(dead_code)] pub const ERR_NEITHER_SPACE_NOR_COMMENT: u32 = 10;
-
-macro_rules! many0_ignore {
-    ($i:expr, $submac:ident!( $($args:tt)* )) => ({
-        let ret;
-        let mut input = $i;
-
-        loop {
-            if input.input_len() == 0 {
-                ret = IResult::Done(input, ());
-                break;
-            }
-
-            match $submac!(input, $($args)*) {
-                IResult::Error(_) => {
-                    ret = IResult::Done(input, ());
-                    break;
-                },
-                IResult::Incomplete(Needed::Unknown) => {
-                    ret = IResult::Incomplete(Needed::Unknown);
-                    break;
-                },
-                IResult::Incomplete(Needed::Size(i)) => {
-                    ret = IResult::Incomplete(Needed::Size(i + $i.input_len() - input.input_len()));
-                    break;
-                },
-                IResult::Done(i, _) if i.input_len() == input.input_len() => {
-                    ret = IResult::Error(Err::Position(ErrorKind::Custom(ERR_MANY0_IGNORE), input));
-                    break;
-                },
-                IResult::Done(i, _) => input = i
-            }
-        }
-
-        ret
-    });
-    ($i:expr, $f:expr) => (many0_ignore!($i, call!($f));)
-}
 
 macro_rules! many1_ignore {
     ($i:expr, $submac:ident!( $($args:tt)* )) => ({
