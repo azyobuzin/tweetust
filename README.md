@@ -24,10 +24,3 @@ git clone --recursive git@github.com:azyobuzin/tweetust.git
 ```
 
 ...before `cargo build`.
-
-The tests use `#![feature(alloc)]` which is only available on the nightly channel:
-
-```
-rustup default nightly
-cargo test
-```

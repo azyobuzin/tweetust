@@ -1,8 +1,5 @@
 //! The test Twitter client app
 
-#![feature(alloc)]
-
-extern crate alloc;
 extern crate tweetust;
 
 use std::fmt;
@@ -299,7 +296,8 @@ impl Command for CmdUploadVideo {
 
             {
                 const BUF_SIZE: usize = 5 * 1000 * 1000; // 5MB
-                let mut buf = unsafe { alloc::raw_vec::RawVec::with_capacity(BUF_SIZE).into_box() };
+                let mut buf = Vec::with_capacity(BUF_SIZE);
+                unsafe { buf.set_len(BUF_SIZE); }
 
                 for segment_index in 0.. {
                     let read_bytes = video_file.read(&mut buf)?;
