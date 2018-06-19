@@ -255,7 +255,6 @@ mod test {
         };
 
         let twitter_result: TwitterResult<Tweet> = resp.parse_to_object();
-        println!("{:?}", twitter_result);
         assert!(twitter_result.is_ok());
     }
 
