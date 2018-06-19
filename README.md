@@ -13,3 +13,21 @@ Twitter API wrapper for Rust.
 - [ ] `jsonmap` element in API definition files
     - direct_messages/events
 - [ ] Support hyper 0.11 (I wonder it is very hard...)
+
+# How to build
+
+This project generates code using the [CoreTweet API Templates](https://github.com/CoreTweet/CoreTweet/tree/master/ApiTemplates).
+CoreTweet is included as a submodule so:
+
+```
+git clone --recursive git@github.com:azyobuzin/tweetust.git
+```
+
+...before `cargo build`.
+
+The tests use `#![feature(alloc)]` which is only available on the nightly channel:
+
+```
+rustup default nightly
+cargo test
+```
