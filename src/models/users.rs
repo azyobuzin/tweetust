@@ -16,7 +16,7 @@ pub struct User {
     pub id: i64,
     pub is_translator: bool,
     pub is_translation_enabled: Option<bool>,
-    pub lang: String,
+    pub lang: Option<String>,
     pub listed_count: u32,
     pub location: Option<String>,
     pub muting: Option<bool>,
