@@ -14,7 +14,7 @@ build = "build.rs"
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 hyper = "0.10"
-hyper-native-tls = "0.2"
+hyper-native-tls = "0.3"
 oauthcli = "1"
 serde = "1"
 serde_derive = "1"
