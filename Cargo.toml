@@ -14,7 +14,7 @@ build = "build.rs"
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 hyper = "0.10"
-hyper-native-tls = { version = "0.2", optional = true }
+hyper-native-tls = "0.2"
 oauthcli = "1"
 serde = "1"
 serde_derive = "1"
@@ -31,9 +31,6 @@ Inflector = { version = "0.11", default-features = false }
 log = "0.3"
 matches = "0.1"
 nom = "1.2"
-
-[features]
-default = ["hyper-native-tls"]
 
 [workspace]
 members = ["clientgen_test"]

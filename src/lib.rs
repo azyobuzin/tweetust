@@ -43,7 +43,6 @@ extern crate serde;
 extern crate serde_json;
 extern crate url;
 
-#[cfg(feature = "hyper-native-tls")]
 pub extern crate hyper_native_tls;
 
 use std::error::Error;

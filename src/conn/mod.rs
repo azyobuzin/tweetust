@@ -13,10 +13,7 @@ use oauthcli;
 use url::{percent_encoding, Url};
 use ::{parse_json, TwitterError};
 use models::*;
-
-#[cfg(feature = "hyper-native-tls")]
 use hyper_native_tls::NativeTlsClient;
-#[cfg(feature = "hyper-native-tls")]
 use hyper_native_tls::native_tls;
 
 pub mod application_only_authenticator;
@@ -126,7 +123,6 @@ impl<C: hyper::net::NetworkConnector> DefaultHttpHandler<C> {
     }
 }
 
-#[cfg(feature = "hyper-native-tls")]
 impl DefaultHttpHandler<DefaultHttpsConnector> {
     pub fn with_https_connector() -> native_tls::Result<Self> {
         NativeTlsClient::new()
